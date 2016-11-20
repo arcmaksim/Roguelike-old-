@@ -1,0 +1,18 @@
+<objects>
+    <object psb="f" vis="f" use="f" isWall="t"/>
+    <object psb="f" vis="f" use="t" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="f" vis="t" use="t" isWall="f"/>
+    <object psb="f" vis="t" use="t" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="f" vis="f" use="t" isWall="f"/>
+    <object psb="f" vis="f" use="f" isWall="f"/>
+    <object psb="f" vis="t" use="f" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="f" vis="t" use="f" isWall="f"/>
+    <object psb="f" vis="f" use="f" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="t" vis="t" use="f" isWall="f"/>
+    <object psb="f" vis="t" use="f" isWall="f"/>
+</objects>

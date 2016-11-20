@@ -1,0 +1,18 @@
+<tiles>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="f" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+    <tile psb="t" vis="t" use="f"/>
+</tiles>

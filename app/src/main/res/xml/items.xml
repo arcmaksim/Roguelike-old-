@@ -1,0 +1,19 @@
+<items>
+    <weapon name="Нож" end="" att="1" mndmg="1" mxdmg="3" dual="f"/>
+    <weapon name="Короткий меч" end="" att="2" mndmg="2" mxdmg="4" dual="f"/>
+    <weapon name="Длинный меч" end="" att="3" mndmg="3" mxdmg="5" dual="f"/>
+    <weapon name="Двуручный меч" end="" att="4" mndmg="5" mxdmg="8" dual="t"/>
+    <armor name="Кожанный доспех" end="" def="1" arm="1"/>
+    <armor name="Кольчуга" end="а" def="2" arm="1"/>
+    <armor name="Латы" end="ы" def="3" arm="2"/>
+    <shield name="Железный щит" end="" def="1" arm="0"/>
+    <shield name="Башенный щит" end="" def="1" arm="1"/>
+    <shield name="Щит 'Кожа Дракона'" end="" def="2" arm="1"/>
+    <item name="Зелье здоровья" end="о" stat="5" val="10"/>
+    <item name="Зелье маны" end="о" stat="7" val="8"/>
+    <item name="Зелье выносливости" end="о" stat="9" val="8"/>
+    <item name="Книга светлой магии" end="а" stat="0" val="0"/>
+    <item name="Книга" end="а" stat="0" val="0"/>
+    <item name="Книга тёмной магии" end="а" stat="0" val="0"/>
+    <item name="Свиток" end="" stat="0" val="0"/>
+</items>

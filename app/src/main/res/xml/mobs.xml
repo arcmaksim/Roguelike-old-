@@ -1,0 +1,8 @@
+<mobs>
+    <mob name="Крыса" hp="5" att="1" def="8" arm="0" spd="9" dmg="1"/>
+    <mob name="Летучая мышь" hp="4" att="1" def="11" arm="0" spd="8" dmg="1"/>
+    <mob name="Слизень" hp="8" att="2" def="10" arm="1" spd="14" dmg="2"/>
+    <mob name="Скелет" hp="10" att="3" def="12" arm="1" spd="12" dmg="3"/>
+    <mob name="Гоблин" hp="12" att="3" def="13" arm="2" spd="10" dmg="4"/>
+    <mob name="Король гоблинов" hp="20" att="3" def="15" arm="3" spd="11" dmg="5"/>
+</mobs>
