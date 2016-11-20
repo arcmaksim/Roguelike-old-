@@ -1,6 +1,6 @@
 # Roguelike
 
-My first roguelike (and my first game) back from 2012. Developed specificly to Samsung Galaxy S Plus.
+My first roguelike (and my first game) back from 2012. Developed specificly for Samsung Galaxy S Plus.
 Suppotrs only 480x800 resolution, has problems with assets, but still playble.
 
 ### Future plans
