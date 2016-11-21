@@ -2,68 +2,24 @@ package ru.MeatGames.roguelike.tomb;
 
 import java.util.Random;
 
-/**
- * √енерирует случайную карту, использую массив map из Global
- */
+public class MapGenerationClass {
 
-public class MapGenerationClass{
-	/**
-	 * @uml.property  name="room"
-	 * @uml.associationEnd  multiplicity="(0 -1)"
-	 */
 	public RoomClass[] room;
-	/**
-	 * @uml.property  name="room1"
-	 * @uml.associationEnd  multiplicity="(0 -1)"
-	 */
 	public RoomDBClass[] room1;
-	/**
-	 * @uml.property  name="zone" multiplicity="(0 -1)" dimension="2"
-	 */
 	public int[][] zone;
 	public Random rnd;
-    /**
-	 * @uml.property  name="m"
-	 */
     public int m;
-	/**
-	 * @uml.property  name="n"
-	 */
 	public int n;
-	/**
-	 * @uml.property  name="z"
-	 */
 	public int z=0;
-	/**
-	 * @uml.property  name="z1"
-	 */
 	public int z1=0;
-	/**
-	 * @uml.property  name="rc"
-	 */
 	public int rc;
-	/**
-	 * @uml.property  name="mr"
-	 */
 	public int mr=70;
-	/**
-	 * @uml.property  name="xl"
-	 */
 	public int xl;
-	/**
-	 * @uml.property  name="xr"
-	 */
 	public int xr;
-	/**
-	 * @uml.property  name="yl"
-	 */
 	public int yl;
-	/**
-	 * @uml.property  name="yr"
-	 */
 	public int yr;
 
-	public MapGenerationClass(){
+	public MapGenerationClass() {
 		rnd = new Random();
 		room1 = new RoomDBClass[mr];
 		loadingRooms();

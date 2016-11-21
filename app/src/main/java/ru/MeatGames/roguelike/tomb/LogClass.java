@@ -1,14 +1,12 @@
 package ru.MeatGames.roguelike.tomb;
 
-/**
- * Класс лога игровых событий.
- */
-
 public class LogClass {
+
 	public String t; //Text
-	//public long n; //время добавлеения
+	//public long n; //РІСЂРµРјСЏ РґРѕР±Р°РІР»РµРЅРёСЏ
 	
 	public LogClass(){
 		t = "";
 	}
+
 }

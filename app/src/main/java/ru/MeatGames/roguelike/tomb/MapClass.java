@@ -2,53 +2,21 @@ package ru.MeatGames.roguelike.tomb;
 
 import android.graphics.Bitmap;
 
-/**
- *  ласс €чейки карты. —одержит методы дл€ управлени€ содержимым €чейки.
- */
-
 public class MapClass {
-	/**
-	 * @uml.property  name="f"
-	 */
+
 	public int f;
-	/**
-	 * @uml.property  name="o"
-	 */
 	public int o;
-    /**
-	 * @uml.property  name="head"
-	 * @uml.associationEnd  readOnly="true"
-	 */
     public ItemList head;
-    /**
-	 * @uml.property  name="mob"
-	 * @uml.associationEnd  readOnly="true" inverse="map:ru.MeatGames.roguelike.tomb.MobList"
-	 */
     public MobList mob;
-	/**
-	 * @uml.property  name="psb"
-	 */
 	public boolean psb;
-	/**
-	 * @uml.property  name="vis"
-	 */
 	public boolean vis;
-	/**
-	 * @uml.property  name="see"
-	 */
 	public boolean see;
-	/**
-	 * @uml.property  name="dis"
-	 */
 	public boolean dis;
-	/**
-	 * @uml.property  name="use"
-	 */
 	public boolean use;
-	
-	public MapClass(){
-		see = false;
-		vis = true;
+
+    public MapClass() {
+        see = false;
+        vis = true;
 		psb = true;
 		dis = false;
 	}
@@ -102,4 +70,5 @@ public class MapClass {
     public Bitmap getItemImg(){
         return (head.next == null)?Global.itemDB[head.item.id].img:Global.game.bag;
     }
+
 }
