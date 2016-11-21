@@ -15,5 +15,6 @@ public class Global {
     public static ItemDB[] itemDB;
     public static MobDB[] mobDB;
     public static StatsDB[] stats;
+    public static AssetHelper mAssetHelper;
 
 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -83,6 +82,8 @@ public class Game extends Activity {
         Global.stats = new StatsDB[Global.game.maxStats];
         for (int x = 0; x < Global.game.maxStats; x++)
             Global.stats[x] = new StatsDB();
+
+        Global.mAssetHelper = new AssetHelper(getAssets());
 
         Global.hero = new HeroClass();
         Global.mapg = new MapGenerationClass();
@@ -402,24 +403,25 @@ public class Game extends Activity {
         loadItems();
         loadMobs();
         // Images loading
-        Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.asdq);
+        AssetHelper assetHelper = Global.mAssetHelper;
+        Bitmap img = assetHelper.getBitmapFromAsset("character_animation_sheet");
         for (int x = 0; x < 4; x++)
             Global.hero.img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
-        bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bag), 0, 0, 24, 24), step, step, false);
-        a = BitmapFactory.decodeResource(getResources(), R.drawable.ert);
-        b = BitmapFactory.decodeResource(getResources(), R.drawable.asd);
-        c = BitmapFactory.decodeResource(getResources(), R.drawable.a321);
-        d = BitmapFactory.decodeResource(getResources(), R.drawable.ery);
-        j = BitmapFactory.decodeResource(getResources(), R.drawable.time);
-        img = BitmapFactory.decodeResource(getResources(), R.drawable.tileset);
+        bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24), step, step, false);
+        a = assetHelper.getBitmapFromAsset("character_icon");
+        b = assetHelper.getBitmapFromAsset("inventory_icon");
+        c = assetHelper.getBitmapFromAsset("back_icon");
+        d = assetHelper.getBitmapFromAsset("ery");
+        j = assetHelper.getBitmapFromAsset("skip_turn_icon");
+        img = assetHelper.getBitmapFromAsset("tileset");
         for (int y = 0; y < 10; y++)
             for (int x = 0; x < 10; x++)
                 Global.tiles[y * 10 + x].img = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false);
-        img = BitmapFactory.decodeResource(getResources(), R.drawable.items);
+        img = assetHelper.getBitmapFromAsset("items_sheet");
         for (int y = 0; y < 2; y++)
             for (int x = 0; x < 10; x++)
                 Global.itemDB[y * 10 + x].img = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false);
-        img = BitmapFactory.decodeResource(getResources(), R.drawable.mobs);
+        img = assetHelper.getBitmapFromAsset("mobs_sheet");
         for (int x = 0; x < maxMobs; x++) {
             Global.mobDB[x].img[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
             Global.mobDB[x].img[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);

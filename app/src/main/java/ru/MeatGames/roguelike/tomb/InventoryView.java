@@ -66,6 +66,7 @@ public class InventoryView extends View {
         Global.game = (Game) c;
         setFocusable(true);
         setFocusableInTouchMode(true);
+
         frame = new Paint();
         frame.setColor(getResources().getColor(R.color.frame));
         framegrn = new Paint();
@@ -84,16 +85,18 @@ public class InventoryView extends View {
         text1.setTextScaleX(1);
         text1.setTextAlign(Paint.Align.LEFT);
         text1.setTypeface(text.getTypeface());
-        weapOn = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.weapon), 30, 30, false);
-        weapOff = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.weapoff), 30, 30, false);
-        shieldOn = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.shieldon), 32, 36, false);
-        shieldOff = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.shieldoff), 32, 36, false);
-        armorOn = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.armoron), 38, 34, false);
-        armorOff = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.armoroff), 38, 34, false);
-        gearOn = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gearon), 32, 28, false);
-        gearOff = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.gearoff), 32, 28, false);
-        consOn = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.conson), 24, 34, false);
-        consOff = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.consoff), 24, 34, false);
+
+        AssetHelper assetHelper = Global.mAssetHelper;
+        weapOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("weapons_icon_outline"), 30, 30, false);
+        weapOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("weapons_icon_filling"), 30, 30, false);
+        shieldOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("shield_icon_outline"), 32, 36, false);
+        shieldOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("shield_icon_filling"), 32, 36, false);
+        armorOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("armor_icon_outline"), 38, 34, false);
+        armorOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("armor_icon_filling"), 38, 34, false);
+        gearOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("gear_icon_outline"), 32, 28, false);
+        gearOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("gear_icon_filling"), 32, 28, false);
+        consOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("consumables_icon_outline"), 24, 34, false);
+        consOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("consumables_icon_filling"), 24, 34, false);
     }
 
     public void fillList(boolean weapon, boolean shield, boolean armor, boolean gear, boolean consumable) {
