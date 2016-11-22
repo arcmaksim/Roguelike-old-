@@ -1,6 +1,8 @@
-package ru.MeatGames.roguelike.tomb;
+package ru.MeatGames.roguelike.tomb.model;
 
 import android.graphics.Bitmap;
+
+import ru.MeatGames.roguelike.tomb.Global;
 
 public class Item {
 
@@ -54,7 +56,7 @@ public class Item {
     }
 
     public Bitmap getImage() {
-        return Global.itemDB[id].img;
+        return Global.itemDB[id].getImg();
     }
 
 }

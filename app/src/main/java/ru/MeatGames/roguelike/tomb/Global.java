@@ -1,5 +1,14 @@
 package ru.MeatGames.roguelike.tomb;
 
+import ru.MeatGames.roguelike.tomb.model.HeroClass;
+import ru.MeatGames.roguelike.tomb.model.MapClass;
+import ru.MeatGames.roguelike.tomb.screen.BrezenhamView;
+import ru.MeatGames.roguelike.tomb.screen.InventoryView;
+import ru.MeatGames.roguelike.tomb.screen.MainMenu;
+import ru.MeatGames.roguelike.tomb.screen.MapView;
+import ru.MeatGames.roguelike.tomb.screen.StatsView;
+import ru.MeatGames.roguelike.tomb.util.AssetHelper;
+
 public class Global {
 
     public static Game game;

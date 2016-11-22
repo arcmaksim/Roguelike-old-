@@ -1,7 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, StartActivity!</string>
     <string name="app_name">Tomb</string>
+
+    <string name="gear_label">Снаряжение</string>
+    <string name="character_string">Персонаж</string>
+    <string name="inventory_string">Инвентарь</string>
+    <string name="exit_game_message">Выйти из игры?</string>
+    <string name="yes">Да</string>
+    <string name="No">Нет</string>
+    <string name="search_chest_message">Сундук осмотрен</string>
+    <string name="search_bookshelf_message">Книжный шкаф осмотрен</string>
+    <string name="experience_earned_message">Опыт повышен</string>
+    <string name="nothing_interesting_message">Ничего интересного</string>
+    <string name="turn_passed_message">Ход пропушен</string>
+    <string name="back_label">Назад</string>
+    <string name="to_menu_label">В меню</string>
+    <string name="victory_label">Победа!</string>
+    <string name="death_from_label">Погиб от</string>
+    <string name="king_was_slain_label">Король убит!</string>
+    <string name="searching_label">Осмотр</string>
+    <string name="inventory_is_empty_label">Инвентарь пуст</string>
+    <string name="new_game_label">Новая игра</string>
+    <string name="exit_game_label">Выход</string>
 
 </resources>

@@ -1,8 +1,7 @@
-package ru.MeatGames.roguelike.tomb;
+package ru.MeatGames.roguelike.tomb.screen;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -10,6 +9,13 @@ import android.graphics.Region;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
+
+import ru.MeatGames.roguelike.tomb.util.AssetHelper;
+import ru.MeatGames.roguelike.tomb.Game;
+import ru.MeatGames.roguelike.tomb.Global;
+import ru.MeatGames.roguelike.tomb.InvItem;
+import ru.MeatGames.roguelike.tomb.model.Item;
+import ru.MeatGames.roguelike.tomb.R;
 
 public class InventoryView extends View {
 
@@ -197,12 +203,12 @@ public class InventoryView extends View {
                 q++;
             }
         } else {
-            canvas.drawText("Инвентарь пуст", 240, 100, text);
+            canvas.drawText(getContext().getString(R.string.inventory_is_empty_label), 240, 100, text);
         }
         canvas.clipRegion(scrR, Region.Op.REPLACE);
         if (!sorted) {
             text1.setTextAlign(Paint.Align.LEFT);
-            canvas.drawText("Снаряжение", 35, 765, text1);
+            canvas.drawText(getContext().getString(R.string.gear_label), 35, 765, text1);
         }
     }
 
@@ -261,7 +267,7 @@ public class InventoryView extends View {
                 canvas.drawText("����� " + curItem.item.val2, 240, 315, text1);
                 break;
             case 5:
-                canvas.drawText(Global.stats[curItem.item.val1].n + " +" + curItem.item.val2, 240, 290, text1);
+                canvas.drawText(Global.stats[curItem.item.val1].getN() + " +" + curItem.item.val2, 240, 290, text1);
                 break;
         }
         text1.setTextAlign(Paint.Align.LEFT);
@@ -303,7 +309,7 @@ public class InventoryView extends View {
             drawList(canvas);
         }
         text1.setTextAlign(Paint.Align.RIGHT);
-        canvas.drawText("�����", 445, 765, text1);
+        canvas.drawText(getContext().getString(R.string.back_label), 445, 765, text1);
         text1.setTextAlign(Paint.Align.LEFT);
         postInvalidate();
     }
@@ -392,7 +398,7 @@ public class InventoryView extends View {
                     case 0:
                         if (curItem.item.isConsumable()) {
                             Global.hero.modifyStat(curItem.item.val1, curItem.item.val2, 1);
-                            Global.mapview.addLine(curItem.item.n + " �����������" + curItem.item.n1);
+                            Global.mapview.addLine(curItem.item.n + " использован" + curItem.item.n1);
                             Global.hero.deleteItem(curItem);
                         } else {
                             if (Global.hero.equipmentList[curItem.item.type - 1] == null) {
@@ -412,7 +418,7 @@ public class InventoryView extends View {
                         break;
                     case 1:
                         Global.hero.dropItem(curItem);
-                        Global.game.v.vibrate(30);
+                        Game.v.vibrate(30);
                         fillList();
                         item = false;
                         Global.game.changeScreen(0);

@@ -1,4 +1,4 @@
-package ru.MeatGames.roguelike.tomb;
+package ru.MeatGames.roguelike.tomb.screen;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,6 +8,9 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import ru.MeatGames.roguelike.tomb.Game;
+import ru.MeatGames.roguelike.tomb.Global;
+import ru.MeatGames.roguelike.tomb.R;
 
 public class BrezenhamView extends View {
     private Paint white;
@@ -69,7 +72,7 @@ public class BrezenhamView extends View {
             }
         canvas.drawRect(Global.hero.mx * 5, 5 + Global.hero.my * 5, 5 + Global.hero.mx * 5, 10 + Global.hero.my * 5, red);
         text.setTextAlign(Paint.Align.RIGHT);
-        canvas.drawText("�����", 435, 765, text);
+        canvas.drawText(getContext().getString(R.string.back_label), 435, 765, text);
         postInvalidate();
     }
 

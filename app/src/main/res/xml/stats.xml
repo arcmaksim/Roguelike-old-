@@ -1,7 +1,10 @@
 <stats>
     <stat name="Сила" s="t" m="f"/>
     <stat name="Ловкость" s="t" m="f"/>
-    <stat name="Инеллект" s="t" m="f"/>
+    <stat
+        name="Интеллект"
+        s="t"
+        m="f"/>
     <stat name="Выносливость" s="t" m="f"/>
     <stat name="Восприятие" s="t" m="f"/>
     <stat name="Здоровье" s="f" m="t"/>

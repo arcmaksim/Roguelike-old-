@@ -1,4 +1,4 @@
-package ru.MeatGames.roguelike.tomb;
+package ru.MeatGames.roguelike.tomb.model;
 
 data class MobClass(var name: String = "") {
 

@@ -1,4 +1,4 @@
-package ru.MeatGames.roguelike.tomb
+package ru.MeatGames.roguelike.tomb.util
 
 import android.content.res.AssetManager
 import android.graphics.Bitmap
@@ -9,7 +9,6 @@ import java.io.InputStream
 class AssetHelper(val assetManager: AssetManager) {
 
     fun getBitmapFromAsset(bitmapName: String): Bitmap {
-        var bitmapName = bitmapName
         var istr: InputStream? = null
         try {
             istr = assetManager.open("images/$bitmapName.png")

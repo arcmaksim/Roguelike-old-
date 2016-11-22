@@ -12,6 +12,16 @@ import org.xmlpull.v1.XmlPullParser;
 
 import java.util.Random;
 
+import ru.MeatGames.roguelike.tomb.model.HeroClass;
+import ru.MeatGames.roguelike.tomb.model.Item;
+import ru.MeatGames.roguelike.tomb.model.MapClass;
+import ru.MeatGames.roguelike.tomb.screen.BrezenhamView;
+import ru.MeatGames.roguelike.tomb.screen.InventoryView;
+import ru.MeatGames.roguelike.tomb.screen.MainMenu;
+import ru.MeatGames.roguelike.tomb.screen.MapView;
+import ru.MeatGames.roguelike.tomb.screen.StatsView;
+import ru.MeatGames.roguelike.tomb.util.AssetHelper;
+
 public class Game extends Activity {
 
     public static Vibrator v;
@@ -33,7 +43,7 @@ public class Game extends Activity {
     public boolean tap;
     public Bitmap a;
     public Bitmap b;
-    public Bitmap c;
+    public Bitmap backIcon;
     public Bitmap d;
     public Bitmap j;
     public Random rnd;
@@ -253,7 +263,7 @@ public class Game extends Activity {
                     Global.hero.modifyStat(5, rnd.nextInt(3) + 1, -1);
                     Global.mapview.addLine("?????? ?????!");
                     if (Global.hero.getStat(5) < 1) {
-                        lastAttack = Bitmap.createScaledBitmap(Global.tiles[44].img, 72, 72, false);
+                        lastAttack = Bitmap.createScaledBitmap(Global.tiles[44].getImg(), 72, 72, false);
                         Global.mapview.death = true;
                     }
                 }
@@ -410,21 +420,21 @@ public class Game extends Activity {
         bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24), step, step, false);
         a = assetHelper.getBitmapFromAsset("character_icon");
         b = assetHelper.getBitmapFromAsset("inventory_icon");
-        c = assetHelper.getBitmapFromAsset("back_icon");
+        backIcon = assetHelper.getBitmapFromAsset("back_icon");
         d = assetHelper.getBitmapFromAsset("ery");
         j = assetHelper.getBitmapFromAsset("skip_turn_icon");
         img = assetHelper.getBitmapFromAsset("tileset");
         for (int y = 0; y < 10; y++)
             for (int x = 0; x < 10; x++)
-                Global.tiles[y * 10 + x].img = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false);
+                Global.tiles[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
         img = assetHelper.getBitmapFromAsset("items_sheet");
         for (int y = 0; y < 2; y++)
             for (int x = 0; x < 10; x++)
-                Global.itemDB[y * 10 + x].img = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false);
+                Global.itemDB[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
         img = assetHelper.getBitmapFromAsset("mobs_sheet");
         for (int x = 0; x < maxMobs; x++) {
-            Global.mobDB[x].img[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
-            Global.mobDB[x].img[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);
+            Global.mobDB[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
+            Global.mobDB[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);
         }
     }
 
@@ -434,9 +444,9 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.stats);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("stat")) {
-                    Global.stats[i].n = parser.getAttributeValue(0);
-                    Global.stats[i].s = parser.getAttributeValue(1).equals("t");
-                    Global.stats[i++].m = parser.getAttributeValue(2).equals("t");
+                    Global.stats[i].setN(parser.getAttributeValue(0));
+                    Global.stats[i].setS(parser.getAttributeValue(1).equals("t"));
+                    Global.stats[i++].setM(parser.getAttributeValue(2).equals("t"));
                     parser.next();
                 }
                 parser.next();
@@ -451,9 +461,9 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.tiles);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("tile")) {
-                    Global.tiles[i].psb = parser.getAttributeValue(0).equals("t");
-                    Global.tiles[i].vis = parser.getAttributeValue(1).equals("t");
-                    Global.tiles[i++].use = parser.getAttributeValue(2).equals("t");
+                    Global.tiles[i].setPsb(parser.getAttributeValue(0).equals("t"));
+                    Global.tiles[i].setVis(parser.getAttributeValue(1).equals("t"));
+                    Global.tiles[i++].setUse(parser.getAttributeValue(2).equals("t"));
                 }
                 parser.next();
             }
@@ -461,10 +471,10 @@ public class Game extends Activity {
             parser = getResources().getXml(R.xml.objects);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("object")) {
-                    Global.tiles[i].psb = parser.getAttributeValue(0).equals("t");
-                    Global.tiles[i].vis = parser.getAttributeValue(1).equals("t");
-                    Global.tiles[i].use = parser.getAttributeValue(2).equals("t");
-                    Global.tiles[i++].isWall = parser.getAttributeValue(3).equals("t");
+                    Global.tiles[i].setPsb(parser.getAttributeValue(0).equals("t"));
+                    Global.tiles[i].setVis(parser.getAttributeValue(1).equals("t"));
+                    Global.tiles[i].setUse(parser.getAttributeValue(2).equals("t"));
+                    Global.tiles[i++].setWall(parser.getAttributeValue(3).equals("t"));
                 }
                 parser.next();
             }
@@ -521,13 +531,13 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.mobs);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("mob")) {
-                    Global.mobDB[i].mob.setName(parser.getAttributeValue(0));
-                    Global.mobDB[i].mob.setHp(Integer.parseInt(parser.getAttributeValue(1)));
-                    Global.mobDB[i].mob.setAtt(Integer.parseInt(parser.getAttributeValue(2)));
-                    Global.mobDB[i].mob.setDef(Integer.parseInt(parser.getAttributeValue(3)));
-                    Global.mobDB[i].mob.setArm(Integer.parseInt(parser.getAttributeValue(4)));
-                    Global.mobDB[i].mob.setSpd(Integer.parseInt(parser.getAttributeValue(5)));
-                    Global.mobDB[i++].mob.setDmg(Integer.parseInt(parser.getAttributeValue(6)));
+                    Global.mobDB[i].getMob().setName(parser.getAttributeValue(0));
+                    Global.mobDB[i].getMob().setHp(Integer.parseInt(parser.getAttributeValue(1)));
+                    Global.mobDB[i].getMob().setAtt(Integer.parseInt(parser.getAttributeValue(2)));
+                    Global.mobDB[i].getMob().setDef(Integer.parseInt(parser.getAttributeValue(3)));
+                    Global.mobDB[i].getMob().setArm(Integer.parseInt(parser.getAttributeValue(4)));
+                    Global.mobDB[i].getMob().setSpd(Integer.parseInt(parser.getAttributeValue(5)));
+                    Global.mobDB[i++].getMob().setDmg(Integer.parseInt(parser.getAttributeValue(6)));
                 }
                 parser.next();
             }
@@ -546,12 +556,12 @@ public class Game extends Activity {
     }
 
     public void modifyTile(int px, int py, int f, int o) {
-        Global.map[px][py].psb = Global.tiles[f].psb;
-        Global.map[px][py].vis = Global.tiles[f].vis;
-        Global.map[px][py].use = Global.tiles[f].use;
-        Global.map[px][py].psb = Global.tiles[o].psb;
-        Global.map[px][py].vis = Global.tiles[o].vis;
-        Global.map[px][py].use = Global.tiles[o].use;
+        Global.map[px][py].psb = Global.tiles[f].getPsb();
+        Global.map[px][py].vis = Global.tiles[f].getVis();
+        Global.map[px][py].use = Global.tiles[f].getUse();
+        Global.map[px][py].psb = Global.tiles[o].getPsb();
+        Global.map[px][py].vis = Global.tiles[o].getVis();
+        Global.map[px][py].use = Global.tiles[o].getUse();
     }
 
     public void fillArea(int sx, int sy, int lx1, int ly1, int f, int o) {
