@@ -10,12 +10,12 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
-import ru.MeatGames.roguelike.tomb.util.AssetHelper;
 import ru.MeatGames.roguelike.tomb.Game;
 import ru.MeatGames.roguelike.tomb.Global;
 import ru.MeatGames.roguelike.tomb.InvItem;
-import ru.MeatGames.roguelike.tomb.model.Item;
 import ru.MeatGames.roguelike.tomb.R;
+import ru.MeatGames.roguelike.tomb.model.Item;
+import ru.MeatGames.roguelike.tomb.util.AssetHelper;
 
 public class InventoryView extends View {
 
@@ -69,7 +69,7 @@ public class InventoryView extends View {
 
     public InventoryView(Context c) {
         super(c);
-        Global.game = (Game) c;
+        Global.INSTANCE.setGame((Game) c);
         setFocusable(true);
         setFocusableInTouchMode(true);
 
@@ -83,7 +83,7 @@ public class InventoryView extends View {
         text.setTextSize(24);
         text.setTextScaleX(1);
         text.setTextAlign(Paint.Align.CENTER);
-        text.setTypeface(Typeface.createFromAsset(Global.game.getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
+        text.setTypeface(Typeface.createFromAsset(Global.INSTANCE.getGame().getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
         text1 = new Paint(Paint.ANTI_ALIAS_FLAG);
         text1.setColor(getResources().getColor(R.color.white));
         text1.setStyle(Style.FILL);
@@ -92,7 +92,7 @@ public class InventoryView extends View {
         text1.setTextAlign(Paint.Align.LEFT);
         text1.setTypeface(text.getTypeface());
 
-        AssetHelper assetHelper = Global.mAssetHelper;
+        AssetHelper assetHelper = Global.INSTANCE.getMAssetHelper();
         weapOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("weapons_icon_outline"), 30, 30, false);
         weapOff = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("weapons_icon_filling"), 30, 30, false);
         shieldOn = Bitmap.createScaledBitmap(assetHelper.getBitmapFromAsset("shield_icon_outline"), 32, 36, false);
@@ -109,8 +109,8 @@ public class InventoryView extends View {
         list = null;
         InvItem temp = null;
         curItemsOnScreen = curScroll = 0;
-        if (Global.hero.inv != null)
-            for (InvItem cur = Global.hero.inv; cur != null; cur = cur.next)
+        if (Global.INSTANCE.getHero().inv != null)
+            for (InvItem cur = Global.INSTANCE.getHero().inv; cur != null; cur = cur.next)
                 if (isAllowed(cur.item, weapon, shield, armor, gear, consumable)) {
                     if (list == null) {
                         temp = list = cur;
@@ -133,8 +133,8 @@ public class InventoryView extends View {
         list = null;
         InvItem temp = null;
         curItemsOnScreen = curScroll = 0;
-        if (Global.hero.inv != null)
-            for (InvItem cur = Global.hero.inv; cur != null; cur = cur.next)
+        if (Global.INSTANCE.getHero().inv != null)
+            for (InvItem cur = Global.INSTANCE.getHero().inv; cur != null; cur = cur.next)
                 if (isAllowed(cur.item)) {
                     if (list == null) {
                         temp = list = cur;
@@ -188,7 +188,7 @@ public class InventoryView extends View {
             int u = -(curScroll + savedScroll) / itemSize;
             for (int q = 0; cur != null; cur = cur.nextList) {
                 if (q >= u) {
-                    if (!cur.item.isConsumable() && Global.hero.isEquiped(cur)) {
+                    if (!cur.item.isConsumable() && Global.INSTANCE.getHero().isEquiped(cur)) {
                         canvas.drawRect(40, 72 + q1, 96, 120 + q1, framegrn);
                         canvas.drawRect(95, 72 + q1, 435, 120 + q1, framegrn);
                     } else {
@@ -214,11 +214,11 @@ public class InventoryView extends View {
 
     protected void drawGear(Canvas canvas) {
         for (int x = 0; x < 2; x++) {
-            if (Global.hero.equipmentList[x] != null) {
+            if (Global.INSTANCE.getHero().equipmentList[x] != null) {
                 canvas.drawRect(40, 92 + 50 * x, 98, 140 + 50 * x, frame);
                 canvas.drawRect(97, 92 + 50 * x, 435, 140 + 50 * x, frame);
-                canvas.drawBitmap(Global.hero.equipmentList[x].item.getImage(), 45, 92 + x * 50, null);
-                canvas.drawText(Global.hero.equipmentList[x].item.n, 115, 122 + x * 50, text1);
+                canvas.drawBitmap(Global.INSTANCE.getHero().equipmentList[x].item.getImage(), 45, 92 + x * 50, null);
+                canvas.drawText(Global.INSTANCE.getHero().equipmentList[x].item.n, 115, 122 + x * 50, text1);
             } else {
                 text1.setTextAlign(Paint.Align.CENTER);
                 canvas.drawRect(40, 92 + 50 * x, 435, 140 + 50 * x, frame);
@@ -226,11 +226,11 @@ public class InventoryView extends View {
                 text1.setTextAlign(Paint.Align.LEFT);
             }
         }
-        if (Global.hero.equipmentList[2] != null) {
+        if (Global.INSTANCE.getHero().equipmentList[2] != null) {
             canvas.drawRect(40, 242, 98, 290, frame);
             canvas.drawRect(97, 242, 435, 290, frame);
-            canvas.drawBitmap(Global.hero.equipmentList[2].item.getImage(), 45, 242, null);
-            canvas.drawText(Global.hero.equipmentList[2].item.n, 115, 272, text1);
+            canvas.drawBitmap(Global.INSTANCE.getHero().equipmentList[2].item.getImage(), 45, 242, null);
+            canvas.drawText(Global.INSTANCE.getHero().equipmentList[2].item.n, 115, 272, text1);
         } else {
             text1.setTextAlign(Paint.Align.CENTER);
             canvas.drawRect(40, 242, 435, 290, frame);
@@ -267,7 +267,7 @@ public class InventoryView extends View {
                 canvas.drawText("����� " + curItem.item.val2, 240, 315, text1);
                 break;
             case 5:
-                canvas.drawText(Global.stats[curItem.item.val1].getN() + " +" + curItem.item.val2, 240, 290, text1);
+                canvas.drawText(Global.INSTANCE.getStats()[curItem.item.val1].getN() + " +" + curItem.item.val2, 240, 290, text1);
                 break;
         }
         text1.setTextAlign(Paint.Align.LEFT);
@@ -281,10 +281,10 @@ public class InventoryView extends View {
             if (curItem.item.isConsumable()) {
                 canvas.drawText("������������", 35, 765, text1);
             } else {
-                if (Global.hero.equipmentList[curItem.item.type - 1] == null) {
+                if (Global.INSTANCE.getHero().equipmentList[curItem.item.type - 1] == null) {
                     canvas.drawText("�����", 35, 765, text1);
                 } else {
-                    if (curItem == Global.hero.equipmentList[curItem.item.type - 1]) {
+                    if (curItem == Global.INSTANCE.getHero().equipmentList[curItem.item.type - 1]) {
                         canvas.drawText("�����", 35, 765, text1);
                     } else {
                         canvas.drawText("�������", 35, 765, text1);
@@ -324,33 +324,33 @@ public class InventoryView extends View {
 
     private void onTouchGear(int sx, int sy) {
         if (parm.contains(sx, sy)) {
-            if (Global.hero.equipmentList[0] == null) {
+            if (Global.INSTANCE.getHero().equipmentList[0] == null) {
                 fillList(true, false, false, false, false);
                 sorted = scrollPermission = true;
             } else {
-                curItem = Global.hero.equipmentList[0];
+                curItem = Global.INSTANCE.getHero().equipmentList[0];
                 img = Bitmap.createScaledBitmap(curItem.item.getImage(), 168, 168, false);
                 item = true;
                 scrollPermission = false;
             }
         }
         if (sarm.contains(sx, sy)) {
-            if (Global.hero.equipmentList[1] == null) {
+            if (Global.INSTANCE.getHero().equipmentList[1] == null) {
                 fillList(false, true, false, false, false);
                 sorted = scrollPermission = true;
             } else {
-                curItem = Global.hero.equipmentList[1];
+                curItem = Global.INSTANCE.getHero().equipmentList[1];
                 img = Bitmap.createScaledBitmap(curItem.item.getImage(), 168, 168, false);
                 item = true;
                 scrollPermission = false;
             }
         }
         if (body.contains(sx, sy)) {
-            if (Global.hero.equipmentList[2] == null) {
+            if (Global.INSTANCE.getHero().equipmentList[2] == null) {
                 fillList(false, false, true, false, false);
                 sorted = scrollPermission = true;
             } else {
-                curItem = Global.hero.equipmentList[2];
+                curItem = Global.INSTANCE.getHero().equipmentList[2];
                 img = Bitmap.createScaledBitmap(curItem.item.getImage(), 168, 168, false);
                 item = true;
                 scrollPermission = false;
@@ -358,7 +358,7 @@ public class InventoryView extends View {
         }
         if (sy > 720) {
             if (sx > 320)
-                Global.game.changeScreen(0);
+                Global.INSTANCE.getGame().changeScreen(0);
             if (sx < 160) {
                 gear = false;
                 curScroll = 0;
@@ -376,9 +376,9 @@ public class InventoryView extends View {
                         scrollPermission = true;
                     }
                     if (sx < 160) {
-                        Global.hero.equipItem(curItem);
+                        Global.INSTANCE.getHero().equipItem(curItem);
                         scrollPermission = item = sorted = false;
-                        Global.game.changeScreen(0);
+                        Global.INSTANCE.getGame().changeScreen(0);
                     }
                 }
             } else {
@@ -386,9 +386,9 @@ public class InventoryView extends View {
                     if (sx > 320)
                         item = false;
                     if (sx < 160) {
-                        Global.hero.takeOffItem(curItem);
+                        Global.INSTANCE.getHero().takeOffItem(curItem);
                         scrollPermission = item = sorted = false;
-                        Global.game.changeScreen(0);
+                        Global.INSTANCE.getGame().changeScreen(0);
                     }
                 }
             }
@@ -397,31 +397,31 @@ public class InventoryView extends View {
                 switch (sx / 160) {
                     case 0:
                         if (curItem.item.isConsumable()) {
-                            Global.hero.modifyStat(curItem.item.val1, curItem.item.val2, 1);
-                            Global.mapview.addLine(curItem.item.n + " использован" + curItem.item.n1);
-                            Global.hero.deleteItem(curItem);
+                            Global.INSTANCE.getHero().modifyStat(curItem.item.val1, curItem.item.val2, 1);
+                            Global.INSTANCE.getMapview().addLine(curItem.item.n + " использован" + curItem.item.n1);
+                            Global.INSTANCE.getHero().deleteItem(curItem);
                         } else {
-                            if (Global.hero.equipmentList[curItem.item.type - 1] == null) {
-                                Global.hero.equipItem(curItem);
+                            if (Global.INSTANCE.getHero().equipmentList[curItem.item.type - 1] == null) {
+                                Global.INSTANCE.getHero().equipItem(curItem);
                             } else {
-                                if (curItem == Global.hero.equipmentList[curItem.item.type - 1]) {
-                                    Global.hero.takeOffItem(curItem);
+                                if (curItem == Global.INSTANCE.getHero().equipmentList[curItem.item.type - 1]) {
+                                    Global.INSTANCE.getHero().takeOffItem(curItem);
                                 } else {
-                                    Global.hero.takeOffItem(curItem.item.type - 1);
-                                    Global.hero.equipItem(curItem);
+                                    Global.INSTANCE.getHero().takeOffItem(curItem.item.type - 1);
+                                    Global.INSTANCE.getHero().equipItem(curItem);
                                 }
 
                             }
                         }
                         item = false;
-                        Global.game.changeScreen(0);
+                        Global.INSTANCE.getGame().changeScreen(0);
                         break;
                     case 1:
-                        Global.hero.dropItem(curItem);
+                        Global.INSTANCE.getHero().dropItem(curItem);
                         Game.v.vibrate(30);
                         fillList();
                         item = false;
-                        Global.game.changeScreen(0);
+                        Global.INSTANCE.getGame().changeScreen(0);
                         break;
                     case 2:
                         item = false;
@@ -497,7 +497,7 @@ public class InventoryView extends View {
             }
             if (sy > 720) {
                 if (sx > 320)
-                    Global.game.changeScreen(0);
+                    Global.INSTANCE.getGame().changeScreen(0);
                 if (sx < 160) {
                     gear = true;
                     curScroll = 0;

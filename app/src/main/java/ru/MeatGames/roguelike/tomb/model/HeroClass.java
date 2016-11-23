@@ -25,52 +25,52 @@ public class HeroClass {
     public void newHero() {
         inv = null;
         equipmentList = new InvItem[3];
-        Global.stats[0].setA(10);
-        Global.stats[1].setA(10);
-        Global.stats[2].setA(10);
-        Global.stats[3].setA(10);
-        Global.stats[4].setA(10);
-        Global.stats[5].setA(18);
-        Global.stats[6].setA(18);
-        Global.stats[7].setA(10);
-        Global.stats[8].setA(10);
-        Global.stats[9].setA(10);
-        Global.stats[10].setA(10);
-        Global.stats[11].setA(2);
-        Global.stats[12].setA(1);
-        Global.stats[13].setA(3);
-        Global.stats[14].setA(10);
-        Global.stats[16].setA(10);
-        Global.stats[18].setA(1000);
-        Global.stats[19].setA(10);
-        Global.stats[20].setA(0);
-        Global.stats[21].setA(32);
-        Global.stats[22].setA(1);
-        Global.stats[25].setA(10);
-        Global.stats[27].setA(1000);
-        Global.stats[28].setA(10);
-        Global.stats[29].setA(1);
-        Global.stats[31].setA(1);
+        Global.INSTANCE.getStats()[0].setA(10);
+        Global.INSTANCE.getStats()[1].setA(10);
+        Global.INSTANCE.getStats()[2].setA(10);
+        Global.INSTANCE.getStats()[3].setA(10);
+        Global.INSTANCE.getStats()[4].setA(10);
+        Global.INSTANCE.getStats()[5].setA(18);
+        Global.INSTANCE.getStats()[6].setA(18);
+        Global.INSTANCE.getStats()[7].setA(10);
+        Global.INSTANCE.getStats()[8].setA(10);
+        Global.INSTANCE.getStats()[9].setA(10);
+        Global.INSTANCE.getStats()[10].setA(10);
+        Global.INSTANCE.getStats()[11].setA(2);
+        Global.INSTANCE.getStats()[12].setA(1);
+        Global.INSTANCE.getStats()[13].setA(3);
+        Global.INSTANCE.getStats()[14].setA(10);
+        Global.INSTANCE.getStats()[16].setA(10);
+        Global.INSTANCE.getStats()[18].setA(1000);
+        Global.INSTANCE.getStats()[19].setA(10);
+        Global.INSTANCE.getStats()[20].setA(0);
+        Global.INSTANCE.getStats()[21].setA(32);
+        Global.INSTANCE.getStats()[22].setA(1);
+        Global.INSTANCE.getStats()[25].setA(10);
+        Global.INSTANCE.getStats()[27].setA(1000);
+        Global.INSTANCE.getStats()[28].setA(10);
+        Global.INSTANCE.getStats()[29].setA(1);
+        Global.INSTANCE.getStats()[31].setA(1);
         cregen = regen = 22;
-        addItem(Global.game.createItem(1));
-        addItem(Global.game.createItem(4));
-        addItem(Global.game.createItem(7));
-        addItem(Global.game.createItem(10));
-        addItem(Global.game.createItem(10));
-        addItem(Global.game.createItem(10));
+        addItem(Global.INSTANCE.getGame().createItem(1));
+        addItem(Global.INSTANCE.getGame().createItem(4));
+        addItem(Global.INSTANCE.getGame().createItem(7));
+        addItem(Global.INSTANCE.getGame().createItem(10));
+        addItem(Global.INSTANCE.getGame().createItem(10));
+        addItem(Global.INSTANCE.getGame().createItem(10));
         preequipItem(inv);
         preequipItem(inv.next);
         preequipItem(inv.next.next);
     }
 
     public int getStat(int id) {
-        return Global.stats[id].getA();
+        return Global.INSTANCE.getStats()[id].getA();
     }
 
     public void modifyStat(int id, int value, int m) {
-        Global.stats[id].setA(Global.stats[id].getA() + m * value);
-        if (Global.stats[id].getM() && Global.stats[id].getA() > Global.stats[id + 1].getA())
-            Global.stats[id].setA(Global.stats[id + 1].getA());
+        Global.INSTANCE.getStats()[id].setA(Global.INSTANCE.getStats()[id].getA() + m * value);
+        if (Global.INSTANCE.getStats()[id].getM() && Global.INSTANCE.getStats()[id].getA() > Global.INSTANCE.getStats()[id + 1].getA())
+            Global.INSTANCE.getStats()[id].setA(Global.INSTANCE.getStats()[id + 1].getA());
         if (id == 20) isLevelUp();
     }
 
@@ -79,27 +79,27 @@ public class HeroClass {
             modifyStat(20, getStat(21), -1);
             modifyStat(21, getStat(21), 1);
             modifyStat(31, 1, 1);
-            Global.mapview.addLine("Уровень повышен!");
-            int u = Global.game.rnd.nextInt(3) + 2;
+            Global.INSTANCE.getMapview().addLine("Уровень повышен!");
+            int u = Global.INSTANCE.getGame().rnd.nextInt(3) + 2;
             modifyStat(6, u, 1);
             modifyStat(5, u, 1);
-            Global.mapview.addLine("Здоровье увеличено");
+            Global.INSTANCE.getMapview().addLine("Здоровье увеличено");
             if (getStat(31) % 4 == 0) {
                 modifyStat(12, 1, 1);
-                Global.mapview.addLine("Минимальный урон увеличен");
+                Global.INSTANCE.getMapview().addLine("Минимальный урон увеличен");
             }
             if (getStat(31) % 5 == 0) {
                 regen--;
                 if (regen < cregen) cregen = regen;
-                Global.mapview.addLine("Скорость регенерации увеличена");
+                Global.INSTANCE.getMapview().addLine("Скорость регенерации увеличена");
             }
             if (getStat(31) % 2 == 0) {
                 modifyStat(13, 1, 1);
-                Global.mapview.addLine("Максиммальный урон увеличен");
+                Global.INSTANCE.getMapview().addLine("Максиммальный урон увеличен");
             }
             if (getStat(31) % 3 == 0) {
                 modifyStat(19, 1, 1);
-                Global.mapview.addLine("Защита увеличена");
+                Global.INSTANCE.getMapview().addLine("Защита увеличена");
             }
         }
     }
@@ -137,9 +137,9 @@ public class HeroClass {
             }
             cur.next = item.next;
         }
-        Global.map[mx][my].addItem(i);
-        Global.mapview.addLine(i.n + " выброшен" + i.n1);
-        Global.game.move(0, 0);
+        Global.INSTANCE.getMap()[mx][my].addItem(i);
+        Global.INSTANCE.getMapview().addLine(i.n + " выброшен" + i.n1);
+        Global.INSTANCE.getGame().move(0, 0);
     }
 
     public void deleteItem(InvItem item) {
@@ -199,8 +199,8 @@ public class HeroClass {
                 modifyStat(22, item.item.val2, 1);
                 break;
         }
-        Global.mapview.addLine(item.item.n + " надет" + item.item.n1);
-        Global.game.move(0, 0);
+        Global.INSTANCE.getMapview().addLine(item.item.n + " надет" + item.item.n1);
+        Global.INSTANCE.getGame().move(0, 0);
     }
 
     public void takeOffItem(InvItem item) {
@@ -219,9 +219,9 @@ public class HeroClass {
                 modifyStat(22, item.item.val2, -1);
                 break;
         }
-        Global.hero.equipmentList[item.item.type - 1] = null;
-        Global.mapview.addLine(item.item.n + " снят" + item.item.n1);
-        Global.game.move(0, 0);
+        Global.INSTANCE.getHero().equipmentList[item.item.type - 1] = null;
+        Global.INSTANCE.getMapview().addLine(item.item.n + " снят" + item.item.n1);
+        Global.INSTANCE.getGame().move(0, 0);
     }
 
     public void takeOffItem(int i) {
@@ -241,9 +241,9 @@ public class HeroClass {
                 modifyStat(22, item.item.val2, -1);
                 break;
         }
-        Global.hero.equipmentList[item.item.type - 1] = null;
-        Global.mapview.addLine(item.item.n + " снят" + item.item.n1);
-        Global.game.move(0, 0);
+        Global.INSTANCE.getHero().equipmentList[item.item.type - 1] = null;
+        Global.INSTANCE.getMapview().addLine(item.item.n + " снят" + item.item.n1);
+        Global.INSTANCE.getGame().move(0, 0);
     }
 
 }

@@ -26,13 +26,13 @@ public class Item {
         val1 = val2 = val3 = -10000;
         property = false;
         this.id = id;
-        this.n = Global.itemDB[id].n;
-        this.n1 = Global.itemDB[id].n1;
-        this.type = Global.itemDB[id].type;
-        this.val1 = Global.itemDB[id].val1;
-        this.val2 = Global.itemDB[id].val2;
-        this.val3 = Global.itemDB[id].val3;
-        this.property = Global.itemDB[id].property;
+        this.n = Global.INSTANCE.getItemDB()[id].n;
+        this.n1 = Global.INSTANCE.getItemDB()[id].n1;
+        this.type = Global.INSTANCE.getItemDB()[id].type;
+        this.val1 = Global.INSTANCE.getItemDB()[id].val1;
+        this.val2 = Global.INSTANCE.getItemDB()[id].val2;
+        this.val3 = Global.INSTANCE.getItemDB()[id].val3;
+        this.property = Global.INSTANCE.getItemDB()[id].property;
     }
 
     public boolean isWeapon() {
@@ -56,7 +56,7 @@ public class Item {
     }
 
     public Bitmap getImage() {
-        return Global.itemDB[id].getImg();
+        return Global.INSTANCE.getItemDB()[id].getImg();
     }
 
 }

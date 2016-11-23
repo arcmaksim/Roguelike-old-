@@ -67,19 +67,19 @@ public class MapClass {
     }
 
     public boolean isWall() {
-        return Global.tiles[o].isWall();
+        return Global.INSTANCE.getTiles()[o].isWall();
     }
 
     public Bitmap getFloorImg() {
-        return Global.tiles[f].getImg();
+        return Global.INSTANCE.getTiles()[f].getImg();
     }
 
     public Bitmap getObjectImg() {
-        return Global.tiles[o].getImg();
+        return Global.INSTANCE.getTiles()[o].getImg();
     }
 
     public Bitmap getItemImg() {
-        return (head.next == null) ? Global.itemDB[head.item.id].getImg() : Global.game.bag;
+        return (head.next == null) ? Global.INSTANCE.getItemDB()[head.item.id].getImg() : Global.INSTANCE.getGame().bag;
     }
 
 }

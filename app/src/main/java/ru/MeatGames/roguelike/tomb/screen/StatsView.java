@@ -23,7 +23,7 @@ public class StatsView extends View {
 
     public StatsView(Context c) {
         super(c);
-        Global.game = (Game) c;
+        Global.INSTANCE.setGame((Game) c);
         setFocusable(true);
         setFocusableInTouchMode(true);
         fbluel = new Paint();
@@ -40,30 +40,30 @@ public class StatsView extends View {
         text.setTextSize(16);
         text.setTextScaleX(1);
         text.setTextAlign(Paint.Align.CENTER);
-        text.setTypeface(Typeface.createFromAsset(Global.game.getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
+        text.setTypeface(Typeface.createFromAsset(Global.INSTANCE.getGame().getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawRect(0, 0, 480, 800, frame);
-        float r = (float) Global.hero.getStat(20) / Global.hero.getStat(21);
+        float r = (float) Global.INSTANCE.getHero().getStat(20) / Global.INSTANCE.getHero().getStat(21);
         canvas.drawRect(150, 136, 150 + Math.round(100 * r), 144, fbluel);
         text.setTextSize(24);
         text.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText("Уровень " + Global.hero.getStat(31), 70, 120, text);
-        canvas.drawText("Сила " + Global.hero.getStat(0), 70, 160, text);
-        canvas.drawText("Ловкость " + Global.hero.getStat(1), 70, 190, text);
-        canvas.drawText("Интеллект " + Global.hero.getStat(2), 70, 220, text);
-        canvas.drawText("Выносливость " + Global.hero.getStat(3), 70, 250, text);
-        canvas.drawText("Восприятие " + Global.hero.getStat(4), 70, 280, text);
-        canvas.drawText("Здоровье " + Global.hero.getStat(5) + " / " + Global.hero.getStat(6), 70, 320, text);
-        canvas.drawText("Мана " + Global.hero.getStat(7) + " / " + Global.hero.getStat(8), 70, 350, text);
-        canvas.drawText("Запас сил " + Global.hero.getStat(9) + " / " + Global.hero.getStat(10), 70, 380, text);
-        canvas.drawText("Атака +" + Global.hero.getStat(11), 70, 420, text);
-        canvas.drawText("Урон " + Global.hero.getStat(12) + " - " + Global.hero.getStat(13), 70, 450, text);
-        canvas.drawText("Защита " + Global.hero.getStat(19), 70, 480, text);
-        canvas.drawText("Броня " + Global.hero.getStat(22), 70, 510, text);
-        canvas.drawBitmap(Global.game.backIcon, 384, 742, null);
+        canvas.drawText("Уровень " + Global.INSTANCE.getHero().getStat(31), 70, 120, text);
+        canvas.drawText("Сила " + Global.INSTANCE.getHero().getStat(0), 70, 160, text);
+        canvas.drawText("Ловкость " + Global.INSTANCE.getHero().getStat(1), 70, 190, text);
+        canvas.drawText("Интеллект " + Global.INSTANCE.getHero().getStat(2), 70, 220, text);
+        canvas.drawText("Выносливость " + Global.INSTANCE.getHero().getStat(3), 70, 250, text);
+        canvas.drawText("Восприятие " + Global.INSTANCE.getHero().getStat(4), 70, 280, text);
+        canvas.drawText("Здоровье " + Global.INSTANCE.getHero().getStat(5) + " / " + Global.INSTANCE.getHero().getStat(6), 70, 320, text);
+        canvas.drawText("Мана " + Global.INSTANCE.getHero().getStat(7) + " / " + Global.INSTANCE.getHero().getStat(8), 70, 350, text);
+        canvas.drawText("Запас сил " + Global.INSTANCE.getHero().getStat(9) + " / " + Global.INSTANCE.getHero().getStat(10), 70, 380, text);
+        canvas.drawText("Атака +" + Global.INSTANCE.getHero().getStat(11), 70, 420, text);
+        canvas.drawText("Урон " + Global.INSTANCE.getHero().getStat(12) + " - " + Global.INSTANCE.getHero().getStat(13), 70, 450, text);
+        canvas.drawText("Защита " + Global.INSTANCE.getHero().getStat(19), 70, 480, text);
+        canvas.drawText("Броня " + Global.INSTANCE.getHero().getStat(22), 70, 510, text);
+        canvas.drawBitmap(Global.INSTANCE.getGame().backIcon, 384, 742, null);
         postInvalidate();
     }
 
@@ -81,7 +81,7 @@ public class StatsView extends View {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
                 if (y > 720 && x > 320)
-                    Global.game.changeScreen(0);
+                    Global.INSTANCE.getGame().changeScreen(0);
                 break;
         }
         return true;

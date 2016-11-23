@@ -191,7 +191,7 @@ public class MapGenerationClass {
     }
 
     public boolean correctPlace(int x, int y) {
-        return Global.map[x][y].isWall() && ((!Global.map[x][y - 1].isWall() ^ !Global.map[x][y + 1].isWall()) ^ (!Global.map[x - 1][y].isWall() ^ !Global.map[x + 1][y].isWall()));
+        return Global.INSTANCE.getMap()[x][y].isWall() && ((!Global.INSTANCE.getMap()[x][y - 1].isWall() ^ !Global.INSTANCE.getMap()[x][y + 1].isWall()) ^ (!Global.INSTANCE.getMap()[x - 1][y].isWall() ^ !Global.INSTANCE.getMap()[x + 1][y].isWall()));
     }
 
     public boolean findCell() {
@@ -205,11 +205,11 @@ public class MapGenerationClass {
     }
 
     public boolean checkZone(int n, int m, int ln, int lm) {
-        if (n + ln > Global.game.mw - 3 || m + lm > Global.game.mh - 3 || n < 2 || m < 2)
+        if (n + ln > Global.INSTANCE.getGame().mw - 3 || m + lm > Global.INSTANCE.getGame().mh - 3 || n < 2 || m < 2)
             return false;
         for (int n1 = n; n1 < n + ln + 1; n1++)
             for (int m1 = m; m1 < m + lm + 1; m1++)
-                if (!Global.map[n1][m1].isWall())
+                if (!Global.INSTANCE.getMap()[n1][m1].isWall())
                     return false;
         return true;
     }
@@ -217,24 +217,24 @@ public class MapGenerationClass {
     public void fillArea(int sx, int sy, int lx1, int ly1, int f) {
         for (int y = sy; y < sy + ly1; y++)
             for (int x = sx; x < sx + lx1; x++) {
-                Global.map[x][y].f = f / 1000;
-                Global.map[x][y].o = f % 1000;
+                Global.INSTANCE.getMap()[x][y].f = f / 1000;
+                Global.INSTANCE.getMap()[x][y].o = f % 1000;
                 modifyTile(x, y, f / 1000, f % 1000);
             }
     }
 
     public void modifyTile(int px, int py, int f, int o) {
-        Global.map[px][py].psb = Global.tiles[o].getPsb();
-        Global.map[px][py].vis = Global.tiles[o].getVis();
-        Global.map[px][py].use = Global.tiles[o].getUse();
+        Global.INSTANCE.getMap()[px][py].psb = Global.INSTANCE.getTiles()[o].getPsb();
+        Global.INSTANCE.getMap()[px][py].vis = Global.INSTANCE.getTiles()[o].getVis();
+        Global.INSTANCE.getMap()[px][py].use = Global.INSTANCE.getTiles()[o].getUse();
     }
 
     public void deleteObjects(int x, int y, int lx, int ly) {
         for (int x1 = 0; x1 < lx; x1++)
             for (int y1 = 0; y1 < ly; y1++)
-                if (!Global.map[x + x1][y + y1].isWall()) {
-                    Global.map[x + x1][y + y1].o = 0;
-                    modifyTile(x + x1, y + y1, Global.map[x + x1][y + y1].f, 0);
+                if (!Global.INSTANCE.getMap()[x + x1][y + y1].isWall()) {
+                    Global.INSTANCE.getMap()[x + x1][y + y1].o = 0;
+                    modifyTile(x + x1, y + y1, Global.INSTANCE.getMap()[x + x1][y + y1].f, 0);
                 }
     }
 
@@ -283,31 +283,31 @@ public class MapGenerationClass {
     public void mapGen() {
         rc = 0;
         int lx, ly;
-        fillArea(0, 0, Global.game.mw, Global.game.mh, 5030);
+        fillArea(0, 0, Global.INSTANCE.getGame().mw, Global.INSTANCE.getGame().mh, 5030);
         for (int i = 0; i < rc; i++)
             room1[i] = null;
-        for (int x = 0; x < Global.game.mw; x++)
-            for (int y = 0; y < Global.game.mh; y++) {
-                Global.map[x][y].deleteItems();
-                Global.map[x][y].dis = false;
-                Global.map[x][y].see = false;
+        for (int x = 0; x < Global.INSTANCE.getGame().mw; x++)
+            for (int y = 0; y < Global.INSTANCE.getGame().mh; y++) {
+                Global.INSTANCE.getMap()[x][y].deleteItems();
+                Global.INSTANCE.getMap()[x][y].dis = false;
+                Global.INSTANCE.getMap()[x][y].see = false;
             }
-        while (Global.game.firstMob != null) {
-            Global.game.firstMob.map.deleteMob();
-            Global.game.firstMob.mob = null;
-            Global.game.firstMob = Global.game.firstMob.next;
+        while (Global.INSTANCE.getGame().firstMob != null) {
+            Global.INSTANCE.getGame().firstMob.map.deleteMob();
+            Global.INSTANCE.getGame().firstMob.mob = null;
+            Global.INSTANCE.getGame().firstMob = Global.INSTANCE.getGame().firstMob.next;
         }
         int x2 = 0;
         int y2 = 0;
         boolean up, down, left, right;
-        lx = rnd.nextInt(Global.game.mw / 2) + 16;
-        ly = rnd.nextInt(Global.game.mh / 2) + 16;
-        Global.mapview.camx = lx - 2;
-        Global.mapview.camy = ly - 2;
-        Global.hero.mx = lx + 2;
-        Global.hero.my = ly + 2;
-        Global.hero.x = 216;
-        Global.hero.y = 376;
+        lx = rnd.nextInt(Global.INSTANCE.getGame().mw / 2) + 16;
+        ly = rnd.nextInt(Global.INSTANCE.getGame().mh / 2) + 16;
+        Global.INSTANCE.getMapview().camx = lx - 2;
+        Global.INSTANCE.getMapview().camy = ly - 2;
+        Global.INSTANCE.getHero().mx = lx + 2;
+        Global.INSTANCE.getHero().my = ly + 2;
+        Global.INSTANCE.getHero().x = 216;
+        Global.INSTANCE.getHero().y = 376;
         fillArea(lx, ly, 5, 5, 5000);
         fillArea(lx + 2, ly + 2, 1, 1, 5039);
         room1[rc] = new RoomDBClass(x2, y2, lx, ly);
@@ -317,10 +317,10 @@ public class MapGenerationClass {
         yr = ly + 5;
         while (rc < mr - 1) {
             if (findCell()) {
-                right = Global.map[z - 1][z1].psb;
-                left = Global.map[z + 1][z1].psb;
-                down = Global.map[z][z1 - 1].psb;
-                up = Global.map[z][z1 + 1].psb;
+                right = Global.INSTANCE.getMap()[z - 1][z1].psb;
+                left = Global.INSTANCE.getMap()[z + 1][z1].psb;
+                down = Global.INSTANCE.getMap()[z][z1 - 1].psb;
+                up = Global.INSTANCE.getMap()[z][z1 + 1].psb;
                 if ((right ^ left) ^ (down ^ up)) {
                     int n = 0;
                     int b = rnd.nextInt(100);
@@ -498,8 +498,8 @@ public class MapGenerationClass {
                             for (int x = 0; x < lx; x++)
                                 for (int y = 0; y < ly; y++) {
                                     int v = zone[x][y];
-                                    Global.map[x2 + x][y2 + y].f = v / 1000;
-                                    Global.map[x2 + x][y2 + y].o = v % 1000;
+                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].f = v / 1000;
+                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].o = v % 1000;
                                     modifyTile(x2 + x, y2 + y, v / 1000, v % 1000);
                                 }
                             if (up) deleteObjects(z, z1 - 1, 1, 1);
@@ -511,73 +511,75 @@ public class MapGenerationClass {
                         if (x2 < xl) xl = x2 - 1;
                         if (x2 + lx > xr) xr = x2 + lx + 1;
                         if (xl < 2) xl = 2;
-                        if (xr > Global.game.mw - 2) xr = Global.game.mw - 2;
+                        if (xr > Global.INSTANCE.getGame().mw - 2)
+                            xr = Global.INSTANCE.getGame().mw - 2;
                         if (y2 < yl) yl = y2 - 1;
                         if (y2 + ly > yr) yr = y2 + ly + 1;
                         if (yl < 2) yl = 2;
-                        if (yr > Global.game.mh - 2) yr = Global.game.mh - 2;
+                        if (yr > Global.INSTANCE.getGame().mh - 2)
+                            yr = Global.INSTANCE.getGame().mh - 2;
                         room1[rc] = new RoomDBClass(x2, y2, lx, ly);
                         if (rnd.nextInt(2) == 0) {
                             if (up) {
                                 int r = getRoom(z, z1 + 1);
                                 for (int x = 0; x < lx; x++)
-                                    if (getRoom(x2 + x, z1 + 1) == r && !Global.map[x2 + x][z1 + 1].isWall() && !Global.map[x2 + x][z1 - 1].isWall())
-                                        if (Global.map[x2 + x][z1 + 1].f == Global.map[x2 + x][z1 - 1].f)
-                                            Global.game.fillArea(x2 + x, z1, 1, 1, Global.map[x2 + x][z1 + 1].f, 0);
+                                    if (getRoom(x2 + x, z1 + 1) == r && !Global.INSTANCE.getMap()[x2 + x][z1 + 1].isWall() && !Global.INSTANCE.getMap()[x2 + x][z1 - 1].isWall())
+                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].f == Global.INSTANCE.getMap()[x2 + x][z1 - 1].f)
+                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].f, 0);
                             }
                             if (down) {
                                 int r = getRoom(z, z1 - 1);
                                 for (int x = 0; x < lx; x++)
-                                    if (getRoom(x2 + x, z1 - 1) == r && !Global.map[x2 + x][z1 + 1].isWall() && !Global.map[x2 + x][z1 - 1].isWall())
-                                        if (Global.map[x2 + x][z1 + 1].f == Global.map[x2 + x][z1 - 1].f)
-                                            Global.game.fillArea(x2 + x, z1, 1, 1, Global.map[x2 + x][z1 + 1].f, 0);
+                                    if (getRoom(x2 + x, z1 - 1) == r && !Global.INSTANCE.getMap()[x2 + x][z1 + 1].isWall() && !Global.INSTANCE.getMap()[x2 + x][z1 - 1].isWall())
+                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].f == Global.INSTANCE.getMap()[x2 + x][z1 - 1].f)
+                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].f, 0);
                             }
                             if (right) {
                                 int r = getRoom(z - 1, z1);
                                 for (int y = 0; y < ly; y++)
-                                    if (getRoom(z - 1, y2 + y) == r && !Global.map[z + 1][y2 + y].isWall() && !Global.map[z - 1][y2 + y].isWall())
-                                        if (Global.map[z + 1][y2 + y].f == Global.map[z - 1][y2 + y].f)
-                                            Global.game.fillArea(z, y2 + y, 1, 1, Global.map[z + 1][y2 + y].f, 0);
+                                    if (getRoom(z - 1, y2 + y) == r && !Global.INSTANCE.getMap()[z + 1][y2 + y].isWall() && !Global.INSTANCE.getMap()[z - 1][y2 + y].isWall())
+                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].f == Global.INSTANCE.getMap()[z - 1][y2 + y].f)
+                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].f, 0);
                             }
                             if (left) {
                                 int r = getRoom(z + 1, z1);
                                 for (int y = 0; y < ly; y++)
-                                    if (getRoom(z + 1, y2 + y) == r && !Global.map[z + 1][y2 + y].isWall() && !Global.map[z - 1][y2 + y].isWall())
-                                        if (Global.map[z + 1][y2 + y].f == Global.map[z - 1][y2 + y].f)
-                                            Global.game.fillArea(z, y2 + y, 1, 1, Global.map[z + 1][y2 + y].f, 0);
+                                    if (getRoom(z + 1, y2 + y) == r && !Global.INSTANCE.getMap()[z + 1][y2 + y].isWall() && !Global.INSTANCE.getMap()[z - 1][y2 + y].isWall())
+                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].f == Global.INSTANCE.getMap()[z - 1][y2 + y].f)
+                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].f, 0);
                             }
                         }
                     }
                 }
             } else
                 rc++;
-            if (Game.curLvls == Global.game.maxLvl - 1 && rc == mr - 2)
+            if (Game.curLvls == Global.INSTANCE.getGame().maxLvl - 1 && rc == mr - 2)
                 placeFinalRoom();
         }
-        Global.mapview.los(Global.hero.mx, Global.hero.my);
-        Global.game.updateZone();
+        Global.INSTANCE.getMapview().los(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
+        Global.INSTANCE.getGame().updateZone();
         int x4, y4;
         for (int x = 0; x < 30 + Game.curLvls * 7; x++) {
             do {
-                x4 = rnd.nextInt(Global.game.mw);
-                y4 = rnd.nextInt(Global.game.mh);
+                x4 = rnd.nextInt(Global.INSTANCE.getGame().mw);
+                y4 = rnd.nextInt(Global.INSTANCE.getGame().mh);
             }
-            while (!Global.map[x4][y4].psb || Global.map[x4][y4].see || Global.map[x4][y4].hasMob());
-            int en = rnd.nextInt(Global.game.maxMobs - Game.curLvls - 1) + Game.curLvls;
+            while (!Global.INSTANCE.getMap()[x4][y4].psb || Global.INSTANCE.getMap()[x4][y4].see || Global.INSTANCE.getMap()[x4][y4].hasMob());
+            int en = rnd.nextInt(Global.INSTANCE.getGame().maxMobs - Game.curLvls - 1) + Game.curLvls;
             if (en < 3 && rnd.nextInt(3) == 0) {
-                if (Global.map[x4 - 1][y4].psb && !Global.map[x4 - 1][y4].hasItem())
-                    Global.game.createMob(x4 - 1, y4, en);
-                if (Global.map[x4 + 1][y4].psb && !Global.map[x4 + 1][y4].hasItem())
-                    Global.game.createMob(x4 + 1, y4, en);
+                if (Global.INSTANCE.getMap()[x4 - 1][y4].psb && !Global.INSTANCE.getMap()[x4 - 1][y4].hasItem())
+                    Global.INSTANCE.getGame().createMob(x4 - 1, y4, en);
+                if (Global.INSTANCE.getMap()[x4 + 1][y4].psb && !Global.INSTANCE.getMap()[x4 + 1][y4].hasItem())
+                    Global.INSTANCE.getGame().createMob(x4 + 1, y4, en);
             }
-            Global.game.createMob(x4, y4, en);
+            Global.INSTANCE.getGame().createMob(x4, y4, en);
         }
-        if (Game.curLvls < Global.game.maxLvl - 1) {
+        if (Game.curLvls < Global.INSTANCE.getGame().maxLvl - 1) {
             while (true) {
-                x4 = rnd.nextInt(Global.game.mw);
-                y4 = rnd.nextInt(Global.game.mh);
-                if (Global.map[x4][y4].o == 0 && !Global.map[x4][y4].see) {
-                    Global.map[x4][y4].o = 40;
+                x4 = rnd.nextInt(Global.INSTANCE.getGame().mw);
+                y4 = rnd.nextInt(Global.INSTANCE.getGame().mh);
+                if (Global.INSTANCE.getMap()[x4][y4].o == 0 && !Global.INSTANCE.getMap()[x4][y4].see) {
+                    Global.INSTANCE.getMap()[x4][y4].o = 40;
                     m = x4 - 2;
                     n = y4 - 2;
                     break;
@@ -593,10 +595,10 @@ public class MapGenerationClass {
         newZone(lx, ly, n);
         while (true) {
             if (findCell()) {
-                right = Global.map[z - 1][z1].psb;
-                left = Global.map[z + 1][z1].psb;
-                down = Global.map[z][z1 - 1].psb;
-                up = Global.map[z][z1 + 1].psb;
+                right = Global.INSTANCE.getMap()[z - 1][z1].psb;
+                left = Global.INSTANCE.getMap()[z + 1][z1].psb;
+                down = Global.INSTANCE.getMap()[z][z1 - 1].psb;
+                up = Global.INSTANCE.getMap()[z][z1 + 1].psb;
                 if ((right ^ left) ^ (down ^ up)) {
                     if (up) {
                         y2 = z1 - ly;
@@ -619,16 +621,16 @@ public class MapGenerationClass {
                         for (int x = 0; x < lx; x++)
                             for (int y = 0; y < ly; y++) {
                                 int v = zone[x][y];
-                                Global.map[x2 + x][y2 + y].f = v / 1000;
-                                Global.map[x2 + x][y2 + y].o = v % 1000;
+                                Global.INSTANCE.getMap()[x2 + x][y2 + y].f = v / 1000;
+                                Global.INSTANCE.getMap()[x2 + x][y2 + y].o = v % 1000;
                                 modifyTile(x2 + x, y2 + y, v / 1000, v % 1000);
                             }
                         fillArea(z, z1, 1, 1, 5031);
-                        Global.game.createMob(x2 + 3, y2 + 3, 5);
-                        Global.game.createMob(x2 + 4, y2 + 3, 4);
-                        Global.game.createMob(x2 + 2, y2 + 3, 4);
-                        Global.game.createMob(x2 + 3, y2 + 4, 4);
-                        Global.game.createMob(x2 + 3, y2 + 2, 4);
+                        Global.INSTANCE.getGame().createMob(x2 + 3, y2 + 3, 5);
+                        Global.INSTANCE.getGame().createMob(x2 + 4, y2 + 3, 4);
+                        Global.INSTANCE.getGame().createMob(x2 + 2, y2 + 3, 4);
+                        Global.INSTANCE.getGame().createMob(x2 + 3, y2 + 4, 4);
+                        Global.INSTANCE.getGame().createMob(x2 + 3, y2 + 2, 4);
                         break;
                     }
                 }

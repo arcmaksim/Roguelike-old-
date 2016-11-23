@@ -55,53 +55,53 @@ public class Game extends Activity {
     public int[][] zone;
 
     public static Bitmap getHeroImg(int n) {
-        return Global.hero.img[n];
+        return Global.INSTANCE.getHero().img[n];
     }
 
     public static int getFloor(int x, int y) {
-        return Global.map[x][y].f;
+        return Global.INSTANCE.getMap()[x][y].f;
     }
 
     public static int getObject(int x, int y) {
-        return Global.map[x][y].o;
+        return Global.INSTANCE.getMap()[x][y].o;
     }
 
     protected void onCreate(Bundle w) {
         super.onCreate(w);
 
-        Global.game = this;
+        Global.INSTANCE.setGame(this);
         rnd = new Random();
 
-        Global.map = new MapClass[mw][mh];
+        Global.INSTANCE.setMap(new MapClass[mw][mh]);
         for (int x = 0; x < mw; x++)
             for (int y = 0; y < mh; y++)
-                Global.map[x][y] = new MapClass();
+                Global.INSTANCE.getMap()[x][y] = new MapClass();
 
-        Global.tiles = new TileDB[maxTiles];
+        Global.INSTANCE.setTiles(new TileDB[maxTiles]);
         for (int x = 0; x < maxTiles; x++)
-            Global.tiles[x] = new TileDB();
+            Global.INSTANCE.getTiles()[x] = new TileDB();
 
-        Global.itemDB = new ItemDB[maxItems];
+        Global.INSTANCE.setItemDB(new ItemDB[maxItems]);
         for (int x = 0; x < maxItems; x++)
-            Global.itemDB[x] = new ItemDB();
+            Global.INSTANCE.getItemDB()[x] = new ItemDB();
 
-        Global.mobDB = new MobDB[maxMobs];
+        Global.INSTANCE.setMobDB(new MobDB[maxMobs]);
         for (int x = 0; x < maxMobs; x++)
-            Global.mobDB[x] = new MobDB();
+            Global.INSTANCE.getMobDB()[x] = new MobDB();
 
-        Global.stats = new StatsDB[Global.game.maxStats];
-        for (int x = 0; x < Global.game.maxStats; x++)
-            Global.stats[x] = new StatsDB();
+        Global.INSTANCE.setStats(new StatsDB[Global.INSTANCE.getGame().maxStats]);
+        for (int x = 0; x < Global.INSTANCE.getGame().maxStats; x++)
+            Global.INSTANCE.getStats()[x] = new StatsDB();
 
-        Global.mAssetHelper = new AssetHelper(getAssets());
+        Global.INSTANCE.setMAssetHelper(new AssetHelper(getAssets()));
 
-        Global.hero = new HeroClass();
-        Global.mapg = new MapGenerationClass();
-        Global.mmview = new MainMenu(this);
-        Global.mapview = new MapView(this);
-        Global.invview = new InventoryView(this);
-        Global.stsview = new StatsView(this);
-        Global.bview = new BrezenhamView(this);
+        Global.INSTANCE.setHero(new HeroClass());
+        Global.INSTANCE.setMapg(new MapGenerationClass());
+        Global.INSTANCE.setMmview(new MainMenu(this));
+        Global.INSTANCE.setMapview(new MapView(this));
+        Global.INSTANCE.setInvview(new InventoryView(this));
+        Global.INSTANCE.setStsview(new StatsView(this));
+        Global.INSTANCE.setBview(new BrezenhamView(this));
 
         zone = new int[11][11];
 
@@ -114,8 +114,8 @@ public class Game extends Activity {
     }
 
     public void onBackPressed() {
-        if (scr == 0 && !Global.mapview.prgb)
-            Global.mapview.exit = !Global.mapview.exit;
+        if (scr == 0 && !Global.INSTANCE.getMapview().prgb)
+            Global.INSTANCE.getMapview().exit = !Global.INSTANCE.getMapview().exit;
     }
 
     public void exitGame() {
@@ -123,10 +123,10 @@ public class Game extends Activity {
     }
 
     public void newGame() {
-        Global.hero.newHero();
+        Global.INSTANCE.getHero().newHero();
         curLvls = 0;
-        Global.mapg.mapGen();
-        Global.mapview.clearLog();
+        Global.INSTANCE.getMapg().mapGen();
+        Global.INSTANCE.getMapview().clearLog();
         changeScreen(4);
     }
 
@@ -134,25 +134,25 @@ public class Game extends Activity {
         scr = u;
         switch (u) {
             case 0:
-                setContentView(Global.mapview);
-                Global.mapview.requestFocus();
+                setContentView(Global.INSTANCE.getMapview());
+                Global.INSTANCE.getMapview().requestFocus();
                 break;
             case 1:
-                Global.invview.fillList();
-                setContentView(Global.invview);
-                Global.invview.requestFocus();
+                Global.INSTANCE.getInvview().fillList();
+                setContentView(Global.INSTANCE.getInvview());
+                Global.INSTANCE.getInvview().requestFocus();
                 break;
             case 2:
-                setContentView(Global.stsview);
-                Global.stsview.requestFocus();
+                setContentView(Global.INSTANCE.getStsview());
+                Global.INSTANCE.getStsview().requestFocus();
                 break;
             case 3:
-                setContentView(Global.bview);
-                Global.bview.requestFocus();
+                setContentView(Global.INSTANCE.getBview());
+                Global.INSTANCE.getBview().requestFocus();
                 break;
             case 4:
-                setContentView(Global.mmview);
-                Global.mmview.requestFocus();
+                setContentView(Global.INSTANCE.getMmview());
+                Global.INSTANCE.getMmview().requestFocus();
                 break;
         }
     }
@@ -187,7 +187,7 @@ public class Game extends Activity {
         MobList temp = new MobList(rnd.nextInt(4));
         temp.x = x;
         temp.y = y;
-        Global.map[x][y].addMob(temp);
+        Global.INSTANCE.getMap()[x][y].addMob(temp);
         addInQueue(temp);
     }
 
@@ -195,7 +195,7 @@ public class Game extends Activity {
         MobList temp = new MobList(t);
         temp.x = x;
         temp.y = y;
-        Global.map[x][y].addMob(temp);
+        Global.INSTANCE.getMap()[x][y].addMob(temp);
         addInQueue(temp);
     }
 
@@ -233,42 +233,42 @@ public class Game extends Activity {
     public void isCollision(int mx, int my) {
         if (mx > -1 && mx < mw && my < mh && my > -1) {
             move = true;
-            if (Global.map[mx][my].use) {
+            if (Global.INSTANCE.getMap()[mx][my].use) {
                 switch (Game.getObject(mx, my)) {
                     case 31:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 32);
-                        Global.mapview.addLine("????? ???????");
+                        Global.INSTANCE.getMapview().addLine("????? ???????");
                         move = false;
                         turn = false;
                         break;
                     case 33:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 34);
-                        Global.mapview.line = false;
-                        Global.mapview.initPrgb(33, 159);
+                        Global.INSTANCE.getMapview().line = false;
+                        Global.INSTANCE.getMapview().initPrgb(33, 159);
                         move = false;
                         turn = false;
                         break;
                     case 36:
-                        Global.mapview.line = false;
-                        Global.mapview.initPrgb(36, 259);
+                        Global.INSTANCE.getMapview().line = false;
+                        Global.INSTANCE.getMapview().initPrgb(36, 259);
                         move = false;
                         turn = false;
                         break;
                 }
             }
-            if (turn && Global.map[mx][my].hasMob())
-                attack(Global.map[mx][my]);
+            if (turn && Global.INSTANCE.getMap()[mx][my].hasMob())
+                attack(Global.INSTANCE.getMap()[mx][my]);
             if (turn)
                 if (Game.getObject(mx, my) == 44) {
-                    Global.hero.modifyStat(5, rnd.nextInt(3) + 1, -1);
-                    Global.mapview.addLine("?????? ?????!");
-                    if (Global.hero.getStat(5) < 1) {
-                        lastAttack = Bitmap.createScaledBitmap(Global.tiles[44].getImg(), 72, 72, false);
-                        Global.mapview.death = true;
+                    Global.INSTANCE.getHero().modifyStat(5, rnd.nextInt(3) + 1, -1);
+                    Global.INSTANCE.getMapview().addLine("?????? ?????!");
+                    if (Global.INSTANCE.getHero().getStat(5) < 1) {
+                        lastAttack = Bitmap.createScaledBitmap(Global.INSTANCE.getTiles()[44].getImg(), 72, 72, false);
+                        Global.INSTANCE.getMapview().death = true;
                     }
                 }
-            if (!Global.map[mx][my].psb && turn) {
-                Global.mapview.addLine("??????????? ?? ????");
+            if (!Global.INSTANCE.getMap()[mx][my].psb && turn) {
+                Global.INSTANCE.getMapview().addLine("??????????? ?? ????");
                 v.vibrate(30);
                 move = false;
             } else {
@@ -280,26 +280,26 @@ public class Game extends Activity {
     }
 
     public void move(int mx, int my) {
-        Global.mapview.mx = mx;
-        Global.mapview.my = my;
-        isCollision(Global.hero.mx + mx, Global.hero.my + my);
+        Global.INSTANCE.getMapview().mx = mx;
+        Global.INSTANCE.getMapview().my = my;
+        isCollision(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my);
         if (move) {
-            Global.hero.mx += mx;
-            Global.hero.my += my;
-            Global.mapview.camx += mx;
-            Global.mapview.camy += my;
+            Global.INSTANCE.getHero().mx += mx;
+            Global.INSTANCE.getHero().my += my;
+            Global.INSTANCE.getMapview().camx += mx;
+            Global.INSTANCE.getMapview().camy += my;
         }
-        Global.mapview.los(Global.hero.mx, Global.hero.my);
+        Global.INSTANCE.getMapview().los(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
         if (!turn) {
             tap = false;
-            if (mx == 1) Global.hero.side = false;
-            if (mx == -1) Global.hero.side = true;
+            if (mx == 1) Global.INSTANCE.getHero().side = false;
+            if (mx == -1) Global.INSTANCE.getHero().side = true;
         }
-        if ((mx != 0 || my != 0) && Global.map[Global.hero.mx][Global.hero.my].hasItem()) {
-            if (Global.map[Global.hero.mx][Global.hero.my].head.next == null)
-                Global.mapview.addLine(Global.map[Global.hero.mx][Global.hero.my].head.item.n + " ????? ?? ?????");
+        if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].hasItem()) {
+            if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.next == null)
+                Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.item.n + " ????? ?? ?????");
             else
-                Global.mapview.addLine("????????? ????????? ????? ?? ?????");
+                Global.INSTANCE.getMapview().addLine("????????? ????????? ????? ?? ?????");
         }
         updateZone();
     }
@@ -307,7 +307,7 @@ public class Game extends Activity {
     public void spread(int i1, int j1, int c) {
         for (int i = i1 - 1; i < i1 + 2; i++)
             for (int j = j1 - 1; j < j1 + 2; j++)
-                if (zone[i][j] == defValue && Global.map[Global.mapview.camx - 1 + i][Global.mapview.camy - 1 + j].psb && !Global.map[Global.mapview.camx - 1 + i][Global.mapview.camy - 1 + j].hasMob())
+                if (zone[i][j] == defValue && Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().camx - 1 + i][Global.INSTANCE.getMapview().camy - 1 + j].psb && !Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().camx - 1 + i][Global.INSTANCE.getMapview().camy - 1 + j].hasMob())
                     zone[i][j] = c;
     }
 
@@ -321,10 +321,10 @@ public class Game extends Activity {
     public void updateZone() {
         clearZone();
         int xl, xr, yl, yr;
-        xl = (Global.mapview.camx - 1 < 1) ? 1 : Global.mapview.camx - 1;
-        yl = (Global.mapview.camy - 1 < 1) ? 1 : Global.mapview.camy - 1;
-        xr = (Global.mapview.camx + 10 > mw - 2) ? mw - 2 : Global.mapview.camx + 10;
-        yr = (Global.mapview.camy + 10 > mh - 2) ? mh - 2 : Global.mapview.camy + 10;
+        xl = (Global.INSTANCE.getMapview().camx - 1 < 1) ? 1 : Global.INSTANCE.getMapview().camx - 1;
+        yl = (Global.INSTANCE.getMapview().camy - 1 < 1) ? 1 : Global.INSTANCE.getMapview().camy - 1;
+        xr = (Global.INSTANCE.getMapview().camx + 10 > mw - 2) ? mw - 2 : Global.INSTANCE.getMapview().camx + 10;
+        yr = (Global.INSTANCE.getMapview().camy + 10 > mh - 2) ? mh - 2 : Global.INSTANCE.getMapview().camy + 10;
         for (int c = 0; c < 5; c++)
             for (int i = xl; i < xr; i++)
                 for (int j = yl; j < yr; j++)
@@ -338,37 +338,37 @@ public class Game extends Activity {
     }
 
     public void attack(MapClass map) {
-        int att = rnd.nextInt(20) + 1 + Global.hero.getStat(11);
+        int att = rnd.nextInt(20) + 1 + Global.INSTANCE.getHero().getStat(11);
         if (att >= map.mob.mob.getDef()) {
-            int u = rnd.nextInt(Global.hero.getStat(13) - Global.hero.getStat(12) + 1) + Global.hero.getStat(12) - map.mob.mob.getArm();
+            int u = rnd.nextInt(Global.INSTANCE.getHero().getStat(13) - Global.INSTANCE.getHero().getStat(12) + 1) + Global.INSTANCE.getHero().getStat(12) - map.mob.mob.getArm();
             if (u < 1) {
                 u = 1;
             }
             map.mob.mob.setHp(map.mob.mob.getHp() - u);
-            Global.mapview.addLine(map.mob.mob.getName() + " ???????? ????");
+            Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + " ???????? ????");
             if (map.mob.mob.getHp() < 1) {
-                Global.mapview.addLine(map.mob.mob.getName() + " ???????");
-                Global.hero.modifyStat(20, map.mob.t, 1);
+                Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + " ???????");
+                Global.INSTANCE.getHero().modifyStat(20, map.mob.t, 1);
                 if (map.mob.t == maxMobs - 1)
-                    Global.mapview.win = true;
+                    Global.INSTANCE.getMapview().win = true;
                 deleteMob(map);
                 int x4, y4;
                 do {
-                    x4 = rnd.nextInt(Global.game.mw);
-                    y4 = rnd.nextInt(Global.game.mh);
+                    x4 = rnd.nextInt(Global.INSTANCE.getGame().mw);
+                    y4 = rnd.nextInt(Global.INSTANCE.getGame().mh);
                 }
-                while (!Global.map[x4][y4].psb || Global.map[x4][y4].see || Global.map[x4][y4].hasMob());
-                int en = rnd.nextInt(Global.game.maxMobs - curLvls - 1) + curLvls;
+                while (!Global.INSTANCE.getMap()[x4][y4].psb || Global.INSTANCE.getMap()[x4][y4].see || Global.INSTANCE.getMap()[x4][y4].hasMob());
+                int en = rnd.nextInt(Global.INSTANCE.getGame().maxMobs - curLvls - 1) + curLvls;
                 if (en < 3 && rnd.nextInt(3) == 0) {
-                    if (Global.map[x4 - 1][y4].psb && !Global.map[x4 - 1][y4].hasItem())
-                        Global.game.createMob(x4 - 1, y4, en);
-                    if (Global.map[x4 + 1][y4].psb && !Global.map[x4 + 1][y4].hasItem())
-                        Global.game.createMob(x4 + 1, y4, en);
+                    if (Global.INSTANCE.getMap()[x4 - 1][y4].psb && !Global.INSTANCE.getMap()[x4 - 1][y4].hasItem())
+                        Global.INSTANCE.getGame().createMob(x4 - 1, y4, en);
+                    if (Global.INSTANCE.getMap()[x4 + 1][y4].psb && !Global.INSTANCE.getMap()[x4 + 1][y4].hasItem())
+                        Global.INSTANCE.getGame().createMob(x4 + 1, y4, en);
                 }
-                Global.game.createMob(x4, y4, en);
+                Global.INSTANCE.getGame().createMob(x4, y4, en);
             }
         } else {
-            Global.mapview.addLine("??????");
+            Global.INSTANCE.getMapview().addLine("??????");
         }
         turn = false;
         move = false;
@@ -390,20 +390,20 @@ public class Game extends Activity {
 
     public void mobAttack(MobList mob) {
         int att = rnd.nextInt(20) + 1 + mob.mob.getArm();
-        if (att >= Global.hero.getStat(19)) {
-            int u = mob.mob.getDmg() - Global.hero.getStat(22);
+        if (att >= Global.INSTANCE.getHero().getStat(19)) {
+            int u = mob.mob.getDmg() - Global.INSTANCE.getHero().getStat(22);
             if (u < 1) {
                 u = 1;
             }
-            Global.hero.modifyStat(5, u, -1);
-            Global.mapview.addLine(mob.mob.getName() + " ??????? ????");
+            Global.INSTANCE.getHero().modifyStat(5, u, -1);
+            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + " ??????? ????");
         } else {
-            Global.mapview.addLine(mob.mob.getName() + " ?????????????");
+            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + " ?????????????");
         }
-        if (Global.hero.getStat(5) < 1) {
-            Global.hero.modifyStat(5, Global.hero.getStat(5), -1);
+        if (Global.INSTANCE.getHero().getStat(5) < 1) {
+            Global.INSTANCE.getHero().modifyStat(5, Global.INSTANCE.getHero().getStat(5), -1);
             lastAttack = Bitmap.createScaledBitmap(mob.getImg(0), 72, 72, false);
-            Global.mapview.death = true;
+            Global.INSTANCE.getMapview().death = true;
         }
     }
 
@@ -413,10 +413,10 @@ public class Game extends Activity {
         loadItems();
         loadMobs();
         // Images loading
-        AssetHelper assetHelper = Global.mAssetHelper;
+        AssetHelper assetHelper = Global.INSTANCE.getMAssetHelper();
         Bitmap img = assetHelper.getBitmapFromAsset("character_animation_sheet");
         for (int x = 0; x < 4; x++)
-            Global.hero.img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
+            Global.INSTANCE.getHero().img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
         bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24), step, step, false);
         a = assetHelper.getBitmapFromAsset("character_icon");
         b = assetHelper.getBitmapFromAsset("inventory_icon");
@@ -426,15 +426,15 @@ public class Game extends Activity {
         img = assetHelper.getBitmapFromAsset("tileset");
         for (int y = 0; y < 10; y++)
             for (int x = 0; x < 10; x++)
-                Global.tiles[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
+                Global.INSTANCE.getTiles()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
         img = assetHelper.getBitmapFromAsset("items_sheet");
         for (int y = 0; y < 2; y++)
             for (int x = 0; x < 10; x++)
-                Global.itemDB[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
+                Global.INSTANCE.getItemDB()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
         img = assetHelper.getBitmapFromAsset("mobs_sheet");
         for (int x = 0; x < maxMobs; x++) {
-            Global.mobDB[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
-            Global.mobDB[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);
+            Global.INSTANCE.getMobDB()[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
+            Global.INSTANCE.getMobDB()[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);
         }
     }
 
@@ -444,9 +444,9 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.stats);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("stat")) {
-                    Global.stats[i].setN(parser.getAttributeValue(0));
-                    Global.stats[i].setS(parser.getAttributeValue(1).equals("t"));
-                    Global.stats[i++].setM(parser.getAttributeValue(2).equals("t"));
+                    Global.INSTANCE.getStats()[i].setN(parser.getAttributeValue(0));
+                    Global.INSTANCE.getStats()[i].setS(parser.getAttributeValue(1).equals("t"));
+                    Global.INSTANCE.getStats()[i++].setM(parser.getAttributeValue(2).equals("t"));
                     parser.next();
                 }
                 parser.next();
@@ -461,9 +461,9 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.tiles);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("tile")) {
-                    Global.tiles[i].setPsb(parser.getAttributeValue(0).equals("t"));
-                    Global.tiles[i].setVis(parser.getAttributeValue(1).equals("t"));
-                    Global.tiles[i++].setUse(parser.getAttributeValue(2).equals("t"));
+                    Global.INSTANCE.getTiles()[i].setPsb(parser.getAttributeValue(0).equals("t"));
+                    Global.INSTANCE.getTiles()[i].setVis(parser.getAttributeValue(1).equals("t"));
+                    Global.INSTANCE.getTiles()[i++].setUse(parser.getAttributeValue(2).equals("t"));
                 }
                 parser.next();
             }
@@ -471,10 +471,10 @@ public class Game extends Activity {
             parser = getResources().getXml(R.xml.objects);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("object")) {
-                    Global.tiles[i].setPsb(parser.getAttributeValue(0).equals("t"));
-                    Global.tiles[i].setVis(parser.getAttributeValue(1).equals("t"));
-                    Global.tiles[i].setUse(parser.getAttributeValue(2).equals("t"));
-                    Global.tiles[i++].setWall(parser.getAttributeValue(3).equals("t"));
+                    Global.INSTANCE.getTiles()[i].setPsb(parser.getAttributeValue(0).equals("t"));
+                    Global.INSTANCE.getTiles()[i].setVis(parser.getAttributeValue(1).equals("t"));
+                    Global.INSTANCE.getTiles()[i].setUse(parser.getAttributeValue(2).equals("t"));
+                    Global.INSTANCE.getTiles()[i++].setWall(parser.getAttributeValue(3).equals("t"));
                 }
                 parser.next();
             }
@@ -489,34 +489,34 @@ public class Game extends Activity {
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG) {
                     if (parser.getName().equals("weapon")) {
-                        Global.itemDB[i].type = 1;
-                        Global.itemDB[i].n = parser.getAttributeValue(0);
-                        Global.itemDB[i].n1 = parser.getAttributeValue(1);
-                        Global.itemDB[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
-                        Global.itemDB[i].val2 = Integer.parseInt(parser.getAttributeValue(3));
-                        Global.itemDB[i].val3 = Integer.parseInt(parser.getAttributeValue(4));
-                        Global.itemDB[i++].property = parser.getAttributeValue(5).equals("t");
+                        Global.INSTANCE.getItemDB()[i].type = 1;
+                        Global.INSTANCE.getItemDB()[i].n = parser.getAttributeValue(0);
+                        Global.INSTANCE.getItemDB()[i].n1 = parser.getAttributeValue(1);
+                        Global.INSTANCE.getItemDB()[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
+                        Global.INSTANCE.getItemDB()[i].val2 = Integer.parseInt(parser.getAttributeValue(3));
+                        Global.INSTANCE.getItemDB()[i].val3 = Integer.parseInt(parser.getAttributeValue(4));
+                        Global.INSTANCE.getItemDB()[i++].property = parser.getAttributeValue(5).equals("t");
                     }
                     if (parser.getName().equals("shield")) {
-                        Global.itemDB[i].type = 2;
-                        Global.itemDB[i].n = parser.getAttributeValue(0);
-                        Global.itemDB[i].n1 = parser.getAttributeValue(1);
-                        Global.itemDB[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
-                        Global.itemDB[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
+                        Global.INSTANCE.getItemDB()[i].type = 2;
+                        Global.INSTANCE.getItemDB()[i].n = parser.getAttributeValue(0);
+                        Global.INSTANCE.getItemDB()[i].n1 = parser.getAttributeValue(1);
+                        Global.INSTANCE.getItemDB()[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
+                        Global.INSTANCE.getItemDB()[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
                     }
                     if (parser.getName().equals("armor")) {
-                        Global.itemDB[i].type = 3;
-                        Global.itemDB[i].n = parser.getAttributeValue(0);
-                        Global.itemDB[i].n1 = parser.getAttributeValue(1);
-                        Global.itemDB[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
-                        Global.itemDB[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
+                        Global.INSTANCE.getItemDB()[i].type = 3;
+                        Global.INSTANCE.getItemDB()[i].n = parser.getAttributeValue(0);
+                        Global.INSTANCE.getItemDB()[i].n1 = parser.getAttributeValue(1);
+                        Global.INSTANCE.getItemDB()[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
+                        Global.INSTANCE.getItemDB()[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
                     }
                     if (parser.getName().equals("item")) {
-                        Global.itemDB[i].type = 5;
-                        Global.itemDB[i].n = parser.getAttributeValue(0);
-                        Global.itemDB[i].n1 = parser.getAttributeValue(1);
-                        Global.itemDB[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
-                        Global.itemDB[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
+                        Global.INSTANCE.getItemDB()[i].type = 5;
+                        Global.INSTANCE.getItemDB()[i].n = parser.getAttributeValue(0);
+                        Global.INSTANCE.getItemDB()[i].n1 = parser.getAttributeValue(1);
+                        Global.INSTANCE.getItemDB()[i].val1 = Integer.parseInt(parser.getAttributeValue(2));
+                        Global.INSTANCE.getItemDB()[i++].val2 = Integer.parseInt(parser.getAttributeValue(3));
                     }
                 }
                 parser.next();
@@ -531,13 +531,13 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.mobs);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("mob")) {
-                    Global.mobDB[i].getMob().setName(parser.getAttributeValue(0));
-                    Global.mobDB[i].getMob().setHp(Integer.parseInt(parser.getAttributeValue(1)));
-                    Global.mobDB[i].getMob().setAtt(Integer.parseInt(parser.getAttributeValue(2)));
-                    Global.mobDB[i].getMob().setDef(Integer.parseInt(parser.getAttributeValue(3)));
-                    Global.mobDB[i].getMob().setArm(Integer.parseInt(parser.getAttributeValue(4)));
-                    Global.mobDB[i].getMob().setSpd(Integer.parseInt(parser.getAttributeValue(5)));
-                    Global.mobDB[i++].getMob().setDmg(Integer.parseInt(parser.getAttributeValue(6)));
+                    Global.INSTANCE.getMobDB()[i].getMob().setName(parser.getAttributeValue(0));
+                    Global.INSTANCE.getMobDB()[i].getMob().setHp(Integer.parseInt(parser.getAttributeValue(1)));
+                    Global.INSTANCE.getMobDB()[i].getMob().setAtt(Integer.parseInt(parser.getAttributeValue(2)));
+                    Global.INSTANCE.getMobDB()[i].getMob().setDef(Integer.parseInt(parser.getAttributeValue(3)));
+                    Global.INSTANCE.getMobDB()[i].getMob().setArm(Integer.parseInt(parser.getAttributeValue(4)));
+                    Global.INSTANCE.getMobDB()[i].getMob().setSpd(Integer.parseInt(parser.getAttributeValue(5)));
+                    Global.INSTANCE.getMobDB()[i++].getMob().setDmg(Integer.parseInt(parser.getAttributeValue(6)));
                 }
                 parser.next();
             }
@@ -547,28 +547,28 @@ public class Game extends Activity {
 
     public void createItem(int x4, int y4) {
         Item item = createItem();
-        Global.map[x4][y4].addItem(item);
+        Global.INSTANCE.getMap()[x4][y4].addItem(item);
     }
 
     public void createItem(int x4, int y4, int t) {
         Item item = createItem(t);
-        Global.map[x4][y4].addItem(item);
+        Global.INSTANCE.getMap()[x4][y4].addItem(item);
     }
 
     public void modifyTile(int px, int py, int f, int o) {
-        Global.map[px][py].psb = Global.tiles[f].getPsb();
-        Global.map[px][py].vis = Global.tiles[f].getVis();
-        Global.map[px][py].use = Global.tiles[f].getUse();
-        Global.map[px][py].psb = Global.tiles[o].getPsb();
-        Global.map[px][py].vis = Global.tiles[o].getVis();
-        Global.map[px][py].use = Global.tiles[o].getUse();
+        Global.INSTANCE.getMap()[px][py].psb = Global.INSTANCE.getTiles()[f].getPsb();
+        Global.INSTANCE.getMap()[px][py].vis = Global.INSTANCE.getTiles()[f].getVis();
+        Global.INSTANCE.getMap()[px][py].use = Global.INSTANCE.getTiles()[f].getUse();
+        Global.INSTANCE.getMap()[px][py].psb = Global.INSTANCE.getTiles()[o].getPsb();
+        Global.INSTANCE.getMap()[px][py].vis = Global.INSTANCE.getTiles()[o].getVis();
+        Global.INSTANCE.getMap()[px][py].use = Global.INSTANCE.getTiles()[o].getUse();
     }
 
     public void fillArea(int sx, int sy, int lx1, int ly1, int f, int o) {
         for (int y = sy; y < sy + ly1; y++) {
             for (int x = sx; x < sx + lx1; x++) {
-                Global.map[x][y].f = f;
-                Global.map[x][y].o = o;
+                Global.INSTANCE.getMap()[x][y].f = f;
+                Global.INSTANCE.getMap()[x][y].o = o;
                 modifyTile(x, y, f, o);
             }
         }
@@ -580,7 +580,7 @@ public class Game extends Activity {
             mobAttack(mob);
         } else {
             int x4 = 0, y4 = 0;
-            int x = mob.x - Global.hero.mx + 5, y = mob.y - Global.hero.my + 5;
+            int x = mob.x - Global.INSTANCE.getHero().mx + 5, y = mob.y - Global.INSTANCE.getHero().my + 5;
             boolean u, d, l, r;
             u = d = l = r = false;
             for (int c = -1; c < 2; c++) {
@@ -597,26 +597,26 @@ public class Game extends Activity {
                 if (u) y4 = -1;
                 if (d) y4 = 1;
             }
-            if (Global.map[mob.x + x4][mob.y + y4].psb && !Global.map[mob.x + x4][mob.y + y4].hasMob()) {
-                Global.map[mob.x][mob.y].deleteMob();
+            if (Global.INSTANCE.getMap()[mob.x + x4][mob.y + y4].psb && !Global.INSTANCE.getMap()[mob.x + x4][mob.y + y4].hasMob()) {
+                Global.INSTANCE.getMap()[mob.x][mob.y].deleteMob();
                 mob.x += x4;
                 mob.y += y4;
-                Global.map[mob.x][mob.y].addMob(mob);
+                Global.INSTANCE.getMap()[mob.x][mob.y].addMob(mob);
                 updateZone();
             }
         }
     }
 
     public void newTurnCount() {
-        Global.hero.init = Global.hero.getStat(25);
+        Global.INSTANCE.getHero().init = Global.INSTANCE.getHero().getStat(25);
     }
 
     public int min(MobList mob) {
         int a = defValue;
         for (int x1 = -1; x1 < 2; x1++)
             for (int y1 = -1; y1 < 2; y1++)
-                if (zone[mob.x - Global.hero.mx + 5 + x1][mob.y - Global.hero.my + 5 + y1] < a)
-                    a = zone[mob.x - Global.hero.mx + 5 + x1][mob.y - Global.hero.my + 5 + y1];
+                if (zone[mob.x - Global.INSTANCE.getHero().mx + 5 + x1][mob.y - Global.INSTANCE.getHero().my + 5 + y1] < a)
+                    a = zone[mob.x - Global.INSTANCE.getHero().mx + 5 + x1][mob.y - Global.INSTANCE.getHero().my + 5 + y1];
         return a;
     }
 
@@ -624,12 +624,12 @@ public class Game extends Activity {
         Thread t = new Thread(new Runnable() {
             public void run() {
                 while (true) {
-                    if (--Global.hero.init == 0) {
+                    if (--Global.INSTANCE.getHero().init == 0) {
                         newTurnCount();
-                        if (--Global.hero.cregen == 0) {
-                            Global.hero.cregen = Global.hero.regen;
-                            if (Global.hero.getStat(5) != Global.hero.getStat(6))
-                                Global.hero.modifyStat(5, 1, 1);
+                        if (--Global.INSTANCE.getHero().cregen == 0) {
+                            Global.INSTANCE.getHero().cregen = Global.INSTANCE.getHero().regen;
+                            if (Global.INSTANCE.getHero().getStat(5) != Global.INSTANCE.getHero().getStat(6))
+                                Global.INSTANCE.getHero().modifyStat(5, 1, 1);
                         }
                         tap = turn = move = true;
                         while (tap) ;
@@ -638,7 +638,7 @@ public class Game extends Activity {
                         while (firstMob.turnCount <= turnCount) {
                             MobList temp = firstMob;
                             firstMob = firstMob.next;
-                            if (Math.abs(temp.x - Global.hero.mx) < 5 && Math.abs(temp.y - Global.hero.my) < 5)
+                            if (Math.abs(temp.x - Global.INSTANCE.getHero().mx) < 5 && Math.abs(temp.y - Global.INSTANCE.getHero().my) < 5)
                                 mobTurn(temp);
                             addInQueue(temp);
                         }

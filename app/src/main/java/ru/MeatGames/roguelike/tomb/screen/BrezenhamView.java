@@ -25,7 +25,7 @@ public class BrezenhamView extends View {
 
     public BrezenhamView(Context c) {
         super(c);
-        Global.game = (Game) c;
+        Global.INSTANCE.setGame((Game) c);
         setFocusable(true);
         setFocusableInTouchMode(true);
         frame = new Paint();
@@ -45,16 +45,16 @@ public class BrezenhamView extends View {
         text.setStyle(Style.FILL_AND_STROKE);
         text.setTextScaleX(1);
         text.setTextSize(16);
-        text.setTypeface(Typeface.createFromAsset(Global.game.getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
+        text.setTypeface(Typeface.createFromAsset(Global.INSTANCE.getGame().getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawRect(0, 0, 480, 800, frame);
-        for (int x = 0; x < Global.game.mw; x++)
-            for (int y = 0; y < Global.game.mh; y++) {
-                if (Global.map[x][y].dis) {
-                    switch (Global.map[x][y].o) {
+        for (int x = 0; x < Global.INSTANCE.getGame().mw; x++)
+            for (int y = 0; y < Global.INSTANCE.getGame().mh; y++) {
+                if (Global.INSTANCE.getMap()[x][y].dis) {
+                    switch (Global.INSTANCE.getMap()[x][y].o) {
                         case 0:
                             canvas.drawRect(x * 5, 5 + 5 * y, x * 5 + 5, 10 + 5 * y, white);
                             break;
@@ -70,7 +70,7 @@ public class BrezenhamView extends View {
                         canvas.drawRect(x*5,5+5*y,x*5+5,10+5*y,blue);*/
                 }
             }
-        canvas.drawRect(Global.hero.mx * 5, 5 + Global.hero.my * 5, 5 + Global.hero.mx * 5, 10 + Global.hero.my * 5, red);
+        canvas.drawRect(Global.INSTANCE.getHero().mx * 5, 5 + Global.INSTANCE.getHero().my * 5, 5 + Global.INSTANCE.getHero().mx * 5, 10 + Global.INSTANCE.getHero().my * 5, red);
         text.setTextAlign(Paint.Align.RIGHT);
         canvas.drawText(getContext().getString(R.string.back_label), 435, 765, text);
         postInvalidate();
@@ -83,7 +83,7 @@ public class BrezenhamView extends View {
                 x1 = (int) event.getX();
                 y1 = (int) event.getY();
                 if (y1 > 720 && x1 > 320)
-                    Global.game.changeScreen(0);
+                    Global.INSTANCE.getGame().changeScreen(0);
                 break;
         }
         return true;

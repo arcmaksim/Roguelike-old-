@@ -10,9 +10,9 @@ import android.view.View;
 
 import ru.MeatGames.roguelike.tomb.Game;
 import ru.MeatGames.roguelike.tomb.Global;
-import ru.MeatGames.roguelike.tomb.model.Item;
 import ru.MeatGames.roguelike.tomb.LogClass;
 import ru.MeatGames.roguelike.tomb.R;
+import ru.MeatGames.roguelike.tomb.model.Item;
 
 public class MapView extends View {
     public final int maxLines = 8;
@@ -66,7 +66,7 @@ public class MapView extends View {
         text.setTextSize(16);
         text.setTextScaleX(1);
         text.setTextAlign(Paint.Align.LEFT);
-        text.setTypeface(Typeface.createFromAsset(Global.game.getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
+        text.setTypeface(Typeface.createFromAsset(Global.INSTANCE.getGame().getAssets(), "fonts/Bulgaria_Glorious_Cyr.ttf"));
         hud = new Paint();
         hud.setColor(getResources().getColor(R.color.hud));
         black = new Paint();
@@ -97,15 +97,15 @@ public class MapView extends View {
         if (!death && !win) {
             animTime = Math.abs(System.currentTimeMillis());
             drawMap(canvas);
-            if (Global.hero.side)
-                canvas.drawBitmap(Game.getHeroImg((int) (animTime / 600 % 2)), Global.hero.x, Global.hero.y, null);
+            if (Global.INSTANCE.getHero().side)
+                canvas.drawBitmap(Game.getHeroImg((int) (animTime / 600 % 2)), Global.INSTANCE.getHero().x, Global.INSTANCE.getHero().y, null);
             else
-                canvas.drawBitmap(Game.getHeroImg((int) (animTime / 600 % 2 + 2)), Global.hero.x, Global.hero.y, null);
+                canvas.drawBitmap(Game.getHeroImg((int) (animTime / 600 % 2 + 2)), Global.INSTANCE.getHero().x, Global.INSTANCE.getHero().y, null);
             drawHUD(canvas);
-            if (Global.game.lines) drawLines(canvas);
+            if (Global.INSTANCE.getGame().lines) drawLines(canvas);
             if (circle) drawActions(canvas, n);
             if (exit) drawExit(canvas);
-            r = (float) Global.hero.getStat(20) / Global.hero.getStat(21);
+            r = (float) Global.INSTANCE.getHero().getStat(20) / Global.INSTANCE.getHero().getStat(21);
             canvas.drawRect(4, 789, Math.round(472 * r), 796, fblued);
             if (prgb) drawProgBar(canvas);
         } else
@@ -120,17 +120,17 @@ public class MapView extends View {
             int cx = x - camx;
             for (int y = camy; y < camy + 9; y++) {
                 int cy = y - camy;
-                if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh && Global.map[x][y].see) {
-                    canvas.drawBitmap(Global.map[x][y].getFloorImg(), Global.game.step * cx + 24, Global.game.step * cy + 184, null);
-                    canvas.drawBitmap(Global.map[x][y].getObjectImg(), Global.game.step * cx + 24, Global.game.step * cy + 184, null);
-                    if (Global.map[x][y].hasItem())
-                        canvas.drawBitmap(Global.map[x][y].getItemImg(), Global.game.step * cx + 24, Global.game.step * cy + 184, null);
-                    if (Global.map[x][y].hasMob())
-                        canvas.drawBitmap(Global.map[x][y].mob.getImg((int) (animTime / 600 % 2)), Global.game.step * cx + 24, Global.game.step * cy + 184, null);
+                if (x > -1 && y > -1 && x < Global.INSTANCE.getGame().mw && y < Global.INSTANCE.getGame().mh && Global.INSTANCE.getMap()[x][y].see) {
+                    canvas.drawBitmap(Global.INSTANCE.getMap()[x][y].getFloorImg(), Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, null);
+                    canvas.drawBitmap(Global.INSTANCE.getMap()[x][y].getObjectImg(), Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, null);
+                    if (Global.INSTANCE.getMap()[x][y].hasItem())
+                        canvas.drawBitmap(Global.INSTANCE.getMap()[x][y].getItemImg(), Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, null);
+                    if (Global.INSTANCE.getMap()[x][y].hasMob())
+                        canvas.drawBitmap(Global.INSTANCE.getMap()[x][y].mob.getImg((int) (animTime / 600 % 2)), Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, null);
                     if (((cx - 4 == 0 || cy - 4 == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 3) || (cx - 4 != 0 && cy - 4 != 0 && Math.abs(cx - 4) + Math.abs(cy - 4) == 4))
-                        canvas.drawRect(Global.game.step * cx + 24, Global.game.step * cy + 184, Global.game.step * (cx + 1) + 24, Global.game.step * (cy + 1) + 184, dark1);
+                        canvas.drawRect(Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, Global.INSTANCE.getGame().step * (cx + 1) + 24, Global.INSTANCE.getGame().step * (cy + 1) + 184, dark1);
                     if (((Math.abs(cx - 4) == 0 || Math.abs(cy - 4) == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 4) || ((Math.abs(cx - 4) != 0 || Math.abs(cy - 4) != 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 5) || (Math.abs(cx - 4) == Math.abs(cy - 4) && Math.abs(cx - 4) == 3))
-                        canvas.drawRect(Global.game.step * cx + 24, Global.game.step * cy + 184, Global.game.step * (cx + 1) + 24, Global.game.step * (cy + 1) + 184, dark2);
+                        canvas.drawRect(Global.INSTANCE.getGame().step * cx + 24, Global.INSTANCE.getGame().step * cy + 184, Global.INSTANCE.getGame().step * (cx + 1) + 24, Global.INSTANCE.getGame().step * (cy + 1) + 184, dark2);
                 }
             }
         }
@@ -139,10 +139,10 @@ public class MapView extends View {
 
     protected void drawHUD(Canvas canvas) {
         text.setTextAlign(Paint.Align.CENTER);
-        canvas.drawBitmap(Global.game.b, 43, 745, null);
-        canvas.drawText("HP  " + Global.hero.getStat(5) + " / " + Global.hero.getStat(6), 240, 755, text);
-        canvas.drawText("MP  " + Global.hero.getStat(7) + " / " + Global.hero.getStat(8), 240, 778, text);
-        canvas.drawBitmap(Global.game.j, 404, 743, null);
+        canvas.drawBitmap(Global.INSTANCE.getGame().b, 43, 745, null);
+        canvas.drawText("HP  " + Global.INSTANCE.getHero().getStat(5) + " / " + Global.INSTANCE.getHero().getStat(6), 240, 755, text);
+        canvas.drawText("MP  " + Global.INSTANCE.getHero().getStat(7) + " / " + Global.INSTANCE.getHero().getStat(8), 240, 778, text);
+        canvas.drawBitmap(Global.INSTANCE.getGame().j, 404, 743, null);
         text.setTextAlign(Paint.Align.LEFT);
     }
 
@@ -195,10 +195,10 @@ public class MapView extends View {
             line = true;
             afterPrgb(mc);
         }
-        canvas.drawRect(168, Global.hero.y - 35, 312, Global.hero.y - 11, text);
-        canvas.drawRect(168, Global.hero.y - 35, 168 + (Math.abs(System.currentTimeMillis()) / 10 - time2) * (144f / timeLine), Global.hero.y - 11, fbluel);
+        canvas.drawRect(168, Global.INSTANCE.getHero().y - 35, 312, Global.INSTANCE.getHero().y - 11, text);
+        canvas.drawRect(168, Global.INSTANCE.getHero().y - 35, 168 + (Math.abs(System.currentTimeMillis()) / 10 - time2) * (144f / timeLine), Global.INSTANCE.getHero().y - 11, fbluel);
         text.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(getContext().getString(R.string.searching_label), 240, Global.hero.y - 16, text);
+        canvas.drawText(getContext().getString(R.string.searching_label), 240, Global.INSTANCE.getHero().y - 16, text);
     }
 
     protected void drawFinal(Canvas canvas) {
@@ -206,7 +206,7 @@ public class MapView extends View {
         text.setTextSize(24);
         if (death) {
             canvas.drawText(getContext().getString(R.string.death_from_label), 240, 320, text);
-            canvas.drawBitmap(Global.game.lastAttack, 204, 340, null);
+            canvas.drawBitmap(Global.INSTANCE.getGame().lastAttack, 204, 340, null);
         }
         if (win) {
             canvas.drawText(getContext().getString(R.string.victory_label), 240, 320, text);
@@ -219,16 +219,16 @@ public class MapView extends View {
     public void afterPrgb(int mc) {
         switch (mc) {
             case 33:
-                Global.game.fillArea(Global.hero.mx + mx, Global.hero.my + my, 1, 1, Game.getFloor(Global.hero.mx + mx, Global.hero.my + my), 35);
-                Global.mapview.addLine(getContext().getString(R.string.search_chest_message));
-                Global.game.createItem(Global.hero.mx + mx, Global.hero.my + my);
+                Global.INSTANCE.getGame().fillArea(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my, 1, 1, Game.getFloor(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my), 35);
+                Global.INSTANCE.getMapview().addLine(getContext().getString(R.string.search_chest_message));
+                Global.INSTANCE.getGame().createItem(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my);
                 break;
             case 36:
-                Global.game.fillArea(Global.hero.mx + mx, Global.hero.my + my, 1, 1, Game.getFloor(Global.hero.mx + mx, Global.hero.my + my), 37);
+                Global.INSTANCE.getGame().fillArea(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my, 1, 1, Game.getFloor(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my), 37);
                 addLine(getContext().getString(R.string.search_bookshelf_message));
-                if (Global.game.rnd.nextInt(3) != 0) {
+                if (Global.INSTANCE.getGame().rnd.nextInt(3) != 0) {
                     addLine(getContext().getString(R.string.experience_earned_message));
-                    Global.hero.modifyStat(20, Global.game.rnd.nextInt(4) + 2, 1);
+                    Global.INSTANCE.getHero().modifyStat(20, Global.INSTANCE.getGame().rnd.nextInt(4) + 2, 1);
                 } else {
                     addLine(getContext().getString(R.string.nothing_interesting_message));
                 }
@@ -288,7 +288,7 @@ public class MapView extends View {
         x = xstart;
         y = ystart;
         err = el / 2;
-        Global.map[x][y].see = true;
+        Global.INSTANCE.getMap()[x][y].see = true;
         for (int t = 0; t < el; t++) {
             err -= es;
             if (err < 0) {
@@ -299,12 +299,12 @@ public class MapView extends View {
                 x += pdx;
                 y += pdy;
             }
-            if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh) {
-                if (!Global.map[x][y].see)
-                    Global.map[x][y].see = v;
+            if (x > -1 && y > -1 && x < Global.INSTANCE.getGame().mw && y < Global.INSTANCE.getGame().mh) {
+                if (!Global.INSTANCE.getMap()[x][y].see)
+                    Global.INSTANCE.getMap()[x][y].see = v;
                 if (v)
-                    Global.map[x][y].dis = true;
-                if (!Global.map[x][y].vis)
+                    Global.INSTANCE.getMap()[x][y].dis = true;
+                if (!Global.INSTANCE.getMap()[x][y].vis)
                     v = false;
             }
         }
@@ -313,12 +313,12 @@ public class MapView extends View {
     public void los(int x, int y) {
         int cm = (camx < 0) ? 0 : camx;
         int cm1 = (camy < 0) ? 0 : camy;
-        for (int c = cm; c < ((cm + 9 >= Global.game.mw) ? Global.game.mw : cm + 9); c++)
-            for (int c1 = cm1; c1 < ((cm1 + 9 >= Global.game.mw) ? Global.game.mw : cm1 + 9); c1++)
-                Global.map[c][c1].see = false;
+        for (int c = cm; c < ((cm + 9 >= Global.INSTANCE.getGame().mw) ? Global.INSTANCE.getGame().mw : cm + 9); c++)
+            for (int c1 = cm1; c1 < ((cm1 + 9 >= Global.INSTANCE.getGame().mw) ? Global.INSTANCE.getGame().mw : cm1 + 9); c1++)
+                Global.INSTANCE.getMap()[c][c1].see = false;
         for (int c = x - 1; c < x + 2; c++)
             for (int c1 = y - 1; c1 < y + 2; c1++)
-                Global.map[c][c1].see = true;
+                Global.INSTANCE.getMap()[c][c1].see = true;
         for (int c = -1; c < 2; c++) {
             line(x, y, x + c, y - 4);
             line(x, y, x + c, y + 4);
@@ -342,58 +342,58 @@ public class MapView extends View {
     public void onTouchMain() {
         clearLog();
         if (y1 < 48 && x1 > 240)
-            Global.game.changeScreen(3);
+            Global.INSTANCE.getGame().changeScreen(3);
         if (y1 < 48 && x1 < 240)
-            Global.game.lines = !Global.game.lines;
+            Global.INSTANCE.getGame().lines = !Global.INSTANCE.getGame().lines;
         if (y1 > 48 && y1 < 720)
             switch (((y1 - 48) / 224) * 3 + x1 / 160) {
                 case 0:
-                    Global.game.move(-1, -1);
+                    Global.INSTANCE.getGame().move(-1, -1);
                     break;
                 case 1:
-                    Global.game.move(0, -1);
+                    Global.INSTANCE.getGame().move(0, -1);
                     break;
                 case 2:
-                    Global.game.move(1, -1);
+                    Global.INSTANCE.getGame().move(1, -1);
                     break;
                 case 3:
-                    Global.game.move(-1, 0);
+                    Global.INSTANCE.getGame().move(-1, 0);
                     break;
                 case 4:
-                    if (Global.map[Global.hero.mx][Global.hero.my].o == 40) {
+                    if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].o == 40) {
                         Game.curLvls++;
-                        Global.mapg.mapGen();
-                        Global.game.move(0, 0);
+                        Global.INSTANCE.getMapg().mapGen();
+                        Global.INSTANCE.getGame().move(0, 0);
                     }
-                    if (Global.map[Global.hero.mx][Global.hero.my].hasItem()) {
-                        Item item = Global.map[Global.hero.mx][Global.hero.my].getItem();
-                        Global.hero.addItem(item);
+                    if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].hasItem()) {
+                        Item item = Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].getItem();
+                        Global.INSTANCE.getHero().addItem(item);
                         addLine(item.n + " подобран" + item.n1);
                         Game.v.vibrate(30);
-                        Global.game.move(0, 0);
+                        Global.INSTANCE.getGame().move(0, 0);
                     }
                     break;
                 case 5:
-                    Global.game.move(1, 0);
+                    Global.INSTANCE.getGame().move(1, 0);
                     break;
                 case 6:
-                    Global.game.move(-1, 1);
+                    Global.INSTANCE.getGame().move(-1, 1);
                     break;
                 case 7:
-                    Global.game.move(0, 1);
+                    Global.INSTANCE.getGame().move(0, 1);
                     break;
                 case 8:
-                    Global.game.move(1, 1);
+                    Global.INSTANCE.getGame().move(1, 1);
                     break;
             }
         if (y1 > 720) {
             if (x1 < 120)
-                Global.game.changeScreen(1);
+                Global.INSTANCE.getGame().changeScreen(1);
             if (x1 > 120 && x1 < 360)
-                Global.game.changeScreen(2);
+                Global.INSTANCE.getGame().changeScreen(2);
             if (x1 > 360) {
-                Global.game.move(0, 0);
-                Global.mapview.addLine(getContext().getString(R.string.turn_passed_message));
+                Global.INSTANCE.getGame().move(0, 0);
+                Global.INSTANCE.getMapview().addLine(getContext().getString(R.string.turn_passed_message));
             }
         }
     }
@@ -401,7 +401,7 @@ public class MapView extends View {
     public void onTouchExit() {
         if (y1 > 385 && y1 < 472 && x1 > 40 && x1 < 440)
             if (x1 < 240)
-                Global.game.exitGame();
+                Global.INSTANCE.getGame().exitGame();
             else
                 exit = false;
     }
@@ -409,7 +409,7 @@ public class MapView extends View {
     public void onTouchFinal() {
         if (y1 > 720) {
             death = win = false;
-            Global.game.newGame();
+            Global.INSTANCE.getGame().newGame();
         }
     }
 
@@ -417,7 +417,7 @@ public class MapView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
-                if (Global.game.tap) {
+                if (Global.INSTANCE.getGame().tap) {
                     x1 = (int) event.getX();
                     y1 = (int) event.getY();
                     if (!prgb && !death && !win) {
@@ -426,7 +426,7 @@ public class MapView extends View {
                         } else {
                             if (pickup)
                                 if (x1 > 45 && x1 < 435 && y1 > 448 && y1 < 520) {
-                                    if (x1 < 240) Global.game.pickupItem();
+                                    if (x1 < 240) Global.INSTANCE.getGame().pickupItem();
                                     pickup = false;
                                 }
                             if (exit) onTouchExit();
