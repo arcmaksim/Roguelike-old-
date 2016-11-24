@@ -114,8 +114,8 @@ public class Game extends Activity {
     }
 
     public void onBackPressed() {
-        if (scr == 0 && !Global.INSTANCE.getMapview().prgb)
-            Global.INSTANCE.getMapview().exit = !Global.INSTANCE.getMapview().exit;
+        if (scr == 0 && !Global.INSTANCE.getMapview().getMDrawProgressBar())
+            Global.INSTANCE.getMapview().setMDrawExitDialog(!Global.INSTANCE.getMapview().getMDrawExitDialog());
     }
 
     public void exitGame() {
@@ -243,14 +243,14 @@ public class Game extends Activity {
                         break;
                     case 33:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 34);
-                        Global.INSTANCE.getMapview().line = false;
-                        Global.INSTANCE.getMapview().initPrgb(33, 159);
+                        Global.INSTANCE.getMapview().setMDrawLines(false);
+                        Global.INSTANCE.getMapview().initProgressBar(33, 159);
                         move = false;
                         turn = false;
                         break;
                     case 36:
-                        Global.INSTANCE.getMapview().line = false;
-                        Global.INSTANCE.getMapview().initPrgb(36, 259);
+                        Global.INSTANCE.getMapview().setMDrawLines(false);
+                        Global.INSTANCE.getMapview().initProgressBar(36, 259);
                         move = false;
                         turn = false;
                         break;
@@ -264,7 +264,7 @@ public class Game extends Activity {
                     Global.INSTANCE.getMapview().addLine("?????? ?????!");
                     if (Global.INSTANCE.getHero().getStat(5) < 1) {
                         lastAttack = Bitmap.createScaledBitmap(Global.INSTANCE.getTiles()[44].getImg(), 72, 72, false);
-                        Global.INSTANCE.getMapview().death = true;
+                        Global.INSTANCE.getMapview().setMDrawDeathScreen(true);
                     }
                 }
             if (!Global.INSTANCE.getMap()[mx][my].psb && turn) {
@@ -280,14 +280,14 @@ public class Game extends Activity {
     }
 
     public void move(int mx, int my) {
-        Global.INSTANCE.getMapview().mx = mx;
-        Global.INSTANCE.getMapview().my = my;
+        Global.INSTANCE.getMapview().setMx(mx);
+        Global.INSTANCE.getMapview().setMy(my);
         isCollision(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my);
         if (move) {
             Global.INSTANCE.getHero().mx += mx;
             Global.INSTANCE.getHero().my += my;
-            Global.INSTANCE.getMapview().camx += mx;
-            Global.INSTANCE.getMapview().camy += my;
+            Global.INSTANCE.getMapview().setCamx(Global.INSTANCE.getMapview().getCamx() + mx);
+            Global.INSTANCE.getMapview().setCamy(Global.INSTANCE.getMapview().getCamy() + my);
         }
         Global.INSTANCE.getMapview().los(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
         if (!turn) {
@@ -307,7 +307,7 @@ public class Game extends Activity {
     public void spread(int i1, int j1, int c) {
         for (int i = i1 - 1; i < i1 + 2; i++)
             for (int j = j1 - 1; j < j1 + 2; j++)
-                if (zone[i][j] == defValue && Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().camx - 1 + i][Global.INSTANCE.getMapview().camy - 1 + j].psb && !Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().camx - 1 + i][Global.INSTANCE.getMapview().camy - 1 + j].hasMob())
+                if (zone[i][j] == defValue && Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().getCamx() - 1 + i][Global.INSTANCE.getMapview().getCamy() - 1 + j].psb && !Global.INSTANCE.getMap()[Global.INSTANCE.getMapview().getCamx() - 1 + i][Global.INSTANCE.getMapview().getCamy() - 1 + j].hasMob())
                     zone[i][j] = c;
     }
 
@@ -321,10 +321,10 @@ public class Game extends Activity {
     public void updateZone() {
         clearZone();
         int xl, xr, yl, yr;
-        xl = (Global.INSTANCE.getMapview().camx - 1 < 1) ? 1 : Global.INSTANCE.getMapview().camx - 1;
-        yl = (Global.INSTANCE.getMapview().camy - 1 < 1) ? 1 : Global.INSTANCE.getMapview().camy - 1;
-        xr = (Global.INSTANCE.getMapview().camx + 10 > mw - 2) ? mw - 2 : Global.INSTANCE.getMapview().camx + 10;
-        yr = (Global.INSTANCE.getMapview().camy + 10 > mh - 2) ? mh - 2 : Global.INSTANCE.getMapview().camy + 10;
+        xl = (Global.INSTANCE.getMapview().getCamx() - 1 < 1) ? 1 : Global.INSTANCE.getMapview().getCamx() - 1;
+        yl = (Global.INSTANCE.getMapview().getCamy() - 1 < 1) ? 1 : Global.INSTANCE.getMapview().getCamy() - 1;
+        xr = (Global.INSTANCE.getMapview().getCamx() + 10 > mw - 2) ? mw - 2 : Global.INSTANCE.getMapview().getCamx() + 10;
+        yr = (Global.INSTANCE.getMapview().getCamy() + 10 > mh - 2) ? mh - 2 : Global.INSTANCE.getMapview().getCamy() + 10;
         for (int c = 0; c < 5; c++)
             for (int i = xl; i < xr; i++)
                 for (int j = yl; j < yr; j++)
@@ -350,7 +350,7 @@ public class Game extends Activity {
                 Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + " ???????");
                 Global.INSTANCE.getHero().modifyStat(20, map.mob.t, 1);
                 if (map.mob.t == maxMobs - 1)
-                    Global.INSTANCE.getMapview().win = true;
+                    Global.INSTANCE.getMapview().setMDrawWinScreen(true);
                 deleteMob(map);
                 int x4, y4;
                 do {
@@ -403,7 +403,7 @@ public class Game extends Activity {
         if (Global.INSTANCE.getHero().getStat(5) < 1) {
             Global.INSTANCE.getHero().modifyStat(5, Global.INSTANCE.getHero().getStat(5), -1);
             lastAttack = Bitmap.createScaledBitmap(mob.getImg(0), 72, 72, false);
-            Global.INSTANCE.getMapview().death = true;
+            Global.INSTANCE.getMapview().setMDrawDeathScreen(true);
         }
     }
 

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
+import android.view.MotionEvent
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 
@@ -14,6 +15,7 @@ class TextButton(mContext: Context, var mLabel: String = "") : Button(mContext) 
     var mBackgroundPaint: Paint? = null
     var mTextPaint: Paint
     var mPadding: Float = UnitConverter.convertDpToPixels(24F, mContext)
+    private lateinit var mOnClickListener: OnClickListener
 
     init {
         isFocusable = true
@@ -53,6 +55,24 @@ class TextButton(mContext: Context, var mLabel: String = "") : Button(mContext) 
                         mTextPaint)
         }
         invalidate()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if(event?.action == MotionEvent.ACTION_UP) {
+            mOnClickListener.onClick(this)
+        }
+        return super.onTouchEvent(event)
+    }
+
+    override fun setOnClickListener(onClickListener: OnClickListener) {
+        mOnClickListener = onClickListener
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        if(event?.action == MotionEvent.ACTION_UP) {
+            mOnClickListener.onClick(this)
+        }
+        return super.dispatchTouchEvent(event)
     }
 
 }

@@ -302,8 +302,8 @@ public class MapGenerationClass {
         boolean up, down, left, right;
         lx = rnd.nextInt(Global.INSTANCE.getGame().mw / 2) + 16;
         ly = rnd.nextInt(Global.INSTANCE.getGame().mh / 2) + 16;
-        Global.INSTANCE.getMapview().camx = lx - 2;
-        Global.INSTANCE.getMapview().camy = ly - 2;
+        Global.INSTANCE.getMapview().setCamx(lx - 2);
+        Global.INSTANCE.getMapview().setCamy(ly - 2);
         Global.INSTANCE.getHero().mx = lx + 2;
         Global.INSTANCE.getHero().my = ly + 2;
         Global.INSTANCE.getHero().x = 216;

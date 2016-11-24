@@ -27,13 +27,13 @@ public class StatsView extends View {
         setFocusable(true);
         setFocusableInTouchMode(true);
         fbluel = new Paint();
-        fbluel.setColor(getResources().getColor(R.color.fbluel));
+        fbluel.setColor(getResources().getColor(R.color.lightBlue));
         fblued = new Paint();
-        fblued.setColor(getResources().getColor(R.color.fblued));
+        fblued.setColor(getResources().getColor(R.color.darkBlue));
         hud = new Paint();
         hud.setColor(getResources().getColor(R.color.hud));
         frame = new Paint();
-        frame.setColor(getResources().getColor(R.color.frame));
+        frame.setColor(getResources().getColor(R.color.mainBackground));
         text = new Paint(Paint.ANTI_ALIAS_FLAG);
         text.setColor(getResources().getColor(R.color.white));
         text.setStyle(Style.FILL);

@@ -74,7 +74,7 @@ public class InventoryView extends View {
         setFocusableInTouchMode(true);
 
         frame = new Paint();
-        frame.setColor(getResources().getColor(R.color.frame));
+        frame.setColor(getResources().getColor(R.color.mainBackground));
         framegrn = new Paint();
         framegrn.setColor(getResources().getColor(R.color.framegrn));
         text = new Paint(Paint.ANTI_ALIAS_FLAG);

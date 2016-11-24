@@ -29,13 +29,13 @@ public class BrezenhamView extends View {
         setFocusable(true);
         setFocusableInTouchMode(true);
         frame = new Paint();
-        frame.setColor(getResources().getColor(R.color.frame));
+        frame.setColor(getResources().getColor(R.color.mainBackground));
         hud = new Paint();
         hud.setColor(getResources().getColor(R.color.hud));
         white = new Paint();
         white.setColor(getResources().getColor(R.color.white));
         blue = new Paint();
-        blue.setColor(getResources().getColor(R.color.fbluel));
+        blue.setColor(getResources().getColor(R.color.lightBlue));
         red = new Paint();
         red.setColor(getResources().getColor(R.color.fredl));
         grn = new Paint();

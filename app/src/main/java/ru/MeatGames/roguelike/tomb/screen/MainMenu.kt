@@ -1,20 +1,24 @@
 package ru.MeatGames.roguelike.tomb.screen
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.Paint.Style
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
 class MainMenu(context: Context) : View(context) {
 
-    private val mBackgroundColor: Paint
+    private val mBackgroundPaint: Paint
     private val mTitleTextPaint: Paint
 
     private val mScreenWidth: Int
@@ -28,14 +32,12 @@ class MainMenu(context: Context) : View(context) {
         isFocusable = true
         isFocusableInTouchMode = true
 
-        val display = context.windowManager.defaultDisplay
-        val size = Point()
-        display.getSize(size)
-        mScreenWidth = size.x
-        mScreenHeight = size.y
+        val screenSize = ScreenHelper.getScreenSize(context.windowManager)
+        mScreenWidth = screenSize.x
+        mScreenHeight = screenSize.y
 
-        mBackgroundColor = Paint()
-        mBackgroundColor.color = resources.getColor(R.color.frame)
+        mBackgroundPaint = Paint()
+        mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
 
         mTitleTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mTitleTextPaint.color = resources.getColor(R.color.cell)
@@ -47,15 +49,27 @@ class MainMenu(context: Context) : View(context) {
 
         mNewGameButton = TextButton(context, "Новая игра")
         mNewGameButton.mTextPaint.textAlign = Paint.Align.LEFT
-        mNewGameButton.mDimensions = Rect(0, size.y - size.y / 10, size.x / 3, size.y)
+        mNewGameButton.mDimensions = Rect(0,
+                mScreenHeight - mScreenHeight / 10,
+                mScreenWidth / 3,
+                mScreenHeight)
+        /*mNewGameButton.setOnClickListener({
+            Global.game!!.changeScreen(0)
+        })*/
 
         mExitGameButton = TextButton(context, "Выход")
         mExitGameButton.mTextPaint.textAlign = Paint.Align.RIGHT
-        mExitGameButton.mDimensions = Rect(size.x / 3 * 2, size.y - size.y / 10, size.x, size.y)
+        mExitGameButton.mDimensions = Rect(mScreenWidth / 3 * 2,
+                mScreenHeight - mScreenHeight / 10,
+                mScreenWidth,
+                mScreenHeight)
+        /*mNewGameButton.setOnClickListener({
+            Global.game!!.exitGame()
+        })*/
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, measuredHeight, mBackgroundColor)
+        canvas.fillFrame(mScreenWidth, measuredHeight, mBackgroundPaint)
         canvas.drawText("Yet Another",
                 (mScreenWidth / 2).toFloat(),
                 (mScreenHeight / 8 * 3).toFloat(),
