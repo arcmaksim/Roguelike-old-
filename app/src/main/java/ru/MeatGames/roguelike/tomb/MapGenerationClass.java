@@ -306,8 +306,6 @@ public class MapGenerationClass {
         Global.INSTANCE.getMapview().setCamy(ly - 2);
         Global.INSTANCE.getHero().mx = lx + 2;
         Global.INSTANCE.getHero().my = ly + 2;
-        Global.INSTANCE.getHero().x = 216;
-        Global.INSTANCE.getHero().y = 376;
         fillArea(lx, ly, 5, 5, 5000);
         fillArea(lx + 2, ly + 2, 1, 1, 5039);
         room1[rc] = new RoomDBClass(x2, y2, lx, ly);
@@ -556,7 +554,7 @@ public class MapGenerationClass {
             if (Game.curLvls == Global.INSTANCE.getGame().maxLvl - 1 && rc == mr - 2)
                 placeFinalRoom();
         }
-        Global.INSTANCE.getMapview().los(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
+        Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
         Global.INSTANCE.getGame().updateZone();
         int x4, y4;
         for (int x = 0; x < 30 + Game.curLvls * 7; x++) {

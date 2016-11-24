@@ -47,7 +47,7 @@ public class Game extends Activity {
     public Bitmap d;
     public Bitmap j;
     public Random rnd;
-    public boolean lines = false;
+    public boolean lines = true;
     public int scr = 0;
     public Bitmap lastAttack;
     public Bitmap bag;
@@ -243,13 +243,13 @@ public class Game extends Activity {
                         break;
                     case 33:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 34);
-                        Global.INSTANCE.getMapview().setMDrawLines(false);
+                        Global.INSTANCE.getMapview().setMDrawLog(false);
                         Global.INSTANCE.getMapview().initProgressBar(33, 159);
                         move = false;
                         turn = false;
                         break;
                     case 36:
-                        Global.INSTANCE.getMapview().setMDrawLines(false);
+                        Global.INSTANCE.getMapview().setMDrawLog(false);
                         Global.INSTANCE.getMapview().initProgressBar(36, 259);
                         move = false;
                         turn = false;
@@ -289,7 +289,7 @@ public class Game extends Activity {
             Global.INSTANCE.getMapview().setCamx(Global.INSTANCE.getMapview().getCamx() + mx);
             Global.INSTANCE.getMapview().setCamy(Global.INSTANCE.getMapview().getCamy() + my);
         }
-        Global.INSTANCE.getMapview().los(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
+        Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
         if (!turn) {
             tap = false;
             if (mx == 1) Global.INSTANCE.getHero().side = false;

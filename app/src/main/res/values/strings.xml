@@ -12,7 +12,7 @@
     <string name="search_bookshelf_message">Книжный шкаф осмотрен</string>
     <string name="experience_earned_message">Опыт повышен</string>
     <string name="nothing_interesting_message">Ничего интересного</string>
-    <string name="turn_passed_message">Ход пропушен</string>
+    <string name="turn_passed_message">Ход пропущен</string>
     <string name="back_label">Назад</string>
     <string name="to_menu_label">В меню</string>
     <string name="victory_label">Победа!</string>
