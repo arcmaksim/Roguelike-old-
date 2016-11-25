@@ -4,27 +4,24 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.Typeface
-import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 
 class TextButton(mContext: Context, var mLabel: String = "") : Button(mContext) {
 
     override lateinit var mDimensions: Rect
+
     var mBackgroundPaint: Paint? = null
-    var mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    var mTextPaint: Paint
+
     var mPadding: Float = UnitConverter.convertDpToPixels(24F, mContext)
 
     init {
         isFocusable = true
         isClickable = true
 
-        mTextPaint.color = resources.getColor(R.color.cell)
-        mTextPaint.style = Paint.Style.FILL_AND_STROKE
-        mTextPaint.textScaleX = 1f
-        mTextPaint.textAlign = Paint.Align.CENTER
+        mTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
         mTextPaint.textSize = UnitConverter.convertSpToPixels(12F, mContext)
-        mTextPaint.typeface = Typeface.createFromAsset(mContext.assets, "fonts/Bulgaria_Glorious_Cyr.ttf")
     }
 
     override fun onDraw(canvas: Canvas?) {

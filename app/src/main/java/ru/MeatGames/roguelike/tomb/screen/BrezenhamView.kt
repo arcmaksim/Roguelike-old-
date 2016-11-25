@@ -3,12 +3,9 @@ package ru.MeatGames.roguelike.tomb.screen
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Paint.Style
 import android.graphics.Rect
-import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
-
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
@@ -25,10 +22,10 @@ class BrezenhamView(mContext: Context) : View(mContext) {
 
     private val mBackgroundPaint = Paint()
     private val mDoorMarkerPaint = Paint()
-    private val mRoomMarkerPaint = Paint()
+    private val mRoomBackgroundPaint = Paint()
     private val mHeroMarkerPaint = Paint()
     private val mExitMarkerPaint = Paint()
-    private val mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mTextPaint: Paint
 
     private val mBackButton: TextButton
 
@@ -44,15 +41,12 @@ class BrezenhamView(mContext: Context) : View(mContext) {
 
         mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
         mDoorMarkerPaint.color = resources.getColor(R.color.hud)
-        mRoomMarkerPaint.color = resources.getColor(R.color.white)
+        mRoomBackgroundPaint.color = resources.getColor(R.color.white)
         mHeroMarkerPaint.color = resources.getColor(R.color.fredl)
         mExitMarkerPaint.color = resources.getColor(R.color.grs)
 
-        mTextPaint.color = resources.getColor(R.color.cell)
-        mTextPaint.style = Style.FILL_AND_STROKE
-        mTextPaint.textScaleX = 1f
+        mTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
         mTextPaint.textSize = UnitConverter.convertSpToPixels(32F, mContext)
-        mTextPaint.typeface = Typeface.createFromAsset(Global.game!!.assets, "fonts/Bulgaria_Glorious_Cyr.ttf")
 
         mBackButton = TextButton(context, resources.getString(R.string.back_label))
         mBackButton.mTextPaint.textAlign = Paint.Align.RIGHT
@@ -74,7 +68,7 @@ class BrezenhamView(mContext: Context) : View(mContext) {
                                 (y + 1) * mMarkerSize,
                                 (x + 1) * mMarkerSize,
                                 (y + 2) * mMarkerSize,
-                                mRoomMarkerPaint)
+                                mRoomBackgroundPaint)
                         31, 32 -> canvas.drawRect(x * mMarkerSize,
                                 (y + 1) * mMarkerSize,
                                 (x + 1) * mMarkerSize,

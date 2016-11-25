@@ -3,8 +3,6 @@ package ru.MeatGames.roguelike.tomb.screen
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Paint.Style
-import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
@@ -14,7 +12,7 @@ import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 
-class MapView(context: Context) : View(context) {
+class MapView(mContext: Context) : View(mContext) {
 
     val mScreenWidth: Int
     val mScreenHeight: Int
@@ -29,7 +27,7 @@ class MapView(context: Context) : View(context) {
     var mLightShadowPaint = Paint()
     var mDarkShadowPaint = Paint()
     val mMenuBackgroundPaint = Paint()
-    val mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val mTextPaint: Paint
 
     var mTileID: Int = 0 // tile id for ProgressBar
     var mProgressBarDuration: Int = 0
@@ -61,7 +59,7 @@ class MapView(context: Context) : View(context) {
         isFocusable = true
         isFocusableInTouchMode = true
 
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
+        val screenSize = ScreenHelper.getScreenSize((mContext as Game).windowManager)
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
 
@@ -75,12 +73,8 @@ class MapView(context: Context) : View(context) {
         mDarkShadowPaint.color = resources.getColor(R.color.darkShadow)
         mMenuBackgroundPaint.color = resources.getColor(R.color.menuBackground)
 
-        mTextPaint.color = resources.getColor(R.color.white)
-        mTextPaint.style = Style.FILL
-        mTextPaint.textSize = 16f
-        mTextPaint.textScaleX = 1f
+        mTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
         mTextPaint.textAlign = Paint.Align.LEFT
-        mTextPaint.typeface = Typeface.createFromAsset(Global.game!!.assets, "fonts/Bulgaria_Glorious_Cyr.ttf")
 
         black = Paint()
         black.color = resources.getColor(R.color.black)

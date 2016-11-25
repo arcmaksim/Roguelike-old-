@@ -3,9 +3,7 @@ package ru.MeatGames.roguelike.tomb.screen
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Paint.Style
 import android.graphics.Rect
-import android.graphics.Typeface
 import android.view.MotionEvent
 import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
@@ -16,10 +14,10 @@ import ru.MeatGames.roguelike.tomb.util.UnitConverter
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
-class MainMenu(context: Context) : View(context) {
+class MainMenu(mContext: Context) : View(mContext) {
 
     private val mBackgroundPaint = Paint()
-    private val mTitleTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mTitleTextPaint: Paint
 
     private val mScreenWidth: Int
     private val mScreenHeight: Int
@@ -28,22 +26,18 @@ class MainMenu(context: Context) : View(context) {
     private val mExitGameButton: TextButton
 
     init {
-        Global.game = context as Game
+        Global.game = mContext as Game
         isFocusable = true
         isFocusableInTouchMode = true
 
-        val screenSize = ScreenHelper.getScreenSize(context.windowManager)
+        val screenSize = ScreenHelper.getScreenSize(mContext.windowManager)
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
 
         mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
 
-        mTitleTextPaint.color = resources.getColor(R.color.cell)
-        mTitleTextPaint.style = Style.FILL_AND_STROKE
-        mTitleTextPaint.textScaleX = 1f
+        mTitleTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
         mTitleTextPaint.textSize = UnitConverter.convertSpToPixels(32F, context)
-        mTitleTextPaint.textAlign = Paint.Align.CENTER
-        mTitleTextPaint.typeface = Typeface.createFromAsset(Global.game!!.assets, "fonts/Bulgaria_Glorious_Cyr.ttf")
 
         mNewGameButton = TextButton(context, "Новая игра")
         mNewGameButton.mTextPaint.textAlign = Paint.Align.LEFT
