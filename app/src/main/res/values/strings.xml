@@ -22,5 +22,13 @@
     <string name="inventory_is_empty_label">Инвентарь пуст</string>
     <string name="new_game_label">Новая игра</string>
     <string name="exit_game_label">Выход</string>
+    <string name="door_opened_message">Дверь открыта</string>
+    <string name="path_is_blocked_message">Препятствие на пути</string>
+    <string name="lying_on_the_ground_message">" лежит на земле"</string>
+    <string name="attack_missed_message">Промах</string>
+    <string name="is_dying_message">" умирает"</string>
+    <string name="is_receiving_damage_message">" получает урон"</string>
+    <string name="is_dealing_damage_message">" наносит урон"</string>
+    <string name="is_missing_attack_message">" промахивается"</string>
 
 </resources>

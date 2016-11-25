@@ -18,8 +18,8 @@ import ru.MeatGames.roguelike.tomb.view.TextButton
 
 class MainMenu(context: Context) : View(context) {
 
-    private val mBackgroundPaint: Paint
-    private val mTitleTextPaint: Paint
+    private val mBackgroundPaint = Paint()
+    private val mTitleTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private val mScreenWidth: Int
     private val mScreenHeight: Int
@@ -36,10 +36,8 @@ class MainMenu(context: Context) : View(context) {
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
 
-        mBackgroundPaint = Paint()
         mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
 
-        mTitleTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mTitleTextPaint.color = resources.getColor(R.color.cell)
         mTitleTextPaint.style = Style.FILL_AND_STROKE
         mTitleTextPaint.textScaleX = 1f
@@ -53,9 +51,6 @@ class MainMenu(context: Context) : View(context) {
                 mScreenHeight - mScreenHeight / 10,
                 mScreenWidth / 3,
                 mScreenHeight)
-        /*mNewGameButton.setOnClickListener({
-            Global.game!!.changeScreen(0)
-        })*/
 
         mExitGameButton = TextButton(context, "Выход")
         mExitGameButton.mTextPaint.textAlign = Paint.Align.RIGHT
@@ -63,9 +58,6 @@ class MainMenu(context: Context) : View(context) {
                 mScreenHeight - mScreenHeight / 10,
                 mScreenWidth,
                 mScreenHeight)
-        /*mNewGameButton.setOnClickListener({
-            Global.game!!.exitGame()
-        })*/
     }
 
     override fun onDraw(canvas: Canvas) {

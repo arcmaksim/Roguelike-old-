@@ -237,7 +237,7 @@ public class Game extends Activity {
                 switch (Game.getObject(mx, my)) {
                     case 31:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 32);
-                        Global.INSTANCE.getMapview().addLine("????? ???????");
+                        Global.INSTANCE.getMapview().addLine(getString(R.string.door_opened_message));
                         move = false;
                         turn = false;
                         break;
@@ -268,7 +268,7 @@ public class Game extends Activity {
                     }
                 }
             if (!Global.INSTANCE.getMap()[mx][my].psb && turn) {
-                Global.INSTANCE.getMapview().addLine("??????????? ?? ????");
+                Global.INSTANCE.getMapview().addLine(getString(R.string.path_is_blocked_message));
                 v.vibrate(30);
                 move = false;
             } else {
@@ -297,7 +297,7 @@ public class Game extends Activity {
         }
         if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].hasItem()) {
             if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.next == null)
-                Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.item.n + " ????? ?? ?????");
+                Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.item.n + getString(R.string.lying_on_the_ground_message));
             else
                 Global.INSTANCE.getMapview().addLine("????????? ????????? ????? ?? ?????");
         }
@@ -345,9 +345,9 @@ public class Game extends Activity {
                 u = 1;
             }
             map.mob.mob.setHp(map.mob.mob.getHp() - u);
-            Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + " ???????? ????");
+            Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + getString(R.string.is_receiving_damage_message));
             if (map.mob.mob.getHp() < 1) {
-                Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + " ???????");
+                Global.INSTANCE.getMapview().addLine(map.mob.mob.getName() + getString(R.string.is_dying_message));
                 Global.INSTANCE.getHero().modifyStat(20, map.mob.t, 1);
                 if (map.mob.t == maxMobs - 1)
                     Global.INSTANCE.getMapview().setMDrawWinScreen(true);
@@ -368,7 +368,7 @@ public class Game extends Activity {
                 Global.INSTANCE.getGame().createMob(x4, y4, en);
             }
         } else {
-            Global.INSTANCE.getMapview().addLine("??????");
+            Global.INSTANCE.getMapview().addLine(getString(R.string.attack_missed_message));
         }
         turn = false;
         move = false;
@@ -396,9 +396,9 @@ public class Game extends Activity {
                 u = 1;
             }
             Global.INSTANCE.getHero().modifyStat(5, u, -1);
-            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + " ??????? ????");
+            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + getString(R.string.is_dealing_damage_message));
         } else {
-            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + " ?????????????");
+            Global.INSTANCE.getMapview().addLine(mob.mob.getName() + getString(R.string.is_missing_attack_message));
         }
         if (Global.INSTANCE.getHero().getStat(5) < 1) {
             Global.INSTANCE.getHero().modifyStat(5, Global.INSTANCE.getHero().getStat(5), -1);
