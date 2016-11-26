@@ -7,8 +7,13 @@ import android.view.View
 abstract class Button(context: Context?) : View(context) {
 
     abstract var mDimensions: Rect
+    var mIsEnabled: Boolean = true
 
-    fun isPressed(xCoordinate: Int, yCoordinate: Int) = mDimensions.contains(xCoordinate, yCoordinate)
+    fun isPressed(xCoordinate: Int, yCoordinate: Int) =
+            if (mIsEnabled)
+                mDimensions.contains(xCoordinate, yCoordinate)
+            else
+                false
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) =
             setMeasuredDimension(measureWidth(widthMeasureSpec), measureHeight(heightMeasureSpec))
@@ -23,7 +28,7 @@ abstract class Button(context: Context?) : View(context) {
         val specSize = MeasureSpec.getSize(measureSpec)
         var measurement = 0
 
-        when(MeasureSpec.getMode(measureSpec)) {
+        when (MeasureSpec.getMode(measureSpec)) {
             MeasureSpec.EXACTLY -> measurement = specSize
             MeasureSpec.AT_MOST -> Math.min(preferred, specSize)
             else -> measurement = preferred

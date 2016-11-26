@@ -2,7 +2,10 @@ package ru.MeatGames.roguelike.tomb
 
 import ru.MeatGames.roguelike.tomb.model.HeroClass
 import ru.MeatGames.roguelike.tomb.model.MapClass
-import ru.MeatGames.roguelike.tomb.screen.*
+import ru.MeatGames.roguelike.tomb.screen.BrezenhamView
+import ru.MeatGames.roguelike.tomb.screen.MainMenu
+import ru.MeatGames.roguelike.tomb.screen.MapView
+import ru.MeatGames.roguelike.tomb.screen.StatsView
 import ru.MeatGames.roguelike.tomb.util.AssetHelper
 
 object Global {
@@ -11,7 +14,6 @@ object Global {
     var hero: HeroClass? = null
     var mapg: MapGenerationClass? = null
     var mapview: MapView? = null
-    var invview: InventoryView? = null
     var stsview: StatsView? = null
     var bview: BrezenhamView? = null
     var mmview: MainMenu? = null

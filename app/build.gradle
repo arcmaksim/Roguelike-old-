@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.1"
 
     defaultConfig {
         applicationId "ru.MeatGames.roguelike.tomb"
         minSdkVersion 15
-        targetSdkVersion 15
+        targetSdkVersion 24
     }
 
     buildTypes {

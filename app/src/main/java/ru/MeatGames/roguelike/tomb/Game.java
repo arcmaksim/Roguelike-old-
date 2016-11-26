@@ -41,13 +41,13 @@ public class Game extends Activity {
     public boolean turn = true;
     public boolean move = true;
     public boolean tap;
-    public Bitmap a;
-    public Bitmap b;
-    public Bitmap backIcon;
+    public Bitmap mCharacterIcon;
+    public Bitmap mInventoryIcon;
+    public Bitmap mBackIcon;
     public Bitmap d;
-    public Bitmap j;
+    public Bitmap mSkipTurnIcon;
     public Random rnd;
-    public boolean lines = true;
+    public boolean lines = false;
     public int scr = 0;
     public Bitmap lastAttack;
     public Bitmap bag;
@@ -99,7 +99,6 @@ public class Game extends Activity {
         Global.INSTANCE.setMapg(new MapGenerationClass());
         Global.INSTANCE.setMmview(new MainMenu(this));
         Global.INSTANCE.setMapview(new MapView(this));
-        Global.INSTANCE.setInvview(new InventoryView(this));
         Global.INSTANCE.setStsview(new StatsView(this));
         Global.INSTANCE.setBview(new BrezenhamView(this));
 
@@ -138,9 +137,9 @@ public class Game extends Activity {
                 Global.INSTANCE.getMapview().requestFocus();
                 break;
             case 1:
-                Global.INSTANCE.getInvview().fillList();
-                setContentView(Global.INSTANCE.getInvview());
-                Global.INSTANCE.getInvview().requestFocus();
+                InventoryView inventoryScreen = new InventoryView(this);
+                setContentView(inventoryScreen);
+                inventoryScreen.requestFocus();
                 break;
             case 2:
                 setContentView(Global.INSTANCE.getStsview());
@@ -414,27 +413,27 @@ public class Game extends Activity {
         loadMobs();
         // Images loading
         AssetHelper assetHelper = Global.INSTANCE.getMAssetHelper();
-        Bitmap img = assetHelper.getBitmapFromAsset("character_animation_sheet");
+        Bitmap temp = assetHelper.getBitmapFromAsset("character_animation_sheet");
         for (int x = 0; x < 4; x++)
-            Global.INSTANCE.getHero().img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
+            Global.INSTANCE.getHero().img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 0, 24, 24), step, step, false);
         bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24), step, step, false);
-        a = assetHelper.getBitmapFromAsset("character_icon");
-        b = assetHelper.getBitmapFromAsset("inventory_icon");
-        backIcon = assetHelper.getBitmapFromAsset("back_icon");
+        mCharacterIcon = assetHelper.getBitmapFromAsset("character_icon");
+        mInventoryIcon = assetHelper.getBitmapFromAsset("inventory_icon");
+        mBackIcon = assetHelper.getBitmapFromAsset("back_icon");
         d = assetHelper.getBitmapFromAsset("ery");
-        j = assetHelper.getBitmapFromAsset("skip_turn_icon");
-        img = assetHelper.getBitmapFromAsset("tileset");
+        mSkipTurnIcon = assetHelper.getBitmapFromAsset("skip_turn_icon");
+        temp = assetHelper.getBitmapFromAsset("tileset");
         for (int y = 0; y < 10; y++)
             for (int x = 0; x < 10; x++)
-                Global.INSTANCE.getTiles()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
-        img = assetHelper.getBitmapFromAsset("items_sheet");
+                Global.INSTANCE.getTiles()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24), step, step, false));
+        temp = assetHelper.getBitmapFromAsset("items_sheet");
         for (int y = 0; y < 2; y++)
             for (int x = 0; x < 10; x++)
-                Global.INSTANCE.getItemDB()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, y * 24, 24, 24), step, step, false));
-        img = assetHelper.getBitmapFromAsset("mobs_sheet");
+                Global.INSTANCE.getItemDB()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24), step, step, false));
+        temp = assetHelper.getBitmapFromAsset("mobs_sheet");
         for (int x = 0; x < maxMobs; x++) {
-            Global.INSTANCE.getMobDB()[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 0, 24, 24), step, step, false);
-            Global.INSTANCE.getMobDB()[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(img, x * 24, 24, 24, 24), step, step, false);
+            Global.INSTANCE.getMobDB()[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 0, 24, 24), step, step, false);
+            Global.INSTANCE.getMobDB()[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 24, 24, 24), step, step, false);
         }
     }
 
