@@ -163,9 +163,9 @@ class MapView(mContext: Context) : View(mContext) {
     private fun drawHUD(canvas: Canvas) {
         mTextPaint.textAlign = Paint.Align.CENTER
 
-        canvas.drawBitmap(Global.game!!.b,
-                (mScreenWidth / 8 - Global.game!!.b.width / 2).toFloat(),
-                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.b.height) / 2,
+        canvas.drawBitmap(Global.game!!.mInventoryIcon,
+                (mScreenWidth / 8 - Global.game!!.mInventoryIcon.width / 2).toFloat(),
+                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.mInventoryIcon.height) / 2,
                 null)
         canvas.drawText("HP  " + Global.hero!!.getStat(5) + " / " + Global.hero!!.getStat(6),
                 mScreenWidth * 0.5F,
@@ -175,9 +175,9 @@ class MapView(mContext: Context) : View(mContext) {
                 mScreenWidth * 0.5F,
                 mScreenHeight * 0.965F,
                 mTextPaint)
-        canvas.drawBitmap(Global.game!!.j,
-                (mScreenWidth / 8 * 7 - Global.game!!.j.width / 2).toFloat(),
-                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.j.height) / 2,
+        canvas.drawBitmap(Global.game!!.mSkipTurnIcon,
+                (mScreenWidth / 8 * 7 - Global.game!!.mSkipTurnIcon.width / 2).toFloat(),
+                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.mSkipTurnIcon.height) / 2,
                 null)
         mTextPaint.textAlign = Paint.Align.LEFT
     }

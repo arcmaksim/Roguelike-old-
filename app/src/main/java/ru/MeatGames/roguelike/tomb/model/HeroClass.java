@@ -58,6 +58,9 @@ public class HeroClass {
         addItem(Global.INSTANCE.getGame().createItem(10));
         addItem(Global.INSTANCE.getGame().createItem(10));
         addItem(Global.INSTANCE.getGame().createItem(10));
+        for (int i = 0; i < 30; i++) {
+            addItem(Global.INSTANCE.getGame().createItem(i % 11));
+        }
         preequipItem(inv);
         preequipItem(inv.next);
         preequipItem(inv.next.next);

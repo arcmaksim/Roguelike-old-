@@ -4,7 +4,7 @@
 
     <string name="gear_label">Снаряжение</string>
     <string name="character_string">Персонаж</string>
-    <string name="inventory_string">Инвентарь</string>
+    <string name="inventory_label">Инвентарь</string>
     <string name="exit_game_message">Выйти из игры?</string>
     <string name="yes">Да</string>
     <string name="No">Нет</string>
@@ -30,5 +30,13 @@
     <string name="is_receiving_damage_message">" получает урон"</string>
     <string name="is_dealing_damage_message">" наносит урон"</string>
     <string name="is_missing_attack_message">" промахивается"</string>
+    <string name="empty_stat_label">---</string>
+    <string name="drop_item_label">Выбросить</string>
+    <string name="empty_label">Пусто</string>
+    <string name="onehanded_weapon_label">Одноручное оружие</string>
+    <string name="twohanded_weapon_label">Двуручное оружие</string>
+    <string name="use_label">Использовать</string>
+    <string name="armor_label">Доспехи</string>
+    <string name="weapon_lebel">Оружие</string>
 
 </resources>

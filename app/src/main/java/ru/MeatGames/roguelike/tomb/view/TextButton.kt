@@ -25,27 +25,29 @@ class TextButton(mContext: Context, var mLabel: String = "") : Button(mContext) 
     }
 
     override fun onDraw(canvas: Canvas?) {
-        if(mBackgroundPaint != null) {
-            canvas?.drawRect(mDimensions, mBackgroundPaint)
+        if (mIsEnabled) {
+            mBackgroundPaint?.let {
+                canvas?.drawRect(mDimensions, mBackgroundPaint)
+            }
+            when(mTextPaint.textAlign) {
+                Paint.Align.CENTER ->
+                    canvas?.drawText(mLabel,
+                            mDimensions.exactCenterX(),
+                            mDimensions.bottom - mPadding,
+                            mTextPaint)
+                Paint.Align.LEFT ->
+                    canvas?.drawText(mLabel,
+                            mDimensions.left + mPadding,
+                            mDimensions.bottom - mPadding,
+                            mTextPaint)
+                Paint.Align.RIGHT ->
+                    canvas?.drawText(mLabel,
+                            mDimensions.right - mPadding,
+                            mDimensions.bottom - mPadding,
+                            mTextPaint)
+            }
+            invalidate()
         }
-        when(mTextPaint.textAlign) {
-            Paint.Align.CENTER ->
-                canvas?.drawText(mLabel,
-                        mDimensions.exactCenterX(),
-                        mDimensions.bottom - mPadding,
-                        mTextPaint)
-            Paint.Align.LEFT ->
-                canvas?.drawText(mLabel,
-                        mDimensions.left + mPadding,
-                        mDimensions.bottom - mPadding,
-                        mTextPaint)
-            Paint.Align.RIGHT ->
-                canvas?.drawText(mLabel,
-                        mDimensions.right - mPadding,
-                        mDimensions.bottom - mPadding,
-                        mTextPaint)
-        }
-        invalidate()
     }
 
 }
