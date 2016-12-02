@@ -1,18 +1,18 @@
 <objects>
-    <object psb="f" vis="f" use="f" isWall="t"/>
-    <object psb="f" vis="f" use="t" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="f" vis="t" use="t" isWall="f"/>
-    <object psb="f" vis="t" use="t" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="f" vis="f" use="t" isWall="f"/>
-    <object psb="f" vis="f" use="f" isWall="f"/>
-    <object psb="f" vis="t" use="f" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="f" vis="t" use="f" isWall="f"/>
-    <object psb="f" vis="f" use="f" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="t" vis="t" use="f" isWall="f"/>
-    <object psb="f" vis="t" use="f" isWall="f"/>
+    <object passable="f" transparent="f" usable="f" isWall="t"/>
+    <object passable="f" transparent="f" usable="t" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="f" transparent="t" usable="t" isWall="f"/>
+    <object passable="f" transparent="t" usable="t" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="f" transparent="f" usable="t" isWall="f"/>
+    <object passable="f" transparent="f" usable="f" isWall="f"/>
+    <object passable="f" transparent="t" usable="f" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="f" transparent="t" usable="f" isWall="f"/>
+    <object passable="f" transparent="f" usable="f" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="t" transparent="t" usable="f" isWall="f"/>
+    <object passable="f" transparent="t" usable="f" isWall="f"/>
 </objects>
