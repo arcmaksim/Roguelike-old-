@@ -4,10 +4,9 @@ My first roguelike (and my first game) back from 2012. Developed specifically fo
 Main goal - multiresolution support.
 
 ### Current features
-- Partial multiresolution support (main menu, main game screen, map),
-partial 480x800 resolution (inventory, character screen).
-- Only russian language (currently has minor bugs).
-- Can be completed.
+- Full multiresolution support (ui elements needs to be tweaked).
+- Only russian language support.
+- Can be completed (game mechanics needs to be balanced).
 
 ### Future plans
 1. Support different screen sizes.
