@@ -47,7 +47,7 @@ class MapView(mContext: Context) : View(mContext) {
 
     var mActionCount: Int = 0
 
-    // hero's move directions
+    // hero'single move directions
     var mx: Int = 0
     var my: Int = 0
 

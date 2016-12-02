@@ -25,32 +25,32 @@ public class HeroClass {
     public void newHero() {
         inv = null;
         equipmentList = new InvItem[3];
-        Global.INSTANCE.getStats()[0].setA(10);
-        Global.INSTANCE.getStats()[1].setA(10);
-        Global.INSTANCE.getStats()[2].setA(10);
-        Global.INSTANCE.getStats()[3].setA(10);
-        Global.INSTANCE.getStats()[4].setA(10);
-        Global.INSTANCE.getStats()[5].setA(18);
-        Global.INSTANCE.getStats()[6].setA(18);
-        Global.INSTANCE.getStats()[7].setA(10);
-        Global.INSTANCE.getStats()[8].setA(10);
-        Global.INSTANCE.getStats()[9].setA(10);
-        Global.INSTANCE.getStats()[10].setA(10);
-        Global.INSTANCE.getStats()[11].setA(2);
-        Global.INSTANCE.getStats()[12].setA(1);
-        Global.INSTANCE.getStats()[13].setA(3);
-        Global.INSTANCE.getStats()[14].setA(10);
-        Global.INSTANCE.getStats()[16].setA(10);
-        Global.INSTANCE.getStats()[18].setA(1000);
-        Global.INSTANCE.getStats()[19].setA(10);
-        Global.INSTANCE.getStats()[20].setA(0);
-        Global.INSTANCE.getStats()[21].setA(32);
-        Global.INSTANCE.getStats()[22].setA(1);
-        Global.INSTANCE.getStats()[25].setA(10);
-        Global.INSTANCE.getStats()[27].setA(1000);
-        Global.INSTANCE.getStats()[28].setA(10);
-        Global.INSTANCE.getStats()[29].setA(1);
-        Global.INSTANCE.getStats()[31].setA(1);
+        Global.INSTANCE.getStats()[0].setValue(10);
+        Global.INSTANCE.getStats()[1].setValue(10);
+        Global.INSTANCE.getStats()[2].setValue(10);
+        Global.INSTANCE.getStats()[3].setValue(10);
+        Global.INSTANCE.getStats()[4].setValue(10);
+        Global.INSTANCE.getStats()[5].setValue(18);
+        Global.INSTANCE.getStats()[6].setValue(18);
+        Global.INSTANCE.getStats()[7].setValue(10);
+        Global.INSTANCE.getStats()[8].setValue(10);
+        Global.INSTANCE.getStats()[9].setValue(10);
+        Global.INSTANCE.getStats()[10].setValue(10);
+        Global.INSTANCE.getStats()[11].setValue(2);
+        Global.INSTANCE.getStats()[12].setValue(1);
+        Global.INSTANCE.getStats()[13].setValue(3);
+        Global.INSTANCE.getStats()[14].setValue(10);
+        Global.INSTANCE.getStats()[16].setValue(10);
+        Global.INSTANCE.getStats()[18].setValue(1000);
+        Global.INSTANCE.getStats()[19].setValue(10);
+        Global.INSTANCE.getStats()[20].setValue(0);
+        Global.INSTANCE.getStats()[21].setValue(32);
+        Global.INSTANCE.getStats()[22].setValue(1);
+        Global.INSTANCE.getStats()[25].setValue(10);
+        Global.INSTANCE.getStats()[27].setValue(1000);
+        Global.INSTANCE.getStats()[28].setValue(10);
+        Global.INSTANCE.getStats()[29].setValue(1);
+        Global.INSTANCE.getStats()[31].setValue(1);
         cregen = regen = 22;
         addItem(Global.INSTANCE.getGame().createItem(1));
         addItem(Global.INSTANCE.getGame().createItem(4));
@@ -67,13 +67,13 @@ public class HeroClass {
     }
 
     public int getStat(int id) {
-        return Global.INSTANCE.getStats()[id].getA();
+        return Global.INSTANCE.getStats()[id].getValue();
     }
 
     public void modifyStat(int id, int value, int m) {
-        Global.INSTANCE.getStats()[id].setA(Global.INSTANCE.getStats()[id].getA() + m * value);
-        if (Global.INSTANCE.getStats()[id].getM() && Global.INSTANCE.getStats()[id].getA() > Global.INSTANCE.getStats()[id + 1].getA())
-            Global.INSTANCE.getStats()[id].setA(Global.INSTANCE.getStats()[id + 1].getA());
+        Global.INSTANCE.getStats()[id].setValue(Global.INSTANCE.getStats()[id].getValue() + m * value);
+        if (Global.INSTANCE.getStats()[id].getMaximum() && Global.INSTANCE.getStats()[id].getValue() > Global.INSTANCE.getStats()[id + 1].getValue())
+            Global.INSTANCE.getStats()[id].setValue(Global.INSTANCE.getStats()[id + 1].getValue());
         if (id == 20) isLevelUp();
     }
 

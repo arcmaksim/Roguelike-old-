@@ -41,5 +41,7 @@
     <string name="change_equipped_item_label">Сменить</string>
     <string name="take_off_item_label">Снять</string>
     <string name="equip_item_label">Надеть</string>
+    <string name="several_items_lying_on_the_ground_message">Несколько предметов лежат на земле</string>
+    <string name="trap_message">Ловушка!</string>
 
 </resources>

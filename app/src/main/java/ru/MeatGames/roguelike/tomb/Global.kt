@@ -14,8 +14,6 @@ object Global {
     var hero: HeroClass? = null
     var mapg: MapGenerationClass? = null
     var mapview: MapView? = null
-    var stsview: StatsView? = null
-    var bview: BrezenhamView? = null
     var mmview: MainMenu? = null
     var map: Array<Array<MapClass>>? = null
     var tiles: Array<TileDB>? = null // 0 element is opaque

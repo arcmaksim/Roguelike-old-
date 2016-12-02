@@ -1,40 +1,37 @@
 <stats>
-    <stat name="Сила" s="t" m="f"/>
-    <stat name="Ловкость" s="t" m="f"/>
-    <stat
-        name="Интеллект"
-        s="t"
-        m="f"/>
-    <stat name="Выносливость" s="t" m="f"/>
-    <stat name="Восприятие" s="t" m="f"/>
-    <stat name="Здоровье" s="f" m="t"/>
-    <stat name="Максимальное здоровье" s="f" m="f"/>
-    <stat name="Мана" s="f" m="t"/>
-    <stat name="Максимальная мана" s="f" m="f"/>
-    <stat name="Запас сил" s="f" m="t"/>
-    <stat name="Максимальная стамина" s="f" m="f"/>
-    <stat name="Атака" s="t" m="f"/>
-    <stat name="Минимальный урон" s="t" m="f"/>
-    <stat name="Максимальный урон" s="t" m="f"/>
-    <stat name="Тип" s="t" m="f"/>
-    <stat name="Атака" s="t" m="f"/>
-    <stat name="Минимальный урон" s="t" m="f"/>
-    <stat name="Максимальный урон" s="t" m="f"/>
-    <stat name="Тип" s="t" m="f"/>
-    <stat name="Рукопашная защита" s="t" m="f"/>
-    <stat name="Дистанционная защита" s="t" m="f"/>
-    <stat name="Магическая защита" s="t" m="f"/>
-    <stat name="Рукопашная броня" s="t" m="f"/>
-    <stat name="Дистанционная броня" s="t" m="f"/>
-    <stat name="Магическая броня" s="t" m="f"/>
-    <stat name="Скорость" s="t" m="f"/>
-    <stat name="Переносимый вес" s="f" m="t"/>
-    <stat name="Максимально переносимый вес" s="f" m="f"/>
-    <stat name="Удача" s="t" m="f"/>
-    <stat name="Размер инвентаря" s="f" m="t"/>
-    <stat name="Максимальный размер инвентаря" s="f" m="f"/>
-    <stat name="Уровень" s="t" m="f"/>
-    <stat name="Опыт" s="t" m="f"/>
-    <stat name="Требуемый опыт" s="t" m="f"/>
-    <stat name="Очки обучения" s="t" m="f"/>
+    <stat name="Сила" single="t" maximum="f"/>
+    <stat name="Ловкость" single="t" maximum="f"/>
+    <stat name="Интеллект" single="t" maximum="f"/>
+    <stat name="Выносливость" single="t" maximum="f"/>
+    <stat name="Восприятие" single="t" maximum="f"/>
+    <stat name="Здоровье" single="f" maximum="t"/>
+    <stat name="Максимальное здоровье" single="f" maximum="f"/>
+    <stat name="Мана" single="f" maximum="t"/>
+    <stat name="Максимальная мана" single="f" maximum="f"/>
+    <stat name="Запас сил" single="f" maximum="t"/>
+    <stat name="Максимальная стамина" single="f" maximum="f"/>
+    <stat name="Атака" single="t" maximum="f"/>
+    <stat name="Минимальный урон" single="t" maximum="f"/>
+    <stat name="Максимальный урон" single="t" maximum="f"/>
+    <stat name="Тип" single="t" maximum="f"/>
+    <stat name="Атака" single="t" maximum="f"/>
+    <stat name="Минимальный урон" single="t" maximum="f"/>
+    <stat name="Максимальный урон" single="t" maximum="f"/>
+    <stat name="Тип" single="t" maximum="f"/>
+    <stat name="Рукопашная защита" single="t" maximum="f"/>
+    <stat name="Дистанционная защита" single="t" maximum="f"/>
+    <stat name="Магическая защита" single="t" maximum="f"/>
+    <stat name="Рукопашная броня" single="t" maximum="f"/>
+    <stat name="Дистанционная броня" single="t" maximum="f"/>
+    <stat name="Магическая броня" single="t" maximum="f"/>
+    <stat name="Скорость" single="t" maximum="f"/>
+    <stat name="Переносимый вес" single="f" maximum="t"/>
+    <stat name="Максимально переносимый вес" single="f" maximum="f"/>
+    <stat name="Удача" single="t" maximum="f"/>
+    <stat name="Размер инвентаря" single="f" maximum="t"/>
+    <stat name="Максимальный размер инвентаря" single="f" maximum="f"/>
+    <stat name="Уровень" single="t" maximum="f"/>
+    <stat name="Опыт" single="t" maximum="f"/>
+    <stat name="Требуемый опыт" single="t" maximum="f"/>
+    <stat name="Очки обучения" single="t" maximum="f"/>
 </stats>

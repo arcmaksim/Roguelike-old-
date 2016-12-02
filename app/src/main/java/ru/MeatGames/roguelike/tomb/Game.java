@@ -99,8 +99,6 @@ public class Game extends Activity {
         Global.INSTANCE.setMapg(new MapGenerationClass());
         Global.INSTANCE.setMmview(new MainMenu(this));
         Global.INSTANCE.setMapview(new MapView(this));
-        Global.INSTANCE.setStsview(new StatsView(this));
-        Global.INSTANCE.setBview(new BrezenhamView(this));
 
         zone = new int[11][11];
 
@@ -142,12 +140,14 @@ public class Game extends Activity {
                 inventoryScreen.requestFocus();
                 break;
             case 2:
-                setContentView(Global.INSTANCE.getStsview());
-                Global.INSTANCE.getStsview().requestFocus();
+                StatsView characterScreen = new StatsView(this);
+                setContentView(characterScreen);
+                characterScreen.requestFocus();
                 break;
             case 3:
-                setContentView(Global.INSTANCE.getBview());
-                Global.INSTANCE.getBview().requestFocus();
+                BrezenhamView mapScreen = new BrezenhamView(this);
+                setContentView(mapScreen);
+                mapScreen.requestFocus();
                 break;
             case 4:
                 setContentView(Global.INSTANCE.getMmview());
@@ -159,7 +159,7 @@ public class Game extends Activity {
     public Item createItem() {
         Item item = new Item(rnd.nextInt(13));
         /*item.id = rnd.nextInt(13);
-        item.n = Global.itemDB[item.id].n;
+        item.title = Global.itemDB[item.id].title;
         item.n1 = Global.itemDB[item.id].n1;
         item.type = Global.itemDB[item.id].type;
         item.val1 = Global.itemDB[item.id].val1;
@@ -172,7 +172,7 @@ public class Game extends Activity {
     public Item createItem(int t) {
         Item item = new Item(t);
         /*item.id = t;
-        item.n = Global.itemDB[item.id].n;
+        item.title = Global.itemDB[item.id].title;
         item.n1 = Global.itemDB[item.id].n1;
         item.type = Global.itemDB[item.id].type;
         item.val1 = Global.itemDB[item.id].val1;
@@ -260,7 +260,7 @@ public class Game extends Activity {
             if (turn)
                 if (Game.getObject(mx, my) == 44) {
                     Global.INSTANCE.getHero().modifyStat(5, rnd.nextInt(3) + 1, -1);
-                    Global.INSTANCE.getMapview().addLine("?????? ?????!");
+                    Global.INSTANCE.getMapview().addLine(getString(R.string.trap_message));
                     if (Global.INSTANCE.getHero().getStat(5) < 1) {
                         lastAttack = Bitmap.createScaledBitmap(Global.INSTANCE.getTiles()[44].getImg(), 72, 72, false);
                         Global.INSTANCE.getMapview().setMDrawDeathScreen(true);
@@ -298,7 +298,7 @@ public class Game extends Activity {
             if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.next == null)
                 Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].head.item.n + getString(R.string.lying_on_the_ground_message));
             else
-                Global.INSTANCE.getMapview().addLine("????????? ????????? ????? ?? ?????");
+                Global.INSTANCE.getMapview().addLine(getString(R.string.several_items_lying_on_the_ground_message));
         }
         updateZone();
     }
@@ -443,9 +443,9 @@ public class Game extends Activity {
             XmlPullParser parser = getResources().getXml(R.xml.stats);
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("stat")) {
-                    Global.INSTANCE.getStats()[i].setN(parser.getAttributeValue(0));
-                    Global.INSTANCE.getStats()[i].setS(parser.getAttributeValue(1).equals("t"));
-                    Global.INSTANCE.getStats()[i++].setM(parser.getAttributeValue(2).equals("t"));
+                    Global.INSTANCE.getStats()[i].setTitle(parser.getAttributeValue(0));
+                    Global.INSTANCE.getStats()[i].setSingle(parser.getAttributeValue(1).equals("t"));
+                    Global.INSTANCE.getStats()[i++].setMaximum(parser.getAttributeValue(2).equals("t"));
                     parser.next();
                 }
                 parser.next();

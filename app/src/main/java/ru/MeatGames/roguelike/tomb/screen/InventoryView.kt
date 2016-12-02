@@ -362,7 +362,7 @@ class InventoryView(context: Context) : View(context) {
                 canvas.drawText("Защита " + curItem!!.item.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
                 canvas.drawText("Броня " + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
             }
-            5 -> canvas.drawText(Global.stats!![curItem!!.item.val1].n + " +" + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+            5 -> canvas.drawText(Global.stats!![curItem!!.item.val1].title + " +" + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
         }
         mSecondaryTextPaint.textAlign = Paint.Align.LEFT
         if (mDrawGear) {
