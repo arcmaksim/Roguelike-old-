@@ -79,7 +79,14 @@ public class MapClass {
     }
 
     public Bitmap getItemImg() {
-        return (head.next == null) ? Global.INSTANCE.getItemDB()[head.item.id].getImg() : Global.INSTANCE.getGame().bag;
+        Bitmap temp;
+        if (head.next == null) {
+            temp = Global.INSTANCE.getItemDB()[head.item.id].getImg();
+        } else {
+            temp = Global.INSTANCE.getGame().bag;
+        }
+        return temp;
+        //return (head.next == null) ? Global.INSTANCE.getItemDB()[head.item.id].getImg() : Global.INSTANCE.getGame().bag;
     }
 
 }

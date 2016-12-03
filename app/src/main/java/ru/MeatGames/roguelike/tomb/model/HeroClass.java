@@ -2,8 +2,9 @@ package ru.MeatGames.roguelike.tomb.model;
 
 import android.graphics.Bitmap;
 
+import java.util.LinkedList;
+
 import ru.MeatGames.roguelike.tomb.Global;
-import ru.MeatGames.roguelike.tomb.InvItem;
 
 public class HeroClass {
 
@@ -12,7 +13,7 @@ public class HeroClass {
     public int y;
     public int mx;
     public int my;
-    public InvItem[] equipmentList;
+    public Item[] equipmentList;
     public boolean side = true; //left
 
     // Stats
@@ -20,11 +21,12 @@ public class HeroClass {
     public int cregen;
     public int init = 10;
     public Bitmap[] img = new Bitmap[4];
-    public InvItem inv;
+    public LinkedList<Item> mInventory;
 
     public void newHero() {
-        inv = null;
-        equipmentList = new InvItem[3];
+        mInventory = null;
+        mInventory = new LinkedList<>();
+        equipmentList = new Item[3];
         Global.INSTANCE.getStats()[0].setValue(10);
         Global.INSTANCE.getStats()[1].setValue(10);
         Global.INSTANCE.getStats()[2].setValue(10);
@@ -61,9 +63,9 @@ public class HeroClass {
         for (int i = 0; i < 30; i++) {
             addItem(Global.INSTANCE.getGame().createItem(i % 11));
         }
-        preequipItem(inv);
-        preequipItem(inv.next);
-        preequipItem(inv.next.next);
+        preequipItem(mInventory.get(0));
+        preequipItem(mInventory.get(1));
+        preequipItem(mInventory.get(2));
     }
 
     public int getStat(int id) {
@@ -108,145 +110,98 @@ public class HeroClass {
     }
 
     public void addItem(Item item) {
-        if (inv == null) {
-            inv = new InvItem();
-            inv.item = item;
-        } else {
-            InvItem cur;
-            for (cur = inv; cur.next != null; cur = cur.next) {
-            }
-            cur.next = new InvItem();
-            cur.next.item = item;
-            for (cur = inv; cur != null; cur = cur.next)
-                cur.nextList = null;
-        }
+        mInventory.add(item);
     }
 
-    public boolean isEquiped(InvItem item) {
-        return equipmentList[item.item.type - 1] == item;
+    public boolean isEquiped(Item item) {
+        return equipmentList[item.type - 1] == item;
     }
 
-    public void dropItem(InvItem item) {
-        if (!item.item.isConsumable() && isEquiped(item))
+    public void dropItem(Item item) {
+        if (!item.isConsumable() && isEquiped(item))
             takeOffItem(item);
-        Item i = item.item;
-        InvItem cur;
-        for (cur = inv; cur != null; cur = cur.next)
-            cur.nextList = null;
-        if (inv == item) {
-            inv = inv.next;
-        } else {
-            for (cur = inv; cur.next != item; cur = cur.next) {
-            }
-            cur.next = item.next;
-        }
-        Global.INSTANCE.getMap()[mx][my].addItem(i);
-        Global.INSTANCE.getMapview().addLine(i.n + " выброшен" + i.n1);
+        mInventory.remove(item);
+        Global.INSTANCE.getMap()[mx][my].addItem(item);
+        Global.INSTANCE.getMapview().addLine(item.n + " выброшен" + item.n1);
         Global.INSTANCE.getGame().move(0, 0);
     }
 
-    public void deleteItem(InvItem item) {
-        InvItem cur;
-        for (cur = inv; cur != null; cur = cur.next)
-            cur.nextList = null;
-        if (item == inv) {
-            inv = inv.next;
-        } else {
-            for (cur = inv; cur.next != item; cur = cur.next) {
-            }
-            cur.next = item.next;
-        }
+    public void deleteItem(Item item) {
+        mInventory.remove(item);
     }
 
-    public void preequipItem(InvItem item) {
-        switch (item.item.type) {
+    public void preequipItem(Item item) {
+        switch (item.type) {
             case 1:
                 equipmentList[0] = item;
-                modifyStat(11, item.item.val1, 1);
-                modifyStat(12, item.item.val2, 1);
-                modifyStat(13, item.item.val3, 1);
+                modifyStat(11, item.val1, 1);
+                modifyStat(12, item.val2, 1);
+                modifyStat(13, item.val3, 1);
                 break;
             case 2:
                 equipmentList[1] = item;
-                modifyStat(19, item.item.val1, 1);
-                modifyStat(22, item.item.val2, 1);
+                modifyStat(19, item.val1, 1);
+                modifyStat(22, item.val2, 1);
                 break;
             case 3:
                 equipmentList[2] = item;
-                modifyStat(19, item.item.val1, 1);
-                modifyStat(22, item.item.val2, 1);
+                modifyStat(19, item.val1, 1);
+                modifyStat(22, item.val2, 1);
                 break;
         }
     }
 
-    public void equipItem(InvItem item) {
-        switch (item.item.type) {
+    public void equipItem(Item item) {
+        switch (item.type) {
             case 1:
                 equipmentList[0] = item;
-                if (item.item.property && equipmentList[1] != null)
+                if (item.property && equipmentList[1] != null) {
                     takeOffItem(1);
-                modifyStat(11, item.item.val1, 1);
-                modifyStat(12, item.item.val2, 1);
-                modifyStat(13, item.item.val3, 1);
+                }
+                modifyStat(11, item.val1, 1);
+                modifyStat(12, item.val2, 1);
+                modifyStat(13, item.val3, 1);
                 break;
             case 2:
-                if (equipmentList[0] != null && equipmentList[0].item.property)
+                if (equipmentList[0] != null && equipmentList[0].property) {
                     takeOffItem(0);
+                }
                 equipmentList[1] = item;
-                modifyStat(19, item.item.val1, 1);
-                modifyStat(22, item.item.val2, 1);
+                modifyStat(19, item.val1, 1);
+                modifyStat(22, item.val2, 1);
                 break;
             case 3:
                 equipmentList[2] = item;
-                modifyStat(19, item.item.val1, 1);
-                modifyStat(22, item.item.val2, 1);
+                modifyStat(19, item.val1, 1);
+                modifyStat(22, item.val2, 1);
                 break;
         }
-        Global.INSTANCE.getMapview().addLine(item.item.n + " надет" + item.item.n1);
+        Global.INSTANCE.getMapview().addLine(item.n + " надет" + item.n1);
         Global.INSTANCE.getGame().move(0, 0);
     }
 
-    public void takeOffItem(InvItem item) {
-        switch (item.item.type) {
+    public void takeOffItem(Item item) {
+        switch (item.type) {
             case 1:
-                modifyStat(11, item.item.val1, -1);
-                modifyStat(12, item.item.val2, -1);
-                modifyStat(13, item.item.val3, -1);
+                modifyStat(11, item.val1, -1);
+                modifyStat(12, item.val2, -1);
+                modifyStat(13, item.val3, -1);
                 break;
             case 2:
-                modifyStat(19, item.item.val1, -1);
-                modifyStat(22, item.item.val2, -1);
+                modifyStat(19, item.val1, -1);
+                modifyStat(22, item.val2, -1);
                 break;
             case 3:
-                modifyStat(19, item.item.val1, -1);
-                modifyStat(22, item.item.val2, -1);
+                modifyStat(19, item.val1, -1);
+                modifyStat(22, item.val2, -1);
                 break;
         }
-        Global.INSTANCE.getHero().equipmentList[item.item.type - 1] = null;
-        Global.INSTANCE.getMapview().addLine(item.item.n + " снят" + item.item.n1);
+        Global.INSTANCE.getHero().equipmentList[item.type - 1] = null;
+        Global.INSTANCE.getMapview().addLine(item.n + " снят" + item.n1);
         Global.INSTANCE.getGame().move(0, 0);
     }
 
     public void takeOffItem(int i) {
-        InvItem item = equipmentList[i];
-        switch (item.item.type) {
-            case 1:
-                modifyStat(11, item.item.val1, -1);
-                modifyStat(12, item.item.val2, -1);
-                modifyStat(13, item.item.val3, -1);
-                break;
-            case 2:
-                modifyStat(19, item.item.val1, -1);
-                modifyStat(22, item.item.val2, -1);
-                break;
-            case 3:
-                modifyStat(19, item.item.val1, -1);
-                modifyStat(22, item.item.val2, -1);
-                break;
-        }
-        Global.INSTANCE.getHero().equipmentList[item.item.type - 1] = null;
-        Global.INSTANCE.getMapview().addLine(item.item.n + " снят" + item.item.n1);
-        Global.INSTANCE.getGame().move(0, 0);
+        takeOffItem(equipmentList[i]);
     }
-
 }

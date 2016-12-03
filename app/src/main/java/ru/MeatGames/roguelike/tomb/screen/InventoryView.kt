@@ -6,13 +6,13 @@ import android.view.MotionEvent
 import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
-import ru.MeatGames.roguelike.tomb.InvItem
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.model.Item
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
+import java.util.*
 
 class InventoryView(context: Context) : View(context) {
 
@@ -24,14 +24,16 @@ class InventoryView(context: Context) : View(context) {
     private val mMainTextPaint: Paint
     private val mSecondaryTextPaint: Paint
 
-    private var curItem: InvItem? = null
+    private var mSelectedItem: Item? = null
     private var sx: Int = 0 //ACTION_DOWN
     private var sy: Int = 0
     private var lx: Int = 0 //ACTION_UP,ACTION_MOVE
     private var ly: Int = 0
-    private val mScrollDeadZone = UnitConverter.convertDpToPixels(6F, context)
+
     private val mMaxItemsOnScreen: Int
     private var mItemsOnScreen: Int = 0
+
+    private val mScrollDeadZone = UnitConverter.convertDpToPixels(6F, context)
     private var mCurrentScroll: Int = 0
     private var mMaxScroll: Int = 0
     private var mSavedScroll = 0
@@ -43,7 +45,7 @@ class InventoryView(context: Context) : View(context) {
     private var mDrawItem = false
     private var mDrawGear = false
 
-    // vars for drawing item list
+    // vars for drawing item mItemList
     private val mItemListPadding: Float
     private val mItemPanelsLeftBorder: Float
     private val mItemPanelsRightBorder: Float
@@ -59,7 +61,7 @@ class InventoryView(context: Context) : View(context) {
     private val mItemDetailsBitmapY: Float
     private var img: Bitmap? = null
 
-    private var list: InvItem? = null
+    private var mItemList: LinkedList<Item?> = LinkedList()
 
     // regions for touch input and drawing specific screen parts
     private val mScreenRect: Rect
@@ -72,6 +74,7 @@ class InventoryView(context: Context) : View(context) {
     private val mLeftSoftButton: TextButton // needs proper name
     private val mMiddleSoftButton: TextButton
 
+    // indicates that mItemList contains only appropriate items for selected gear slot
     private var mIsListSorted = false
 
     private val mFilterPanelBorder: Float
@@ -171,69 +174,41 @@ class InventoryView(context: Context) : View(context) {
         fillList()
     }
 
-    // populating inventory list according to selected flags
+    // populating inventory mItemList according to specific flags
     fun fillList(weapon: Boolean, shield: Boolean, armor: Boolean, gear: Boolean, consumable: Boolean) {
-        list = null
-        var temp: InvItem? = null
-        mCurrentScroll = 0
-        mItemsOnScreen = mCurrentScroll
-        if (Global.hero!!.inv != null) {
-            var cur: InvItem? = Global.hero!!.inv
-            while (cur != null) {
-                if (isAllowed(cur.item, weapon, shield, armor, gear, consumable)) {
-                    if (list == null) {
-                        list = cur
-                        temp = list
-                    } else {
-                        temp!!.nextList = cur
-                        temp = temp.nextList
-                    }
-                    mItemsOnScreen++
-                }
-                cur = cur.next
-            }
+        mItemList = LinkedList()
+        Global.hero!!.mInventory?.let {
+            it
+                    .filter { isAllowed(it, weapon, shield, armor, gear, consumable) }
+                    .forEach { mItemList.add(it) }
         }
-        if (temp != null)
-            temp.nextList = null
+        mItemsOnScreen = mItemList.size
         mMaxScroll = if (mItemsOnScreen > mMaxItemsOnScreen) -(mItemsOnScreen - mMaxItemsOnScreen) * mItemPanelCombinedHeight else 0
     }
 
-    private fun isAllowed(item: Item, weapon: Boolean, shield: Boolean, armor: Boolean, gear: Boolean, consumable: Boolean): Boolean =
-            weapon && item.isWeapon || shield && item.isShield || armor && item.isArmor || gear && item.isGear || consumable && item.isConsumable
+    private fun isAllowed(item: Item,
+                          weapon: Boolean = mFilterStates[0],
+                          shield: Boolean = mFilterStates[1],
+                          armor: Boolean = mFilterStates[2],
+                          gear: Boolean = mFilterStates[3],
+                          consumable: Boolean = mFilterStates[4]): Boolean =
+            weapon && item.isWeapon
+                    || shield && item.isShield
+                    || armor && item.isArmor
+                    || gear && item.isGear
+                    || consumable && item.isConsumable
 
-    // populating inventory list according to selected flags
+    // populating inventory mItemList according to selected flags
     fun fillList() {
-        list = null
-        var temp: InvItem? = null
-        mCurrentScroll = 0
-        mItemsOnScreen = mCurrentScroll
-        if (Global.hero!!.inv != null) {
-            var cur: InvItem? = Global.hero!!.inv
-            while (cur != null) {
-                if (isAllowed(cur.item)) {
-                    if (list == null) {
-                        list = cur
-                        temp = list
-                    } else {
-                        temp!!.nextList = cur
-                        temp = temp.nextList
-                    }
-                    mItemsOnScreen++
-                }
-                cur = cur.next
-            }
+        mItemList = LinkedList()
+        Global.hero!!.mInventory?.let {
+            it
+                    .filter { isAllowed(it) }
+                    .forEach { mItemList.add(it) }
         }
-        if (temp != null)
-            temp.nextList = null
+        mItemsOnScreen = mItemList.size
         mMaxScroll = if (mItemsOnScreen > mMaxItemsOnScreen) -(mItemsOnScreen - mMaxItemsOnScreen) * mItemPanelCombinedHeight else 0
     }
-
-    private fun isAllowed(item: Item): Boolean =
-            mFilterStates[0] && item.isWeapon
-                    || mFilterStates[1] && item.isShield
-                    || mFilterStates[2] && item.isArmor
-                    || mFilterStates[3] && item.isGear
-                    || mFilterStates[4] && item.isConsumable
 
     private fun drawFlags(canvas: Canvas) {
         for (i in 0..4) {
@@ -247,48 +222,39 @@ class InventoryView(context: Context) : View(context) {
 
     internal fun drawList(canvas: Canvas) {
         canvas.clipRect(mItemListRect, Region.Op.REPLACE)
-        var cur = list
-        if (cur != null) {
+
+        if (mItemList.size > 0) {
             val u = -(mCurrentScroll + mSavedScroll) / mItemPanelCombinedHeight
             val offset = -(mCurrentScroll + mSavedScroll) % mItemPanelCombinedHeight
             var q = 0
-            while (cur != null) {
+            mItemList.forEach {
                 if (q >= u) {
                     val top = mItemPanelsTopBorder + (q - u) * (mSpaceBetweenItemPanels + mItemPanelHeight) - offset
                     val bottom = top + mItemPanelHeight
-                    if (!cur.item.isConsumable && Global.hero!!.isEquiped(cur)) {
-                        canvas.drawRect(mItemPanelsLeftBorder,
-                                top,
-                                mItemPanelsLeftBorder + Global.game!!.step,
-                                bottom,
-                                mGreenBackgroundPaint)
-                        canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1,
-                                top,
-                                mItemPanelsRightBorder,
-                                bottom,
-                                mGreenBackgroundPaint)
+                    val itemPanelBackground = if (!it!!.isConsumable && Global.hero!!.isEquiped(it)) {
+                        mGreenBackgroundPaint
                     } else {
-                        canvas.drawRect(mItemPanelsLeftBorder,
-                                top,
-                                mItemPanelsLeftBorder + Global.game!!.step,
-                                bottom,
-                                mMainBackgroundPaint)
-                        canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1,
-                                top,
-                                mItemPanelsRightBorder,
-                                bottom,
-                                mMainBackgroundPaint)
+                        mMainBackgroundPaint
                     }
-                    canvas.drawBitmap(cur.item.image, mItemPanelsLeftBorder, top, null)
-                    canvas.drawText(cur.item.n, 115f, top + mItemPanelHeight / 8 * 5, mSecondaryTextPaint)
-                    if (q == u + mMaxItemsOnScreen) break
+                    canvas.drawRect(mItemPanelsLeftBorder,
+                            top,
+                            mItemPanelsLeftBorder + Global.game!!.step,
+                            bottom,
+                            itemPanelBackground)
+                    canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1,
+                            top,
+                            mItemPanelsRightBorder,
+                            bottom,
+                            itemPanelBackground)
+                    canvas.drawBitmap(it.image, mItemPanelsLeftBorder, top, null)
+                    canvas.drawText(it.n, 115f, top + mItemPanelHeight / 8 * 5, mSecondaryTextPaint)
                 }
                 q++
-                cur = cur.nextList
             }
         } else {
             canvas.drawText(context.getString(R.string.inventory_is_empty_label), mScreenWidth * 0.5F, mScreenHeight * 0.125F, mMainTextPaint)
         }
+
         if (!mIsListSorted) {
             mLeftSoftButton.mLabel = context.getString(R.string.gear_label)
         }
@@ -308,8 +274,8 @@ class InventoryView(context: Context) : View(context) {
             if (Global.hero!!.equipmentList[x] != null) {
                 canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game!!.step, bottom, mMainBackgroundPaint)
                 canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-                canvas.drawBitmap(Global.hero!!.equipmentList[x].item.image, mItemPanelsLeftBorder, top, null)
-                canvas.drawText(Global.hero!!.equipmentList[x].item.n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+                canvas.drawBitmap(Global.hero!!.equipmentList[x].image, mItemPanelsLeftBorder, top, null)
+                canvas.drawText(Global.hero!!.equipmentList[x].n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
             } else {
                 mSecondaryTextPaint.textAlign = Paint.Align.CENTER
                 canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, top, mMainBackgroundPaint)
@@ -324,8 +290,8 @@ class InventoryView(context: Context) : View(context) {
         if (Global.hero!!.equipmentList[2] != null) {
             canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game!!.step, bottom, mMainBackgroundPaint)
             canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-            canvas.drawBitmap(Global.hero!!.equipmentList[2].item.image, mItemPanelsLeftBorder, top, null)
-            canvas.drawText(Global.hero!!.equipmentList[2].item.n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+            canvas.drawBitmap(Global.hero!!.equipmentList[2].image, mItemPanelsLeftBorder, top, null)
+            canvas.drawText(Global.hero!!.equipmentList[2].n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
         } else {
             mSecondaryTextPaint.textAlign = Paint.Align.CENTER
             canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
@@ -343,26 +309,26 @@ class InventoryView(context: Context) : View(context) {
         mSecondaryTextPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(context.getString(R.string.empty_stat_label), temp * 0.6F, mItemDetailsBitmapY + img!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
         canvas.drawText(context.getString(R.string.empty_stat_label), mScreenWidth - temp * 0.6F, mItemDetailsBitmapY + img!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
-        canvas.drawText(curItem!!.item.n, mScreenWidth * 0.5F, temp1, mMainTextPaint)
-        when (curItem!!.item.type) {
+        canvas.drawText(mSelectedItem!!.n, mScreenWidth * 0.5F, temp1, mMainTextPaint)
+        when (mSelectedItem!!.type) {
             1 -> {
-                if (curItem!!.item.property) {
+                if (mSelectedItem!!.property) {
                     canvas.drawText(context.getString(R.string.onehanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
                 } else {
                     canvas.drawText(context.getString(R.string.twohanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
                 }
-                canvas.drawText("Атака +" + curItem!!.item.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
-                canvas.drawText("Урон " + curItem!!.item.val2 + " - " + curItem!!.item.val3, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 10, mSecondaryTextPaint)
+                canvas.drawText("Атака +" + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Урон " + mSelectedItem!!.val2 + " - " + mSelectedItem!!.val3, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 10, mSecondaryTextPaint)
             }
             2 -> {
-                canvas.drawText("Защита " + curItem!!.item.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                canvas.drawText("Броня " + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Защита " + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+                canvas.drawText("Броня " + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
             }
             3 -> {
-                canvas.drawText("Защита " + curItem!!.item.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                canvas.drawText("Броня " + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Защита " + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+                canvas.drawText("Броня " + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
             }
-            5 -> canvas.drawText(Global.stats!![curItem!!.item.val1].title + " +" + curItem!!.item.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+            5 -> canvas.drawText(Global.stats!![mSelectedItem!!.val1].title + " +" + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
         }
         mSecondaryTextPaint.textAlign = Paint.Align.LEFT
         if (mDrawGear) {
@@ -372,13 +338,13 @@ class InventoryView(context: Context) : View(context) {
                 context.getString(R.string.take_off_item_label)
             }
         } else {
-            if (curItem!!.item.isConsumable) {
+            if (mSelectedItem!!.isConsumable) {
                 mLeftSoftButton.mLabel = context.getString(R.string.use_label)
             } else {
-                if (Global.hero!!.equipmentList[curItem!!.item.type - 1] == null) {
+                if (Global.hero!!.equipmentList[mSelectedItem!!.type - 1] == null) {
                     mLeftSoftButton.mLabel = context.getString(R.string.equip_item_label)
                 } else {
-                    if (curItem === Global.hero!!.equipmentList[curItem!!.item.type - 1]) {
+                    if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.type - 1]) {
                         mLeftSoftButton.mLabel = context.getString(R.string.take_off_item_label)
                     } else {
                         mLeftSoftButton.mLabel = context.getString(R.string.change_equipped_item_label)
@@ -407,15 +373,12 @@ class InventoryView(context: Context) : View(context) {
         postInvalidate()
     }
 
-    private fun findItem(id: Int): InvItem? {
-        var c = 0
-        var cur = list
-        while (cur != null) {
-            if (c++ == id)
-                return cur
-            cur = cur.nextList
+    private fun findItem(id: Int): Item? {
+        return if (mItemList.size > id) {
+            mItemList[id]
+        } else {
+            null
         }
-        return null
     }
 
     private fun onTouchGear(sx: Int, sy: Int) {
@@ -425,8 +388,8 @@ class InventoryView(context: Context) : View(context) {
                 scrollPermission = true
                 mIsListSorted = scrollPermission
             } else {
-                curItem = Global.hero!!.equipmentList[0]
-                img = Bitmap.createScaledBitmap(curItem!!.item.image, 168, 168, false)
+                mSelectedItem = Global.hero!!.equipmentList[0]
+                img = Bitmap.createScaledBitmap(mSelectedItem!!.image, 168, 168, false)
                 mDrawItem = true
                 scrollPermission = false
             }
@@ -438,8 +401,8 @@ class InventoryView(context: Context) : View(context) {
                 scrollPermission = true
                 mIsListSorted = scrollPermission
             } else {
-                curItem = Global.hero!!.equipmentList[1]
-                img = Bitmap.createScaledBitmap(curItem!!.item.image, 168, 168, false)
+                mSelectedItem = Global.hero!!.equipmentList[1]
+                img = Bitmap.createScaledBitmap(mSelectedItem!!.image, 168, 168, false)
                 mDrawItem = true
                 scrollPermission = false
             }
@@ -451,8 +414,8 @@ class InventoryView(context: Context) : View(context) {
                 scrollPermission = true
                 mIsListSorted = scrollPermission
             } else {
-                curItem = Global.hero!!.equipmentList[2]
-                img = Bitmap.createScaledBitmap(curItem!!.item.image, 168, 168, false)
+                mSelectedItem = Global.hero!!.equipmentList[2]
+                img = Bitmap.createScaledBitmap(mSelectedItem!!.image, 168, 168, false)
                 mDrawItem = true
                 scrollPermission = false
             }
@@ -476,9 +439,9 @@ class InventoryView(context: Context) : View(context) {
             }
             if (mLeftSoftButton.isPressed(sx, sy)) {
                 if (mIsListSorted) {
-                    Global.hero!!.equipItem(curItem)
+                    Global.hero!!.equipItem(mSelectedItem)
                 } else {
-                    Global.hero!!.takeOffItem(curItem)
+                    Global.hero!!.takeOffItem(mSelectedItem)
                 }
                 mIsListSorted = false
                 mDrawItem = mIsListSorted
@@ -487,19 +450,19 @@ class InventoryView(context: Context) : View(context) {
             }
         } else {
             if (mLeftSoftButton.isPressed(sx, sy)) {
-                if (curItem!!.item.isConsumable) {
-                    Global.hero!!.modifyStat(curItem!!.item.val1, curItem!!.item.val2, 1)
-                    Global.mapview!!.addLine(curItem!!.item.n + " использован" + curItem!!.item.n1)
-                    Global.hero!!.deleteItem(curItem)
+                if (mSelectedItem!!.isConsumable) {
+                    Global.hero!!.modifyStat(mSelectedItem!!.val1, mSelectedItem!!.val2, 1)
+                    Global.mapview!!.addLine(mSelectedItem!!.n + " использован" + mSelectedItem!!.n1)
+                    Global.hero!!.deleteItem(mSelectedItem)
                 } else {
-                    if (Global.hero!!.equipmentList[curItem!!.item.type - 1] == null) {
-                        Global.hero!!.equipItem(curItem)
+                    if (Global.hero!!.equipmentList[mSelectedItem!!.type - 1] == null) {
+                        Global.hero!!.equipItem(mSelectedItem)
                     } else {
-                        if (curItem === Global.hero!!.equipmentList[curItem!!.item.type - 1]) {
-                            Global.hero!!.takeOffItem(curItem)
+                        if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.type - 1]) {
+                            Global.hero!!.takeOffItem(mSelectedItem)
                         } else {
-                            Global.hero!!.takeOffItem(curItem!!.item.type - 1)
-                            Global.hero!!.equipItem(curItem)
+                            Global.hero!!.takeOffItem(mSelectedItem!!.type - 1)
+                            Global.hero!!.equipItem(mSelectedItem)
                         }
 
                     }
@@ -509,7 +472,7 @@ class InventoryView(context: Context) : View(context) {
                 Global.game!!.changeScreen(0)
             }
             if (mMiddleSoftButton.isPressed(sx, sy)) {
-                Global.hero!!.dropItem(curItem)
+                Global.hero!!.dropItem(mSelectedItem)
                 Game.v.vibrate(30)
                 fillList()
                 mDrawItem = false
@@ -525,7 +488,6 @@ class InventoryView(context: Context) : View(context) {
     }
 
     fun onTouchInv(sx: Int, sy: Int) {
-        var id = 0
         if (mIsListSorted) {
             if (mBackButton.isPressed(sx, sy)) {
                 scrollPermission = false
@@ -548,20 +510,10 @@ class InventoryView(context: Context) : View(context) {
             }
         }
         if (mItemListRect.contains(sx, sy)) {
-            if (mMaxScroll == 0) {
-                id = (sy - mItemPanelsTopBorder.toInt()) / mItemPanelCombinedHeight
-                if (id < mItemsOnScreen) {
-                    curItem = findItem(id)
-                    img = Bitmap.createScaledBitmap(curItem!!.item.image, 168, 168, false)
-                    scrollPermission = false
-                    mDrawItem = true
-                    mMiddleSoftButton.mIsEnabled = true
-                }
-            } else {
-                //id = (sy - 72 + -mSavedScroll % mItemPanelCombinedHeight) / mItemPanelCombinedHeight + -mSavedScroll / mItemPanelCombinedHeight
-                id = (sy - mItemPanelsTopBorder.toInt() + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
-                curItem = findItem(id)
-                img = Bitmap.createScaledBitmap(curItem!!.item.image, 168, 168, false)
+            val id = (sy - mItemPanelsTopBorder.toInt() + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
+            mSelectedItem = findItem(id)
+            mSelectedItem?.let {
+                img = Bitmap.createScaledBitmap(mSelectedItem!!.image, 168, 168, false)
                 scrollPermission = false
                 mDrawItem = true
                 mMiddleSoftButton.mIsEnabled = true
