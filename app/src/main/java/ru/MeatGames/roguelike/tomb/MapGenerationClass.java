@@ -2,6 +2,7 @@ package ru.MeatGames.roguelike.tomb;
 
 import java.util.Random;
 
+import ru.MeatGames.roguelike.tomb.db.RoomDBClass;
 import ru.MeatGames.roguelike.tomb.model.RoomClass;
 
 public class MapGenerationClass {
@@ -217,24 +218,24 @@ public class MapGenerationClass {
     public void fillArea(int sx, int sy, int lx1, int ly1, int f) {
         for (int y = sy; y < sy + ly1; y++)
             for (int x = sx; x < sx + lx1; x++) {
-                Global.INSTANCE.getMap()[x][y].f = f / 1000;
-                Global.INSTANCE.getMap()[x][y].o = f % 1000;
+                Global.INSTANCE.getMap()[x][y].mFloorID = f / 1000;
+                Global.INSTANCE.getMap()[x][y].mObjectID = f % 1000;
                 modifyTile(x, y, f / 1000, f % 1000);
             }
     }
 
     public void modifyTile(int px, int py, int f, int o) {
-        Global.INSTANCE.getMap()[px][py].psb = Global.INSTANCE.getTiles()[o].getPsb();
-        Global.INSTANCE.getMap()[px][py].vis = Global.INSTANCE.getTiles()[o].getVis();
-        Global.INSTANCE.getMap()[px][py].use = Global.INSTANCE.getTiles()[o].getUse();
+        Global.INSTANCE.getMap()[px][py].mIsPassable = Global.INSTANCE.getTiles()[o].getMIsPassable();
+        Global.INSTANCE.getMap()[px][py].mIsTransparent = Global.INSTANCE.getTiles()[o].getMIsTransparent();
+        Global.INSTANCE.getMap()[px][py].mIsUsable = Global.INSTANCE.getTiles()[o].getMIsUsable();
     }
 
     public void deleteObjects(int x, int y, int lx, int ly) {
         for (int x1 = 0; x1 < lx; x1++)
             for (int y1 = 0; y1 < ly; y1++)
                 if (!Global.INSTANCE.getMap()[x + x1][y + y1].isWall()) {
-                    Global.INSTANCE.getMap()[x + x1][y + y1].o = 0;
-                    modifyTile(x + x1, y + y1, Global.INSTANCE.getMap()[x + x1][y + y1].f, 0);
+                    Global.INSTANCE.getMap()[x + x1][y + y1].mObjectID = 0;
+                    modifyTile(x + x1, y + y1, Global.INSTANCE.getMap()[x + x1][y + y1].mFloorID, 0);
                 }
     }
 
@@ -280,7 +281,7 @@ public class MapGenerationClass {
         return -1;
     }
 
-    public void mapGen() {
+    public void generateMap() {
         rc = 0;
         int lx, ly;
         fillArea(0, 0, Global.INSTANCE.getGame().mw, Global.INSTANCE.getGame().mh, 5030);
@@ -289,8 +290,8 @@ public class MapGenerationClass {
         for (int x = 0; x < Global.INSTANCE.getGame().mw; x++)
             for (int y = 0; y < Global.INSTANCE.getGame().mh; y++) {
                 Global.INSTANCE.getMap()[x][y].deleteItems();
-                Global.INSTANCE.getMap()[x][y].dis = false;
-                Global.INSTANCE.getMap()[x][y].see = false;
+                Global.INSTANCE.getMap()[x][y].mIsDiscovered = false;
+                Global.INSTANCE.getMap()[x][y].mCurrentlyVisible = false;
             }
         while (Global.INSTANCE.getGame().firstMob != null) {
             Global.INSTANCE.getGame().firstMob.map.deleteMob();
@@ -315,10 +316,10 @@ public class MapGenerationClass {
         yr = ly + 5;
         while (rc < mr - 1) {
             if (findCell()) {
-                right = Global.INSTANCE.getMap()[z - 1][z1].psb;
-                left = Global.INSTANCE.getMap()[z + 1][z1].psb;
-                down = Global.INSTANCE.getMap()[z][z1 - 1].psb;
-                up = Global.INSTANCE.getMap()[z][z1 + 1].psb;
+                right = Global.INSTANCE.getMap()[z - 1][z1].mIsPassable;
+                left = Global.INSTANCE.getMap()[z + 1][z1].mIsPassable;
+                down = Global.INSTANCE.getMap()[z][z1 - 1].mIsPassable;
+                up = Global.INSTANCE.getMap()[z][z1 + 1].mIsPassable;
                 if ((right ^ left) ^ (down ^ up)) {
                     int n = 0;
                     int b = rnd.nextInt(100);
@@ -496,8 +497,8 @@ public class MapGenerationClass {
                             for (int x = 0; x < lx; x++)
                                 for (int y = 0; y < ly; y++) {
                                     int v = zone[x][y];
-                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].f = v / 1000;
-                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].o = v % 1000;
+                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].mFloorID = v / 1000;
+                                    Global.INSTANCE.getMap()[x2 + x][y2 + y].mObjectID = v % 1000;
                                     modifyTile(x2 + x, y2 + y, v / 1000, v % 1000);
                                 }
                             if (up) deleteObjects(z, z1 - 1, 1, 1);
@@ -522,29 +523,29 @@ public class MapGenerationClass {
                                 int r = getRoom(z, z1 + 1);
                                 for (int x = 0; x < lx; x++)
                                     if (getRoom(x2 + x, z1 + 1) == r && !Global.INSTANCE.getMap()[x2 + x][z1 + 1].isWall() && !Global.INSTANCE.getMap()[x2 + x][z1 - 1].isWall())
-                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].f == Global.INSTANCE.getMap()[x2 + x][z1 - 1].f)
-                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].f, 0);
+                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].mFloorID == Global.INSTANCE.getMap()[x2 + x][z1 - 1].mFloorID)
+                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].mFloorID, 0);
                             }
                             if (down) {
                                 int r = getRoom(z, z1 - 1);
                                 for (int x = 0; x < lx; x++)
                                     if (getRoom(x2 + x, z1 - 1) == r && !Global.INSTANCE.getMap()[x2 + x][z1 + 1].isWall() && !Global.INSTANCE.getMap()[x2 + x][z1 - 1].isWall())
-                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].f == Global.INSTANCE.getMap()[x2 + x][z1 - 1].f)
-                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].f, 0);
+                                        if (Global.INSTANCE.getMap()[x2 + x][z1 + 1].mFloorID == Global.INSTANCE.getMap()[x2 + x][z1 - 1].mFloorID)
+                                            Global.INSTANCE.getGame().fillArea(x2 + x, z1, 1, 1, Global.INSTANCE.getMap()[x2 + x][z1 + 1].mFloorID, 0);
                             }
                             if (right) {
                                 int r = getRoom(z - 1, z1);
                                 for (int y = 0; y < ly; y++)
                                     if (getRoom(z - 1, y2 + y) == r && !Global.INSTANCE.getMap()[z + 1][y2 + y].isWall() && !Global.INSTANCE.getMap()[z - 1][y2 + y].isWall())
-                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].f == Global.INSTANCE.getMap()[z - 1][y2 + y].f)
-                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].f, 0);
+                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].mFloorID == Global.INSTANCE.getMap()[z - 1][y2 + y].mFloorID)
+                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].mFloorID, 0);
                             }
                             if (left) {
                                 int r = getRoom(z + 1, z1);
                                 for (int y = 0; y < ly; y++)
                                     if (getRoom(z + 1, y2 + y) == r && !Global.INSTANCE.getMap()[z + 1][y2 + y].isWall() && !Global.INSTANCE.getMap()[z - 1][y2 + y].isWall())
-                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].f == Global.INSTANCE.getMap()[z - 1][y2 + y].f)
-                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].f, 0);
+                                        if (Global.INSTANCE.getMap()[z + 1][y2 + y].mFloorID == Global.INSTANCE.getMap()[z - 1][y2 + y].mFloorID)
+                                            Global.INSTANCE.getGame().fillArea(z, y2 + y, 1, 1, Global.INSTANCE.getMap()[z + 1][y2 + y].mFloorID, 0);
                             }
                         }
                     }
@@ -562,12 +563,12 @@ public class MapGenerationClass {
                 x4 = rnd.nextInt(Global.INSTANCE.getGame().mw);
                 y4 = rnd.nextInt(Global.INSTANCE.getGame().mh);
             }
-            while (!Global.INSTANCE.getMap()[x4][y4].psb || Global.INSTANCE.getMap()[x4][y4].see || Global.INSTANCE.getMap()[x4][y4].hasMob());
+            while (!Global.INSTANCE.getMap()[x4][y4].mIsPassable || Global.INSTANCE.getMap()[x4][y4].mCurrentlyVisible || Global.INSTANCE.getMap()[x4][y4].hasMob());
             int en = rnd.nextInt(Global.INSTANCE.getGame().maxMobs - Game.curLvls - 1) + Game.curLvls;
             if (en < 3 && rnd.nextInt(3) == 0) {
-                if (Global.INSTANCE.getMap()[x4 - 1][y4].psb && !Global.INSTANCE.getMap()[x4 - 1][y4].hasItem())
+                if (Global.INSTANCE.getMap()[x4 - 1][y4].mIsPassable && !Global.INSTANCE.getMap()[x4 - 1][y4].hasItem())
                     Global.INSTANCE.getGame().createMob(x4 - 1, y4, en);
-                if (Global.INSTANCE.getMap()[x4 + 1][y4].psb && !Global.INSTANCE.getMap()[x4 + 1][y4].hasItem())
+                if (Global.INSTANCE.getMap()[x4 + 1][y4].mIsPassable && !Global.INSTANCE.getMap()[x4 + 1][y4].hasItem())
                     Global.INSTANCE.getGame().createMob(x4 + 1, y4, en);
             }
             Global.INSTANCE.getGame().createMob(x4, y4, en);
@@ -576,8 +577,8 @@ public class MapGenerationClass {
             while (true) {
                 x4 = rnd.nextInt(Global.INSTANCE.getGame().mw);
                 y4 = rnd.nextInt(Global.INSTANCE.getGame().mh);
-                if (Global.INSTANCE.getMap()[x4][y4].o == 0 && !Global.INSTANCE.getMap()[x4][y4].see) {
-                    Global.INSTANCE.getMap()[x4][y4].o = 40;
+                if (Global.INSTANCE.getMap()[x4][y4].mObjectID == 0 && !Global.INSTANCE.getMap()[x4][y4].mCurrentlyVisible) {
+                    Global.INSTANCE.getMap()[x4][y4].mObjectID = 40;
                     m = x4 - 2;
                     n = y4 - 2;
                     break;
@@ -593,10 +594,10 @@ public class MapGenerationClass {
         newZone(lx, ly, n);
         while (true) {
             if (findCell()) {
-                right = Global.INSTANCE.getMap()[z - 1][z1].psb;
-                left = Global.INSTANCE.getMap()[z + 1][z1].psb;
-                down = Global.INSTANCE.getMap()[z][z1 - 1].psb;
-                up = Global.INSTANCE.getMap()[z][z1 + 1].psb;
+                right = Global.INSTANCE.getMap()[z - 1][z1].mIsPassable;
+                left = Global.INSTANCE.getMap()[z + 1][z1].mIsPassable;
+                down = Global.INSTANCE.getMap()[z][z1 - 1].mIsPassable;
+                up = Global.INSTANCE.getMap()[z][z1 + 1].mIsPassable;
                 if ((right ^ left) ^ (down ^ up)) {
                     if (up) {
                         y2 = z1 - ly;
@@ -619,8 +620,8 @@ public class MapGenerationClass {
                         for (int x = 0; x < lx; x++)
                             for (int y = 0; y < ly; y++) {
                                 int v = zone[x][y];
-                                Global.INSTANCE.getMap()[x2 + x][y2 + y].f = v / 1000;
-                                Global.INSTANCE.getMap()[x2 + x][y2 + y].o = v % 1000;
+                                Global.INSTANCE.getMap()[x2 + x][y2 + y].mFloorID = v / 1000;
+                                Global.INSTANCE.getMap()[x2 + x][y2 + y].mObjectID = v % 1000;
                                 modifyTile(x2 + x, y2 + y, v / 1000, v % 1000);
                             }
                         fillArea(z, z1, 1, 1, 5031);

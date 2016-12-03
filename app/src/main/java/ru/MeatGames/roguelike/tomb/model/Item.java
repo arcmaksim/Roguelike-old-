@@ -6,53 +6,64 @@ import ru.MeatGames.roguelike.tomb.Global;
 
 public class Item {
 
-    public String n; //Name
-    public String n1; //окончание
-    public int w; //Weight
-    public int v; //Value
-    public int type; //type
+    public String mTitle; //Name
+    public String mTitleEnding; //окончание
+    public int mWeight; //Weight
+    public int mValue; //Value
+    public int mType; //mType
     public int id; //something with itemDB
-    public int val1;
-    public int val2;
-    public int val3;
-    public boolean property;
+    public int mValue1;
+    public int mValue2;
+    public int mValue3;
+    public boolean mProperty; // currently for weapons only - is twohanded
 
     public Item() {
-        val1 = val2 = val3 = -10000;
-        property = false;
+        mValue1 = mValue2 = mValue3 = -10000;
+        mProperty = false;
     }
 
     public Item(int id) {
-        val1 = val2 = val3 = -10000;
-        property = false;
+        mValue1 = mValue2 = mValue3 = -10000;
+        mProperty = false;
         this.id = id;
-        this.n = Global.INSTANCE.getItemDB()[id].n;
-        this.n1 = Global.INSTANCE.getItemDB()[id].n1;
-        this.type = Global.INSTANCE.getItemDB()[id].type;
-        this.val1 = Global.INSTANCE.getItemDB()[id].val1;
-        this.val2 = Global.INSTANCE.getItemDB()[id].val2;
-        this.val3 = Global.INSTANCE.getItemDB()[id].val3;
-        this.property = Global.INSTANCE.getItemDB()[id].property;
+        this.mTitle = Global.INSTANCE.getItemDB()[id].mTitle;
+        this.mTitleEnding = Global.INSTANCE.getItemDB()[id].mTitleEnding;
+        this.mType = Global.INSTANCE.getItemDB()[id].mType;
+        this.mValue1 = Global.INSTANCE.getItemDB()[id].mValue1;
+        this.mValue2 = Global.INSTANCE.getItemDB()[id].mValue2;
+        this.mValue3 = Global.INSTANCE.getItemDB()[id].mValue3;
+        this.mProperty = Global.INSTANCE.getItemDB()[id].mProperty;
+    }
+
+    public Item(int type, String title, String titleEndings,
+                int value1, int value2, int value3, boolean property) {
+        mType = type;
+        mTitle = title;
+        mTitleEnding = titleEndings;
+        mValue1 = value1;
+        mValue2 = value2;
+        mValue3 = value3;
+        mProperty = property;
     }
 
     public boolean isWeapon() {
-        return type == 1;
+        return mType == 1;
     }
 
     public boolean isShield() {
-        return type == 2;
+        return mType == 2;
     }
 
     public boolean isArmor() {
-        return type == 3;
+        return mType == 3;
     }
 
     public boolean isGear() {
-        return type == 4;
+        return mType == 4;
     }
 
     public boolean isConsumable() {
-        return type == 5;
+        return mType == 5;
     }
 
     public Bitmap getImage() {

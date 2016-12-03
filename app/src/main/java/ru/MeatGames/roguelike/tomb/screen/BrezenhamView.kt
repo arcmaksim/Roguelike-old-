@@ -62,8 +62,8 @@ class BrezenhamView(mContext: Context) : View(mContext) {
         canvas.fillFrame(mScreenWidth, mScreenHeight, mBackgroundPaint)
         for (x in 0..Global.game!!.mw - 1)
             for (y in 0..Global.game!!.mh - 1) {
-                if (Global.map!![x][y].dis) {
-                    when (Global.map!![x][y].o) {
+                if (Global.map!![x][y].mIsDiscovered) {
+                    when (Global.map!![x][y].mObjectID) {
                         0 -> canvas.drawRect(x * mMarkerSize,
                                 (y + 1) * mMarkerSize,
                                 (x + 1) * mMarkerSize,

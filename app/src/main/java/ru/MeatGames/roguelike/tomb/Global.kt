@@ -1,25 +1,28 @@
 package ru.MeatGames.roguelike.tomb
 
+import ru.MeatGames.roguelike.tomb.db.ItemDB
+import ru.MeatGames.roguelike.tomb.db.MobDB
+import ru.MeatGames.roguelike.tomb.db.StatsDB
+import ru.MeatGames.roguelike.tomb.db.TileDB
 import ru.MeatGames.roguelike.tomb.model.HeroClass
 import ru.MeatGames.roguelike.tomb.model.MapClass
-import ru.MeatGames.roguelike.tomb.screen.BrezenhamView
 import ru.MeatGames.roguelike.tomb.screen.MainMenu
 import ru.MeatGames.roguelike.tomb.screen.MapView
-import ru.MeatGames.roguelike.tomb.screen.StatsView
 import ru.MeatGames.roguelike.tomb.util.AssetHelper
 
 object Global {
 
-    var game: Game? = null
+    lateinit var game: Game
     var hero: HeroClass? = null
     var mapg: MapGenerationClass? = null
-    var mapview: MapView? = null
-    var mmview: MainMenu? = null
+    lateinit var mapview: MapView
+    lateinit var mmview: MainMenu
     var map: Array<Array<MapClass>>? = null
-    var tiles: Array<TileDB>? = null // 0 element is opaque
-    var itemDB: Array<ItemDB>? = null
-    var mobDB: Array<MobDB>? = null
-    var stats: Array<StatsDB>? = null
-    var mAssetHelper: AssetHelper? = null
+    // temporary most of the tiles is null, use carefully
+    lateinit var tiles: Array<TileDB> // 0 element is opaque
+    lateinit var itemDB: Array<ItemDB>
+    lateinit var mobDB: Array<MobDB>
+    lateinit var stats: Array<StatsDB>
+    lateinit var mAssetHelper: AssetHelper
 
 }

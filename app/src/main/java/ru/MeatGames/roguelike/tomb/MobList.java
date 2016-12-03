@@ -22,10 +22,10 @@ public class MobList {
     public MobList(int t) {
         this.t = t;
         mob = new MobClass();
-        mob.setHp(Global.INSTANCE.getMobDB()[t].getMob().getHp());
+        mob.setMHealth(Global.INSTANCE.getMobDB()[t].getMob().getMHealth());
         mob.setName(Global.INSTANCE.getMobDB()[t].getMob().getName());
-        mob.setDef(Global.INSTANCE.getMobDB()[t].getMob().getDef());
-        mob.setArm(Global.INSTANCE.getMobDB()[t].getMob().getDef());
-        mob.setSpd(Global.INSTANCE.getMobDB()[t].getMob().getSpd());
+        mob.setMDefense(Global.INSTANCE.getMobDB()[t].getMob().getMDefense());
+        mob.setMArmor(Global.INSTANCE.getMobDB()[t].getMob().getMDefense());
+        mob.setMSpeed(Global.INSTANCE.getMobDB()[t].getMob().getMSpeed());
     }
 }

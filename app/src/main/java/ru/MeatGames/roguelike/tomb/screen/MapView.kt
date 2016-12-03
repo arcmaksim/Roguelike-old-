@@ -7,10 +7,10 @@ import android.view.MotionEvent
 import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
-import ru.MeatGames.roguelike.tomb.LogClass
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.fillFrame
+import java.util.*
 
 class MapView(mContext: Context) : View(mContext) {
 
@@ -18,7 +18,7 @@ class MapView(mContext: Context) : View(mContext) {
     val mScreenHeight: Int
 
     val mMaxLogLines = 8
-    var mGameEventsLog: Array<LogClass>
+    var mGameEventsLog: LinkedList<String>
 
     val mBackgroundPaint = Paint()
     val mLightBluePaint = Paint()
@@ -63,7 +63,7 @@ class MapView(mContext: Context) : View(mContext) {
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
 
-        mGameEventsLog = Array(mMaxLogLines, { LogClass() })
+        mGameEventsLog = LinkedList()
 
         mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
         mLightBluePaint.color = resources.getColor(R.color.lightBlue)
@@ -134,7 +134,7 @@ class MapView(mContext: Context) : View(mContext) {
             for (y in camy..camy + 9 - 1) {
                 val cy = y - camy
 
-                if (x > -1 && y > -1 && x < Global.game!!.mw && y < Global.game!!.mh && Global.map!![x][y].see) {
+                if (x > -1 && y > -1 && x < Global.game!!.mw && y < Global.game!!.mh && Global.map!![x][y].mCurrentlyVisible) {
                     val currentPixelXtoDraw = (Global.game!!.step * cx + offsetX).toFloat()
                     val currentPixelYtoDraw = (Global.game!!.step * cy + offsetY).toFloat()
                     val leftDrawBorder = (Global.game!!.step * (cx + 1) + offsetX).toFloat()
@@ -232,8 +232,12 @@ class MapView(mContext: Context) : View(mContext) {
     private fun drawLog(canvas: Canvas) {
         mTextPaint.textSize = 16f
         mTextPaint.textAlign = Paint.Align.LEFT
-        for (c in 0..mMaxLogLines - 1)
-            canvas.drawText(mGameEventsLog[c].t, 5f, (20 + 21 * c).toFloat(), mTextPaint)
+        var count = 0
+        mGameEventsLog.forEach {
+            if (count < mMaxLogLines) {
+                canvas.drawText(it, 5f, (20 + 21 * count++).toFloat(), mTextPaint)
+            }
+        }
     }
 
     // needs to be directly above the hero
@@ -284,9 +288,9 @@ class MapView(mContext: Context) : View(mContext) {
             36 -> {
                 Global.game!!.fillArea(Global.hero!!.mx + mx, Global.hero!!.my + my, 1, 1, Game.getFloor(Global.hero!!.mx + mx, Global.hero!!.my + my), 37)
                 addLine(context.getString(R.string.search_bookshelf_message))
-                if (Global.game!!.rnd.nextInt(3) != 0) {
+                if (Global.game!!.mRandom.nextInt(3) != 0) {
                     addLine(context.getString(R.string.experience_earned_message))
-                    Global.hero!!.modifyStat(20, Global.game!!.rnd.nextInt(4) + 2, 1)
+                    Global.hero!!.modifyStat(20, Global.game!!.mRandom.nextInt(4) + 2, 1)
                 } else {
                     addLine(context.getString(R.string.nothing_interesting_message))
                 }
@@ -294,28 +298,9 @@ class MapView(mContext: Context) : View(mContext) {
         }
     }
 
-    fun clearLog() {
-        for (c in 0..mMaxLogLines - 1)
-            mGameEventsLog[c].t = ""
-    }
+    fun clearLog() = mGameEventsLog.clear()
 
-    fun addLine(s: String) {
-        for (c in 0..mMaxLogLines - 1)
-            if (mGameEventsLog[c].t == "") {
-                mGameEventsLog[c].t = s
-                break
-            }
-    }
-
-    fun addLine1(s: String) {
-        var t = true
-        for (c in 0..mMaxLogLines - 1)
-            if (mGameEventsLog[c].t == s) {
-                t = false
-                break
-            }
-        if (t) addLine(s)
-    }
+    fun addLine(message: String) = mGameEventsLog.add(message)
 
     private fun sign(x: Int): Int {
         return if (x > 0) 1 else if (x < 0) -1 else 0
@@ -356,7 +341,7 @@ class MapView(mContext: Context) : View(mContext) {
         x = xstart
         y = ystart
         err = el / 2
-        Global.map!![x][y].see = true
+        Global.map!![x][y].mCurrentlyVisible = true
         for (t in 0..el - 1) {
             err -= es
             if (err < 0) {
@@ -368,11 +353,11 @@ class MapView(mContext: Context) : View(mContext) {
                 y += pdy
             }
             if (x > -1 && y > -1 && x < Global.game!!.mw && y < Global.game!!.mh) {
-                if (!Global.map!![x][y].see)
-                    Global.map!![x][y].see = v
+                if (!Global.map!![x][y].mCurrentlyVisible)
+                    Global.map!![x][y].mCurrentlyVisible = v
                 if (v)
-                    Global.map!![x][y].dis = true
-                if (!Global.map!![x][y].vis)
+                    Global.map!![x][y].mIsDiscovered = true
+                if (!Global.map!![x][y].mIsTransparent)
                     v = false
             }
         }
@@ -383,10 +368,10 @@ class MapView(mContext: Context) : View(mContext) {
         val cm1 = if (camy < 0) 0 else camy
         for (c in cm..(if (cm + 9 >= Global.game!!.mw) Global.game!!.mw else cm + 9) - 1)
             for (c1 in cm1..(if (cm1 + 9 >= Global.game!!.mw) Global.game!!.mw else cm1 + 9) - 1)
-                Global.map!![c][c1].see = false
+                Global.map!![c][c1].mCurrentlyVisible = false
         for (c in x - 1..x + 2 - 1)
             for (c1 in y - 1..y + 2 - 1)
-                Global.map!![c][c1].see = true
+                Global.map!![c][c1].mCurrentlyVisible = true
         for (c in -1..1) {
             line(x, y, x + c, y - 4)
             line(x, y, x + c, y + 4)
@@ -428,15 +413,15 @@ class MapView(mContext: Context) : View(mContext) {
                 2 -> Global.game!!.move(1, -1)
                 3 -> Global.game!!.move(-1, 0)
                 4 -> {
-                    if (Global.map!![Global.hero!!.mx][Global.hero!!.my].o == 40) {
+                    if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
                         Game.curLvls++
-                        Global.mapg!!.mapGen()
+                        Global.mapg!!.generateMap()
                         Global.game!!.move(0, 0)
                     }
                     if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
                         val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
                         Global.hero!!.addItem(item)
-                        addLine(item.n + " подобран" + item.n1)
+                        addLine(item.mTitle + " подобран" + item.mTitleEnding)
                         Game.v.vibrate(30)
                         Global.game!!.move(0, 0)
                     }

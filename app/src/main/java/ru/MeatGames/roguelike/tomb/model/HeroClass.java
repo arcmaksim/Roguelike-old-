@@ -74,7 +74,7 @@ public class HeroClass {
 
     public void modifyStat(int id, int value, int m) {
         Global.INSTANCE.getStats()[id].setValue(Global.INSTANCE.getStats()[id].getValue() + m * value);
-        if (Global.INSTANCE.getStats()[id].getMaximum() && Global.INSTANCE.getStats()[id].getValue() > Global.INSTANCE.getStats()[id + 1].getValue())
+        if (Global.INSTANCE.getStats()[id].getMIsMaximum() && Global.INSTANCE.getStats()[id].getValue() > Global.INSTANCE.getStats()[id + 1].getValue())
             Global.INSTANCE.getStats()[id].setValue(Global.INSTANCE.getStats()[id + 1].getValue());
         if (id == 20) isLevelUp();
     }
@@ -85,7 +85,7 @@ public class HeroClass {
             modifyStat(21, getStat(21), 1);
             modifyStat(31, 1, 1);
             Global.INSTANCE.getMapview().addLine("Уровень повышен!");
-            int u = Global.INSTANCE.getGame().rnd.nextInt(3) + 2;
+            int u = Global.INSTANCE.getGame().mRandom.nextInt(3) + 2;
             modifyStat(6, u, 1);
             modifyStat(5, u, 1);
             Global.INSTANCE.getMapview().addLine("Здоровье увеличено");
@@ -114,7 +114,7 @@ public class HeroClass {
     }
 
     public boolean isEquiped(Item item) {
-        return equipmentList[item.type - 1] == item;
+        return equipmentList[item.mType - 1] == item;
     }
 
     public void dropItem(Item item) {
@@ -122,7 +122,7 @@ public class HeroClass {
             takeOffItem(item);
         mInventory.remove(item);
         Global.INSTANCE.getMap()[mx][my].addItem(item);
-        Global.INSTANCE.getMapview().addLine(item.n + " выброшен" + item.n1);
+        Global.INSTANCE.getMapview().addLine(item.mTitle + " выброшен" + item.mTitleEnding);
         Global.INSTANCE.getGame().move(0, 0);
     }
 
@@ -131,73 +131,73 @@ public class HeroClass {
     }
 
     public void preequipItem(Item item) {
-        switch (item.type) {
+        switch (item.mType) {
             case 1:
                 equipmentList[0] = item;
-                modifyStat(11, item.val1, 1);
-                modifyStat(12, item.val2, 1);
-                modifyStat(13, item.val3, 1);
+                modifyStat(11, item.mValue1, 1);
+                modifyStat(12, item.mValue2, 1);
+                modifyStat(13, item.mValue3, 1);
                 break;
             case 2:
                 equipmentList[1] = item;
-                modifyStat(19, item.val1, 1);
-                modifyStat(22, item.val2, 1);
+                modifyStat(19, item.mValue1, 1);
+                modifyStat(22, item.mValue2, 1);
                 break;
             case 3:
                 equipmentList[2] = item;
-                modifyStat(19, item.val1, 1);
-                modifyStat(22, item.val2, 1);
+                modifyStat(19, item.mValue1, 1);
+                modifyStat(22, item.mValue2, 1);
                 break;
         }
     }
 
     public void equipItem(Item item) {
-        switch (item.type) {
+        switch (item.mType) {
             case 1:
                 equipmentList[0] = item;
-                if (item.property && equipmentList[1] != null) {
+                if (item.mProperty && equipmentList[1] != null) {
                     takeOffItem(1);
                 }
-                modifyStat(11, item.val1, 1);
-                modifyStat(12, item.val2, 1);
-                modifyStat(13, item.val3, 1);
+                modifyStat(11, item.mValue1, 1);
+                modifyStat(12, item.mValue2, 1);
+                modifyStat(13, item.mValue3, 1);
                 break;
             case 2:
-                if (equipmentList[0] != null && equipmentList[0].property) {
+                if (equipmentList[0] != null && equipmentList[0].mProperty) {
                     takeOffItem(0);
                 }
                 equipmentList[1] = item;
-                modifyStat(19, item.val1, 1);
-                modifyStat(22, item.val2, 1);
+                modifyStat(19, item.mValue1, 1);
+                modifyStat(22, item.mValue2, 1);
                 break;
             case 3:
                 equipmentList[2] = item;
-                modifyStat(19, item.val1, 1);
-                modifyStat(22, item.val2, 1);
+                modifyStat(19, item.mValue1, 1);
+                modifyStat(22, item.mValue2, 1);
                 break;
         }
-        Global.INSTANCE.getMapview().addLine(item.n + " надет" + item.n1);
+        Global.INSTANCE.getMapview().addLine(item.mTitle + " надет" + item.mTitleEnding);
         Global.INSTANCE.getGame().move(0, 0);
     }
 
     public void takeOffItem(Item item) {
-        switch (item.type) {
+        switch (item.mType) {
             case 1:
-                modifyStat(11, item.val1, -1);
-                modifyStat(12, item.val2, -1);
-                modifyStat(13, item.val3, -1);
+                modifyStat(11, item.mValue1, -1);
+                modifyStat(12, item.mValue2, -1);
+                modifyStat(13, item.mValue3, -1);
                 break;
             case 2:
-                modifyStat(19, item.val1, -1);
-                modifyStat(22, item.val2, -1);
+                modifyStat(19, item.mValue1, -1);
+                modifyStat(22, item.mValue2, -1);
                 break;
             case 3:
-                modifyStat(19, item.val1, -1);
-                modifyStat(22, item.val2, -1);
+                modifyStat(19, item.mValue1, -1);
+                modifyStat(22, item.mValue2, -1);
                 break;
         }
-        Global.INSTANCE.getHero().equipmentList[item.type - 1] = null;
-        Global.INSTANCE.getMapview().addLine(item.n + " снят" + item.n1);
+        Global.INSTANCE.getHero().equipmentList[item.mType - 1] = null;
+        Global.INSTANCE.getMapview().addLine(item.mTitle + " снят" + item.mTitleEnding);
         Global.INSTANCE.getGame().move(0, 0);
     }
 

@@ -1,4 +1,4 @@
-package ru.MeatGames.roguelike.tomb
+package ru.MeatGames.roguelike.tomb.db
 
 class RoomDBClass(var x: Int, var y: Int, var lx: Int, var ly: Int) {
 

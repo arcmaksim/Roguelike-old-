@@ -2,51 +2,41 @@ package ru.MeatGames.roguelike.tomb.model;
 
 import android.graphics.Bitmap;
 
+import java.util.LinkedList;
+
 import ru.MeatGames.roguelike.tomb.Global;
-import ru.MeatGames.roguelike.tomb.ItemList;
 import ru.MeatGames.roguelike.tomb.MobList;
 
 public class MapClass {
 
-    public int f;
-    public int o;
-    public ItemList head;
+    public int mFloorID;
+    public int mObjectID;
+    public LinkedList<Item> mItems;
     public MobList mob;
-    public boolean psb;
-    public boolean vis;
-    public boolean see;
-    public boolean dis;
-    public boolean use;
+    public boolean mIsPassable;
+    public boolean mIsTransparent;
+    public boolean mCurrentlyVisible;
+    public boolean mIsDiscovered;
+    public boolean mIsUsable;
 
     public MapClass() {
-        see = false;
-        vis = true;
-        psb = true;
-        dis = false;
+        mCurrentlyVisible = false;
+        mIsTransparent = true;
+        mIsPassable = true;
+        mIsDiscovered = false;
+        mItems = new LinkedList<>();
     }
 
     public void addItem(Item item) {
-        if (head == null) {
-            head = new ItemList();
-            head.item = item;
-        } else {
-            ItemList cur;
-            for (cur = head; cur.next != null; cur = cur.next) {
-            }
-            cur.next = new ItemList();
-            cur.next.item = item;
-        }
+        mItems.add(item);
     }
 
     public Item getItem() {
-        Item res = head.item;
-        head = head.next;
-        return res;
+        return mItems.pop();
     }
 
     public void deleteItems() {
-        while (head != null)
-            getItem();
+        mItems.clear();
     }
 
     public void addMob(MobList mob) {
@@ -59,7 +49,7 @@ public class MapClass {
     }
 
     public boolean hasItem() {
-        return head != null;
+        return mItems.size() != 0;
     }
 
     public boolean hasMob() {
@@ -67,26 +57,19 @@ public class MapClass {
     }
 
     public boolean isWall() {
-        return Global.INSTANCE.getTiles()[o].isWall();
+        return Global.INSTANCE.getTiles()[mObjectID].getMIsWall();
     }
 
     public Bitmap getFloorImg() {
-        return Global.INSTANCE.getTiles()[f].getImg();
+        return Global.INSTANCE.getTiles()[mFloorID].getImg();
     }
 
     public Bitmap getObjectImg() {
-        return Global.INSTANCE.getTiles()[o].getImg();
+        return Global.INSTANCE.getTiles()[mObjectID].getImg();
     }
 
     public Bitmap getItemImg() {
-        Bitmap temp;
-        if (head.next == null) {
-            temp = Global.INSTANCE.getItemDB()[head.item.id].getImg();
-        } else {
-            temp = Global.INSTANCE.getGame().bag;
-        }
-        return temp;
-        //return (head.next == null) ? Global.INSTANCE.getItemDB()[head.item.id].getImg() : Global.INSTANCE.getGame().bag;
+        return (mItems.size() > 1) ? Global.INSTANCE.getGame().bag : Global.INSTANCE.getItemDB()[mItems.get(0).id].getImg();
     }
 
 }

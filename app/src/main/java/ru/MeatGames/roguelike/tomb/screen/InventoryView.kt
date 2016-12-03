@@ -247,7 +247,7 @@ class InventoryView(context: Context) : View(context) {
                             bottom,
                             itemPanelBackground)
                     canvas.drawBitmap(it.image, mItemPanelsLeftBorder, top, null)
-                    canvas.drawText(it.n, 115f, top + mItemPanelHeight / 8 * 5, mSecondaryTextPaint)
+                    canvas.drawText(it.mTitle, 115f, top + mItemPanelHeight / 8 * 5, mSecondaryTextPaint)
                 }
                 q++
             }
@@ -275,7 +275,7 @@ class InventoryView(context: Context) : View(context) {
                 canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game!!.step, bottom, mMainBackgroundPaint)
                 canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
                 canvas.drawBitmap(Global.hero!!.equipmentList[x].image, mItemPanelsLeftBorder, top, null)
-                canvas.drawText(Global.hero!!.equipmentList[x].n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+                canvas.drawText(Global.hero!!.equipmentList[x].mTitle, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
             } else {
                 mSecondaryTextPaint.textAlign = Paint.Align.CENTER
                 canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, top, mMainBackgroundPaint)
@@ -291,7 +291,7 @@ class InventoryView(context: Context) : View(context) {
             canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game!!.step, bottom, mMainBackgroundPaint)
             canvas.drawRect(mItemPanelsLeftBorder + Global.game!!.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
             canvas.drawBitmap(Global.hero!!.equipmentList[2].image, mItemPanelsLeftBorder, top, null)
-            canvas.drawText(Global.hero!!.equipmentList[2].n, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+            canvas.drawText(Global.hero!!.equipmentList[2].mTitle, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
         } else {
             mSecondaryTextPaint.textAlign = Paint.Align.CENTER
             canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
@@ -309,26 +309,26 @@ class InventoryView(context: Context) : View(context) {
         mSecondaryTextPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(context.getString(R.string.empty_stat_label), temp * 0.6F, mItemDetailsBitmapY + img!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
         canvas.drawText(context.getString(R.string.empty_stat_label), mScreenWidth - temp * 0.6F, mItemDetailsBitmapY + img!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
-        canvas.drawText(mSelectedItem!!.n, mScreenWidth * 0.5F, temp1, mMainTextPaint)
-        when (mSelectedItem!!.type) {
+        canvas.drawText(mSelectedItem!!.mTitle, mScreenWidth * 0.5F, temp1, mMainTextPaint)
+        when (mSelectedItem!!.mType) {
             1 -> {
-                if (mSelectedItem!!.property) {
+                if (mSelectedItem!!.mProperty) {
                     canvas.drawText(context.getString(R.string.onehanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
                 } else {
                     canvas.drawText(context.getString(R.string.twohanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
                 }
-                canvas.drawText("Атака +" + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
-                canvas.drawText("Урон " + mSelectedItem!!.val2 + " - " + mSelectedItem!!.val3, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 10, mSecondaryTextPaint)
+                canvas.drawText("Атака +" + mSelectedItem!!.mValue1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Урон " + mSelectedItem!!.mValue2 + " - " + mSelectedItem!!.mValue3, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 10, mSecondaryTextPaint)
             }
             2 -> {
-                canvas.drawText("Защита " + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                canvas.drawText("Броня " + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Защита " + mSelectedItem!!.mValue1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+                canvas.drawText("Броня " + mSelectedItem!!.mValue2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
             }
             3 -> {
-                canvas.drawText("Защита " + mSelectedItem!!.val1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                canvas.drawText("Броня " + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
+                canvas.drawText("Защита " + mSelectedItem!!.mValue1, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+                canvas.drawText("Броня " + mSelectedItem!!.mValue2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
             }
-            5 -> canvas.drawText(Global.stats!![mSelectedItem!!.val1].title + " +" + mSelectedItem!!.val2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
+            5 -> canvas.drawText(Global.stats!![mSelectedItem!!.mValue1].mTitle + " +" + mSelectedItem!!.mValue2, mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
         }
         mSecondaryTextPaint.textAlign = Paint.Align.LEFT
         if (mDrawGear) {
@@ -341,10 +341,10 @@ class InventoryView(context: Context) : View(context) {
             if (mSelectedItem!!.isConsumable) {
                 mLeftSoftButton.mLabel = context.getString(R.string.use_label)
             } else {
-                if (Global.hero!!.equipmentList[mSelectedItem!!.type - 1] == null) {
+                if (Global.hero!!.equipmentList[mSelectedItem!!.mType - 1] == null) {
                     mLeftSoftButton.mLabel = context.getString(R.string.equip_item_label)
                 } else {
-                    if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.type - 1]) {
+                    if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.mType - 1]) {
                         mLeftSoftButton.mLabel = context.getString(R.string.take_off_item_label)
                     } else {
                         mLeftSoftButton.mLabel = context.getString(R.string.change_equipped_item_label)
@@ -451,17 +451,17 @@ class InventoryView(context: Context) : View(context) {
         } else {
             if (mLeftSoftButton.isPressed(sx, sy)) {
                 if (mSelectedItem!!.isConsumable) {
-                    Global.hero!!.modifyStat(mSelectedItem!!.val1, mSelectedItem!!.val2, 1)
-                    Global.mapview!!.addLine(mSelectedItem!!.n + " использован" + mSelectedItem!!.n1)
+                    Global.hero!!.modifyStat(mSelectedItem!!.mValue1, mSelectedItem!!.mValue2, 1)
+                    Global.mapview!!.addLine(mSelectedItem!!.mTitle + " использован" + mSelectedItem!!.mTitleEnding)
                     Global.hero!!.deleteItem(mSelectedItem)
                 } else {
-                    if (Global.hero!!.equipmentList[mSelectedItem!!.type - 1] == null) {
+                    if (Global.hero!!.equipmentList[mSelectedItem!!.mType - 1] == null) {
                         Global.hero!!.equipItem(mSelectedItem)
                     } else {
-                        if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.type - 1]) {
+                        if (mSelectedItem === Global.hero!!.equipmentList[mSelectedItem!!.mType - 1]) {
                             Global.hero!!.takeOffItem(mSelectedItem)
                         } else {
-                            Global.hero!!.takeOffItem(mSelectedItem!!.type - 1)
+                            Global.hero!!.takeOffItem(mSelectedItem!!.mType - 1)
                             Global.hero!!.equipItem(mSelectedItem)
                         }
 
