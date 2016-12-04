@@ -53,7 +53,7 @@ class MapView(mContext: Context) : View(mContext) {
 
     val black: Paint
 
-    val mTempTileSize = Global.game!!.step
+    val mTempTileSize = Global.game.step
 
     init {
         isFocusable = true
@@ -105,7 +105,7 @@ class MapView(mContext: Context) : View(mContext) {
 
             drawHUD(canvas)
 
-            if (Global.game!!.lines) drawLines(canvas)
+            if (Global.game.lines) drawLines(canvas)
             if (mDrawActionsMenu) drawActionsMenu(canvas, mActionCount)
             if (mDrawExitDialog) drawExitDialog(canvas)
 
@@ -134,11 +134,11 @@ class MapView(mContext: Context) : View(mContext) {
             for (y in camy..camy + 9 - 1) {
                 val cy = y - camy
 
-                if (x > -1 && y > -1 && x < Global.game!!.mw && y < Global.game!!.mh && Global.map!![x][y].mCurrentlyVisible) {
-                    val currentPixelXtoDraw = (Global.game!!.step * cx + offsetX).toFloat()
-                    val currentPixelYtoDraw = (Global.game!!.step * cy + offsetY).toFloat()
-                    val leftDrawBorder = (Global.game!!.step * (cx + 1) + offsetX).toFloat()
-                    val rightDrawBorder = (Global.game!!.step * (cy + 1) + offsetY).toFloat()
+                if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh && Global.map!![x][y].mCurrentlyVisible) {
+                    val currentPixelXtoDraw = (Global.game.step * cx + offsetX).toFloat()
+                    val currentPixelYtoDraw = (Global.game.step * cy + offsetY).toFloat()
+                    val leftDrawBorder = (Global.game.step * (cx + 1) + offsetX).toFloat()
+                    val rightDrawBorder = (Global.game.step * (cy + 1) + offsetY).toFloat()
 
                     canvas.drawBitmap(Global.map!![x][y].floorImg, currentPixelXtoDraw, currentPixelYtoDraw, null)
                     canvas.drawBitmap(Global.map!![x][y].objectImg, currentPixelXtoDraw, currentPixelYtoDraw, null)
@@ -163,9 +163,9 @@ class MapView(mContext: Context) : View(mContext) {
     private fun drawHUD(canvas: Canvas) {
         mTextPaint.textAlign = Paint.Align.CENTER
 
-        canvas.drawBitmap(Global.game!!.mInventoryIcon,
-                (mScreenWidth / 8 - Global.game!!.mInventoryIcon.width / 2).toFloat(),
-                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.mInventoryIcon.height) / 2,
+        canvas.drawBitmap(Global.game.mInventoryIcon,
+                (mScreenWidth / 8 - Global.game.mInventoryIcon.width / 2).toFloat(),
+                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game.mInventoryIcon.height) / 2,
                 null)
         canvas.drawText("HP  " + Global.hero!!.getStat(5) + " / " + Global.hero!!.getStat(6),
                 mScreenWidth * 0.5F,
@@ -175,9 +175,9 @@ class MapView(mContext: Context) : View(mContext) {
                 mScreenWidth * 0.5F,
                 mScreenHeight * 0.965F,
                 mTextPaint)
-        canvas.drawBitmap(Global.game!!.mSkipTurnIcon,
-                (mScreenWidth / 8 * 7 - Global.game!!.mSkipTurnIcon.width / 2).toFloat(),
-                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game!!.mSkipTurnIcon.height) / 2,
+        canvas.drawBitmap(Global.game.mSkipTurnIcon,
+                (mScreenWidth / 8 * 7 - Global.game.mSkipTurnIcon.width / 2).toFloat(),
+                mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game.mSkipTurnIcon.height) / 2,
                 null)
         mTextPaint.textAlign = Paint.Align.LEFT
     }
@@ -268,7 +268,7 @@ class MapView(mContext: Context) : View(mContext) {
         mTextPaint.textSize = 24f
         if (mDrawDeathScreen) {
             canvas.drawText(context.getString(R.string.death_from_label), mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
-            canvas.drawBitmap(Global.game!!.lastAttack, (mScreenWidth - Global.game!!.lastAttack.width) * 0.5F, mScreenHeight * 0.425F, null)
+            canvas.drawBitmap(Global.game.lastAttack, (mScreenWidth - Global.game.lastAttack.width) * 0.5F, mScreenHeight * 0.425F, null)
         }
         if (mDrawWinScreen) {
             canvas.drawText(context.getString(R.string.victory_label),  mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
@@ -281,16 +281,16 @@ class MapView(mContext: Context) : View(mContext) {
     private fun afterProgressBar(result: Int) {
         when (result) {
             33 -> {
-                Global.game!!.fillArea(Global.hero!!.mx + mx, Global.hero!!.my + my, 1, 1, Game.getFloor(Global.hero!!.mx + mx, Global.hero!!.my + my), 35)
-                Global.mapview!!.addLine(context.getString(R.string.search_chest_message))
-                Global.game!!.createItem(Global.hero!!.mx + mx, Global.hero!!.my + my)
+                Global.game.fillArea(Global.hero!!.mx + mx, Global.hero!!.my + my, 1, 1, Game.getFloor(Global.hero!!.mx + mx, Global.hero!!.my + my), 35)
+                Global.mapview.addLine(context.getString(R.string.search_chest_message))
+                Global.game.createItem(Global.hero!!.mx + mx, Global.hero!!.my + my)
             }
             36 -> {
-                Global.game!!.fillArea(Global.hero!!.mx + mx, Global.hero!!.my + my, 1, 1, Game.getFloor(Global.hero!!.mx + mx, Global.hero!!.my + my), 37)
+                Global.game.fillArea(Global.hero!!.mx + mx, Global.hero!!.my + my, 1, 1, Game.getFloor(Global.hero!!.mx + mx, Global.hero!!.my + my), 37)
                 addLine(context.getString(R.string.search_bookshelf_message))
-                if (Global.game!!.mRandom.nextInt(3) != 0) {
+                if (Global.game.mRandom.nextInt(3) != 0) {
                     addLine(context.getString(R.string.experience_earned_message))
-                    Global.hero!!.modifyStat(20, Global.game!!.mRandom.nextInt(4) + 2, 1)
+                    Global.hero!!.modifyStat(20, Global.game.mRandom.nextInt(4) + 2, 1)
                 } else {
                     addLine(context.getString(R.string.nothing_interesting_message))
                 }
@@ -352,7 +352,7 @@ class MapView(mContext: Context) : View(mContext) {
                 x += pdx
                 y += pdy
             }
-            if (x > -1 && y > -1 && x < Global.game!!.mw && y < Global.game!!.mh) {
+            if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh) {
                 if (!Global.map!![x][y].mCurrentlyVisible)
                     Global.map!![x][y].mCurrentlyVisible = v
                 if (v)
@@ -366,8 +366,8 @@ class MapView(mContext: Context) : View(mContext) {
     fun calculateLineOfSight(x: Int, y: Int) {
         val cm = if (camx < 0) 0 else camx
         val cm1 = if (camy < 0) 0 else camy
-        for (c in cm..(if (cm + 9 >= Global.game!!.mw) Global.game!!.mw else cm + 9) - 1)
-            for (c1 in cm1..(if (cm1 + 9 >= Global.game!!.mw) Global.game!!.mw else cm1 + 9) - 1)
+        for (c in cm..(if (cm + 9 >= Global.game.mw) Global.game.mw else cm + 9) - 1)
+            for (c1 in cm1..(if (cm1 + 9 >= Global.game.mw) Global.game.mw else cm1 + 9) - 1)
                 Global.map!![c][c1].mCurrentlyVisible = false
         for (c in x - 1..x + 2 - 1)
             for (c1 in y - 1..y + 2 - 1)
@@ -396,10 +396,10 @@ class MapView(mContext: Context) : View(mContext) {
         clearLog()
 
         if (touchY < mScreenWidth * 0.1F && touchX > mScreenWidth * 0.5F)
-            Global.game!!.changeScreen(3)
+            Global.game.changeScreen(3)
 
         if (touchY < mScreenWidth * 0.1F && touchX < mScreenWidth * 0.5F)
-            Global.game!!.lines = !Global.game!!.lines
+            Global.game.lines = !Global.game.lines
 
         val temp = (mScreenHeight - (mScreenHeight + mScreenWidth) * 0.1F) / 3
         if (touchY > mScreenWidth * 0.1F && touchY < mScreenHeight * 0.9F) {
@@ -408,42 +408,42 @@ class MapView(mContext: Context) : View(mContext) {
             val y = ((touchY - mScreenWidth * 0.1F) / temp).toInt()
 
             when (x + y * 3) {
-                0 -> Global.game!!.move(-1, -1)
-                1 -> Global.game!!.move(0, -1)
-                2 -> Global.game!!.move(1, -1)
-                3 -> Global.game!!.move(-1, 0)
+                0 -> Global.game.move(-1, -1)
+                1 -> Global.game.move(0, -1)
+                2 -> Global.game.move(1, -1)
+                3 -> Global.game.move(-1, 0)
                 4 -> {
                     if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
                         Game.curLvls++
                         Global.mapg!!.generateMap()
-                        Global.game!!.move(0, 0)
+                        Global.game.move(0, 0)
                     }
                     if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
                         val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
                         Global.hero!!.addItem(item)
                         addLine(item.mTitle + " подобран" + item.mTitleEnding)
                         Game.v.vibrate(30)
-                        Global.game!!.move(0, 0)
+                        Global.game.move(0, 0)
                     }
                 }
-                5 -> Global.game!!.move(1, 0)
-                6 -> Global.game!!.move(-1, 1)
-                7 -> Global.game!!.move(0, 1)
-                8 -> Global.game!!.move(1, 1)
+                5 -> Global.game.move(1, 0)
+                6 -> Global.game.move(-1, 1)
+                7 -> Global.game.move(0, 1)
+                8 -> Global.game.move(1, 1)
             }
         }
 
         if (touchY > mScreenHeight * 0.9F) {
 
             if (touchX < mScreenWidth * 0.25F)
-                Global.game!!.changeScreen(1)
+                Global.game.changeScreen(1)
 
             if (touchX > mScreenWidth * 0.25F && touchX < mScreenWidth * 0.75F)
-                Global.game!!.changeScreen(2)
+                Global.game.changeScreen(2)
 
             if (touchX > mScreenWidth * 0.75F) {
-                Global.game!!.move(0, 0)
-                Global.mapview!!.addLine(context.getString(R.string.turn_passed_message))
+                Global.game.move(0, 0)
+                Global.mapview.addLine(context.getString(R.string.turn_passed_message))
             }
         }
     }
@@ -451,7 +451,7 @@ class MapView(mContext: Context) : View(mContext) {
     private fun onTouchExitDialog(touchX: Int, touchY: Int) {
         if (touchY > mScreenHeight * 0.48F && touchY < mScreenHeight * 0.59F && touchX > mScreenWidth * 0.05F && touchX < mScreenWidth * 0.95F)
             if (touchX < mScreenWidth * 0.5F)
-                Global.game!!.exitGame()
+                Global.game.exitGame()
             else
                 mDrawExitDialog = false
     }
@@ -460,14 +460,14 @@ class MapView(mContext: Context) : View(mContext) {
         if (touchY > mScreenHeight * 0.9F) {
             mDrawWinScreen = false
             mDrawDeathScreen = mDrawWinScreen
-            Global.game!!.newGame()
+            Global.game.newGame()
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_UP ->
-                if (Global.game!!.tap) {
+                if (Global.game.tap) {
                     val touchX = event.x.toInt()
                     val touchY = event.y.toInt()
                     if (!mDrawProgressBar && !mDrawDeathScreen && !mDrawWinScreen) {

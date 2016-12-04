@@ -75,10 +75,10 @@ class MainMenu(mContext: Context) : View(mContext) {
                 val touchX = event.x.toInt()
                 val touchY = event.y.toInt()
                 if (mNewGameButton.isPressed(touchX, touchY)) {
-                    Global.game!!.changeScreen(0)
+                    Global.game.changeScreen(0)
                 }
                 if (mExitGameButton.isPressed(touchX, touchY)) {
-                    Global.game!!.exitGame()
+                    Global.game.exitGame()
                 }
             }
         }

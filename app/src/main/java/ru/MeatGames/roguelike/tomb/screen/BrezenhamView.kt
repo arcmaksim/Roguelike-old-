@@ -55,13 +55,13 @@ class BrezenhamView(mContext: Context) : View(mContext) {
                 mScreenWidth,
                 mScreenHeight)
 
-        mMarkerSize = (mScreenWidth / Global.game!!.mw).toFloat()
+        mMarkerSize = (mScreenWidth / Global.game.mw).toFloat()
     }
 
     override fun onDraw(canvas: Canvas) {
         canvas.fillFrame(mScreenWidth, mScreenHeight, mBackgroundPaint)
-        for (x in 0..Global.game!!.mw - 1)
-            for (y in 0..Global.game!!.mh - 1) {
+        for (x in 0..Global.game.mw - 1)
+            for (y in 0..Global.game.mh - 1) {
                 if (Global.map!![x][y].mIsDiscovered) {
                     when (Global.map!![x][y].mObjectID) {
                         0 -> canvas.drawRect(x * mMarkerSize,
@@ -99,7 +99,7 @@ class BrezenhamView(mContext: Context) : View(mContext) {
                 val touchX = event.x.toInt()
                 val touchY = event.y.toInt()
                 if(mBackButton.isPressed(touchX, touchY)) {
-                    Global.game!!.changeScreen(0)
+                    Global.game.changeScreen(0)
                 }
             }
         }
