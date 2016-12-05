@@ -32,7 +32,7 @@ class InventoryView(context: Context) : View(context) {
     private val mMaxItemsOnScreen: Int
     private var mItemsOnScreen: Int = 0
 
-    private val mScrollDeadZone = UnitConverter.convertDpToPixels(6F, context)
+    private val mScrollDeadZone = UnitConverter.convertDpToPixels(9F, context)
     private var mCurrentScroll: Int = 0
     private var mMaxScroll: Int = 0
     private var mSavedScroll = 0
@@ -56,6 +56,8 @@ class InventoryView(context: Context) : View(context) {
     private val mItemPanelCombinedHeight: Int // ItemPanelHeight + SpaceBetweenItemPanels
     private val mItemListBorder: Float // bottom
     private val mLabelsOffsetX: Float
+    private val mTextVerticalPadding = UnitConverter.convertDpToPixels(4F, context)
+    private val mTextHorizontalPadding = UnitConverter.convertDpToPixels(10F, context)
 
     // vars for drawing item details
     private val mItemDetailsBitmapY: Float
@@ -141,8 +143,7 @@ class InventoryView(context: Context) : View(context) {
         mItemPanelsTopBorder = mFilterPanelBorder + mItemListPadding
         mSpaceBetweenItemPanels = UnitConverter.convertDpToPixels(2F, context)
 
-        // TODO: change to appropriate value
-        mItemPanelHeight = Global.game.step.toFloat()
+        mItemPanelHeight = UnitConverter.convertDpToPixels(40F, context)
         mItemPanelCombinedHeight = (mItemPanelHeight + mSpaceBetweenItemPanels).toInt()
 
         mLabelsOffsetX = mScreenWidth * 0.104F
@@ -164,7 +165,11 @@ class InventoryView(context: Context) : View(context) {
 
         mItemDetailsBitmapY = mItemPanelsTopBorder // using same height
 
-        mMaxItemsOnScreen = mItemListRect.height() / mItemPanelCombinedHeight
+        mMaxItemsOnScreen = if (mItemListRect.height() % mItemPanelCombinedHeight == 0) {
+            mItemListRect.height() / mItemPanelCombinedHeight
+        } else {
+            mItemListRect.height() / mItemPanelCombinedHeight + 1
+        }
         showItemList()
     }
 
@@ -196,7 +201,11 @@ class InventoryView(context: Context) : View(context) {
         }
 
         mItemsOnScreen = mItemList.size
-        mMaxScroll = if (mItemsOnScreen > mMaxItemsOnScreen) -(mItemsOnScreen - mMaxItemsOnScreen) * mItemPanelCombinedHeight else 0
+        mMaxScroll = if (mItemsOnScreen > mMaxItemsOnScreen) {
+            -(mItemList.size * mItemPanelCombinedHeight - mItemListRect.height())
+        } else {
+            0
+        }
     }
 
     private fun drawFlags(canvas: Canvas) {
@@ -225,10 +234,10 @@ class InventoryView(context: Context) : View(context) {
                     } else {
                         mMainBackgroundPaint
                     }
-                    canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game.step, bottom, itemPanelBackground)
-                    canvas.drawRect(mItemPanelsLeftBorder + Global.game.step - 1, top, mItemPanelsRightBorder, bottom, itemPanelBackground)
-                    canvas.drawBitmap(it.image, mItemPanelsLeftBorder, top, null)
-                    canvas.drawText(it.mTitle, 115f, top + mItemPanelHeight / 8 * 5, mSecondaryTextPaint)
+                    canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, itemPanelBackground)
+                    canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, itemPanelBackground)
+                    canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
+                    canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + mTextVerticalPadding, mSecondaryTextPaint)
                 }
                 q++
             }
@@ -252,10 +261,10 @@ class InventoryView(context: Context) : View(context) {
             val bottom = top + mItemPanelHeight
 
             Global.hero!!.equipmentList[x]?.let {
-                canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game.step, bottom, mMainBackgroundPaint)
-                canvas.drawRect(mItemPanelsLeftBorder + Global.game.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-                canvas.drawBitmap(it.image, mItemPanelsLeftBorder, top, null)
-                canvas.drawText(it.mTitle, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+                canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, mMainBackgroundPaint)
+                canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
+                canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
+                canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
             } ?: let {
                 mSecondaryTextPaint.textAlign = Paint.Align.CENTER
                 canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
@@ -270,10 +279,10 @@ class InventoryView(context: Context) : View(context) {
         val bottom = top + mItemPanelHeight
 
         Global.hero!!.equipmentList[2]?.let {
-            canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + Global.game.step, bottom, mMainBackgroundPaint)
-            canvas.drawRect(mItemPanelsLeftBorder + Global.game.step - 1, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-            canvas.drawBitmap(it.image, mItemPanelsLeftBorder, top, null)
-            canvas.drawText(it.mTitle, 115f, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
+            canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, mMainBackgroundPaint)
+            canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
+            canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
+            canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
         } ?: let {
             mSecondaryTextPaint.textAlign = Paint.Align.CENTER
             canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
