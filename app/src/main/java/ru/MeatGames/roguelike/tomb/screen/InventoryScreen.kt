@@ -41,15 +41,9 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
     // vars for drawing item mItemList
     private var mItemList: LinkedList<Item?> = LinkedList()
     private val mItemListPadding: Float
-    private val mItemPanelsLeftBorder: Float
-    private val mItemPanelsRightBorder: Float
-    private val mItemPanelsTopBorder: Float
-    private val mItemPanelsBottomBorder: Float
     private val mSpaceBetweenItemPanels: Float
     private val mItemPanelHeight: Float
     private val mItemPanelCombinedHeight: Int // ItemPanelHeight + SpaceBetweenItemPanels
-    private val mItemListBorder: Float // bottom
-    private val mLabelsOffsetX: Float
     private val mTextVerticalPadding = UnitConverter.convertDpToPixels(4F, context)
     private val mTextHorizontalPadding = UnitConverter.convertDpToPixels(10F, context)
 
@@ -84,7 +78,6 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
         mSecondaryTextPaint.textAlign = Paint.Align.LEFT
 
         mItemListPadding = UnitConverter.convertDpToPixels(16F, context)
-        mItemListBorder = mScreenHeight * 0.9F
 
         mFilterPanelBorder = mScreenHeight * 0.075F
         mFilterButtonsWidth = mScreenWidth * 0.2F
@@ -115,19 +108,16 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
                 mScreenWidth,
                 mScreenHeight)
 
-        mItemPanelsLeftBorder = mItemListPadding
-        mItemPanelsRightBorder = mScreenWidth - mItemListPadding
-        mItemPanelsBottomBorder = mItemListBorder - mItemListPadding
-        mItemPanelsTopBorder = mFilterPanelBorder + mItemListPadding
         mSpaceBetweenItemPanels = UnitConverter.convertDpToPixels(2F, context)
 
         mItemPanelHeight = UnitConverter.convertDpToPixels(40F, context)
         mItemPanelCombinedHeight = (mItemPanelHeight + mSpaceBetweenItemPanels).toInt()
 
-        mLabelsOffsetX = mScreenWidth * 0.104F
-
         mScreenRect = Rect(0, 0, mScreenWidth, mScreenHeight)
-        mItemListRect = Rect(mItemPanelsLeftBorder.toInt(), mItemPanelsTopBorder.toInt(), mItemPanelsRightBorder.toInt(), mItemPanelsBottomBorder.toInt())
+        mItemListRect = Rect(mItemListPadding.toInt(),
+                (mFilterPanelBorder + mItemListPadding).toInt(),
+                (mScreenWidth - mItemListPadding).toInt(),
+                (mScreenHeight * 0.9F - mItemListPadding).toInt())
 
         mMaxItemsOnScreen = if (mItemListRect.height() % mItemPanelCombinedHeight == 0) {
             mItemListRect.height() / mItemPanelCombinedHeight
@@ -201,17 +191,16 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
             var q = 0
             mItemList.forEach {
                 if (q >= u) {
-                    val top = mItemPanelsTopBorder + (q - u) * (mSpaceBetweenItemPanels + mItemPanelHeight) - offset
+                    val top = mItemListRect.top + (q - u) * (mSpaceBetweenItemPanels + mItemPanelHeight) - offset
                     val bottom = top + mItemPanelHeight
                     val itemPanelBackground = if (!it!!.isConsumable && Global.hero!!.isEquiped(it)) {
                         mGreenBackgroundPaint
                     } else {
                         mMainBackgroundPaint
                     }
-                    canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, itemPanelBackground)
-                    canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, itemPanelBackground)
-                    canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
-                    canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + mTextVerticalPadding, mSecondaryTextPaint)
+                    canvas.drawRect(mItemListRect.left.toFloat(), top, mItemListRect.right.toFloat(), bottom, itemPanelBackground)
+                    canvas.drawBitmap(it.image, mItemListRect.left + (mItemPanelHeight - it.image.width) * 0.5F, top + (mItemPanelHeight - it.image.height) / 2, null)
+                    canvas.drawText(it.mTitle, mItemListRect.left + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + mTextVerticalPadding, mSecondaryTextPaint)
                 }
                 q++
             }
@@ -270,7 +259,7 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
         }
 
         if (mItemListRect.contains(sx, sy)) {
-            val possibleItem = (sy - mItemPanelsTopBorder.toInt() + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
+            val possibleItem = (sy - mItemListRect.top + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
             findItem(possibleItem)?.let {
                 Global.game.selectedItem = it
                 Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
