@@ -22,11 +22,14 @@ class GearScreen(context: Context) : View(context) {
 
     private val mPrimaryArmRect: Rect
     private val mSecondaryArmRect: Rect
+    private val mPrimaryArmAltRect: Rect
     private val mBodyRect: Rect
     private val mGearRect: Rect
 
     private val mLeftSoftButton: TextButton
     private val mBackButton: TextButton
+
+    private val mIsTwoHandedWeaponEquipped: Boolean
 
     init {
         isFocusable = true
@@ -59,8 +62,11 @@ class GearScreen(context: Context) : View(context) {
 
         mPrimaryArmRect = Rect(margin, margin, cardWidth + margin, cardHeight + margin)
         mSecondaryArmRect = Rect(cardWidth + 2 * margin, margin, 2 * (cardWidth + margin), cardHeight + margin)
+        mPrimaryArmAltRect = Rect(margin, margin, (cardWidth + margin) * 2, cardHeight + margin)
         mBodyRect = Rect(mScreenWidth - cardWidth - margin, margin, mScreenWidth - margin, cardHeight + margin)
         mGearRect = Rect(margin, cardHeight + 2 * margin, mScreenWidth - margin, (mScreenHeight * 0.9F).toInt() - margin)
+
+        mIsTwoHandedWeaponEquipped = Global.hero!!.equipmentList[0]?.mProperty ?: false
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -73,15 +79,9 @@ class GearScreen(context: Context) : View(context) {
 
     private fun drawGear(canvas: Canvas) {
         Global.hero!!.equipmentList[0]?.let {
-            if(it.mProperty) {
-                canvas.drawRect(mPrimaryArmRect.left.toFloat(),
-                        mPrimaryArmRect.top.toFloat(),
-                        mSecondaryArmRect.right.toFloat(),
-                        mPrimaryArmRect.bottom.toFloat(),
-                        mMainBackgroundPaint)
-                val centerX = (mSecondaryArmRect.right - mPrimaryArmRect.left) * 0.5F
-                val centerY = (mPrimaryArmRect.bottom - mPrimaryArmRect.top) * 0.5F
-                canvas.drawBitmap(it.image, centerX - it.image.width / 2, centerY - it.image.height / 2, null)
+            if (mIsTwoHandedWeaponEquipped) {
+                canvas.drawRect(mPrimaryArmAltRect, mMainBackgroundPaint)
+                canvas.drawBitmap(it.image, mPrimaryArmAltRect.exactCenterX() - it.image.width / 2, mPrimaryArmAltRect.exactCenterY() - it.image.height / 2, null)
             } else {
                 canvas.drawRect(mPrimaryArmRect, mMainBackgroundPaint)
                 canvas.drawBitmap(it.image, mPrimaryArmRect.exactCenterX() - it.image.width / 2, mPrimaryArmRect.exactCenterY() - it.image.height / 2, null)
@@ -91,11 +91,13 @@ class GearScreen(context: Context) : View(context) {
             canvas.drawText(context.getString(R.string.empty_label), mPrimaryArmRect.exactCenterX(), mPrimaryArmRect.exactCenterY(), mTextPaint)
         }
 
-        canvas.drawRect(mSecondaryArmRect, mMainBackgroundPaint)
-        Global.hero!!.equipmentList[1]?.let {
-            canvas.drawBitmap(it.image, mSecondaryArmRect.exactCenterX() - it.image.width / 2, mSecondaryArmRect.exactCenterY() - it.image.width / 2, null)
-        } ?: let {
-            canvas.drawText(context.getString(R.string.empty_label), mSecondaryArmRect.exactCenterX(), mSecondaryArmRect.exactCenterY(), mTextPaint)
+        if (!mIsTwoHandedWeaponEquipped) {
+            canvas.drawRect(mSecondaryArmRect, mMainBackgroundPaint)
+            Global.hero!!.equipmentList[1]?.let {
+                canvas.drawBitmap(it.image, mSecondaryArmRect.exactCenterX() - it.image.width / 2, mSecondaryArmRect.exactCenterY() - it.image.width / 2, null)
+            } ?: let {
+                canvas.drawText(context.getString(R.string.empty_label), mSecondaryArmRect.exactCenterX(), mSecondaryArmRect.exactCenterY(), mTextPaint)
+            }
         }
 
         canvas.drawRect(mBodyRect, mMainBackgroundPaint)
