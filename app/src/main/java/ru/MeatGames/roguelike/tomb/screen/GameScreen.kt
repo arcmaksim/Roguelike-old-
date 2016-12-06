@@ -8,11 +8,12 @@ import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.Screens
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import java.util.*
 
-class MapView(mContext: Context) : View(mContext) {
+class GameScreen(context: Context) : View(context) {
 
     val mScreenWidth: Int
     val mScreenHeight: Int
@@ -59,7 +60,7 @@ class MapView(mContext: Context) : View(mContext) {
         isFocusable = true
         isFocusableInTouchMode = true
 
-        val screenSize = ScreenHelper.getScreenSize((mContext as Game).windowManager)
+        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
 
@@ -73,7 +74,7 @@ class MapView(mContext: Context) : View(mContext) {
         mDarkShadowPaint.color = resources.getColor(R.color.darkShadow)
         mMenuBackgroundPaint.color = resources.getColor(R.color.menuBackground)
 
-        mTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
+        mTextPaint = ScreenHelper.getDefaultTextPaint(context)
         mTextPaint.textAlign = Paint.Align.LEFT
 
         black = Paint()
@@ -396,7 +397,7 @@ class MapView(mContext: Context) : View(mContext) {
         clearLog()
 
         if (touchY < mScreenWidth * 0.1F && touchX > mScreenWidth * 0.5F)
-            Global.game.changeScreen(3)
+            Global.game.changeScreen(Screens.MAP_SCREEN)
 
         if (touchY < mScreenWidth * 0.1F && touchX < mScreenWidth * 0.5F)
             Global.game.lines = !Global.game.lines
@@ -436,10 +437,10 @@ class MapView(mContext: Context) : View(mContext) {
         if (touchY > mScreenHeight * 0.9F) {
 
             if (touchX < mScreenWidth * 0.25F)
-                Global.game.changeScreen(1)
+                Global.game.changeScreen(Screens.INVENTORY_SCREEN)
 
             if (touchX > mScreenWidth * 0.25F && touchX < mScreenWidth * 0.75F)
-                Global.game.changeScreen(2)
+                Global.game.changeScreen(Screens.CHARACTER_SCREEN)
 
             if (touchX > mScreenWidth * 0.75F) {
                 Global.game.move(0, 0)

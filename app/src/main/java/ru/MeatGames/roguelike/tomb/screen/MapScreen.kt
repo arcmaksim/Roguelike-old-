@@ -9,13 +9,14 @@ import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.Screens
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
 // displays explored map
-class BrezenhamView(mContext: Context) : View(mContext) {
+class MapScreen(context: Context) : View(context) {
 
     val mScreenWidth: Int
     val mScreenHeight: Int
@@ -45,8 +46,8 @@ class BrezenhamView(mContext: Context) : View(mContext) {
         mHeroMarkerPaint.color = resources.getColor(R.color.fredl)
         mExitMarkerPaint.color = resources.getColor(R.color.grs)
 
-        mTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
-        mTextPaint.textSize = UnitConverter.convertSpToPixels(32F, mContext)
+        mTextPaint = ScreenHelper.getDefaultTextPaint(context)
+        mTextPaint.textSize = UnitConverter.convertSpToPixels(32F, context)
 
         mBackButton = TextButton(context, resources.getString(R.string.back_label))
         mBackButton.mTextPaint.textAlign = Paint.Align.RIGHT
@@ -99,7 +100,7 @@ class BrezenhamView(mContext: Context) : View(mContext) {
                 val touchX = event.x.toInt()
                 val touchY = event.y.toInt()
                 if(mBackButton.isPressed(touchX, touchY)) {
-                    Global.game.changeScreen(0)
+                    Global.game.changeScreen(Screens.GAME_SCREEN)
                 }
             }
         }

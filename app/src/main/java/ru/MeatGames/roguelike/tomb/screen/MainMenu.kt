@@ -9,6 +9,7 @@ import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.Screens
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
 import ru.MeatGames.roguelike.tomb.util.fillFrame
@@ -75,7 +76,7 @@ class MainMenu(mContext: Context) : View(mContext) {
                 val touchX = event.x.toInt()
                 val touchY = event.y.toInt()
                 if (mNewGameButton.isPressed(touchX, touchY)) {
-                    Global.game.changeScreen(0)
+                    Global.game.changeScreen(Screens.GAME_SCREEN)
                 }
                 if (mExitGameButton.isPressed(touchX, touchY)) {
                     Global.game.exitGame()

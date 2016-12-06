@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
-import ru.MeatGames.roguelike.tomb.Game
-import ru.MeatGames.roguelike.tomb.Global
-import ru.MeatGames.roguelike.tomb.R
+import ru.MeatGames.roguelike.tomb.*
 import ru.MeatGames.roguelike.tomb.model.Item
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
@@ -14,7 +12,7 @@ import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 import java.util.*
 
-class InventoryView(context: Context) : View(context) {
+class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(context) {
 
     private val mScreenWidth: Int
     private val mScreenHeight: Int
@@ -40,10 +38,6 @@ class InventoryView(context: Context) : View(context) {
     private var scrollPermission = true
     private var tap = false
 
-    // flags for drawing different screens
-    private var mDrawItem = false
-    private var mDrawGear = false
-
     // vars for drawing item mItemList
     private var mItemList: LinkedList<Item?> = LinkedList()
     private val mItemListPadding: Float
@@ -59,21 +53,12 @@ class InventoryView(context: Context) : View(context) {
     private val mTextVerticalPadding = UnitConverter.convertDpToPixels(4F, context)
     private val mTextHorizontalPadding = UnitConverter.convertDpToPixels(10F, context)
 
-    // vars for drawing item details
-    private val mItemDetailsBitmapY: Float
-    private var mSelectedItem: Item? = null
-    private var mSelectedItemBitmap: Bitmap? = null
-
     // regions for touch input and drawing specific screen parts
     private val mScreenRect: Rect
     private val mItemListRect: Rect
-    private val mPrimaryArmRect: Rect
-    private val mSecondaryArmRect: Rect
-    private val mBodyRect: Rect
 
     private val mBackButton: TextButton
     private val mLeftSoftButton: TextButton // needs proper name
-    private val mMiddleSoftButton: TextButton
 
     // vars for touch input and drawing filter buttons
     private val mFilterPanelBorder: Float
@@ -123,13 +108,6 @@ class InventoryView(context: Context) : View(context) {
                 mScreenWidth / 3,
                 mScreenHeight)
 
-        mMiddleSoftButton = TextButton(context, resources.getString(R.string.drop_item_label))
-        mMiddleSoftButton.mDimensions = Rect(mScreenWidth / 3,
-                (mScreenHeight * 0.9F).toInt(),
-                mScreenWidth / 3 * 2,
-                mScreenHeight)
-        mMiddleSoftButton.mIsEnabled = false
-
         mBackButton = TextButton(context, resources.getString(R.string.back_label))
         mBackButton.mTextPaint.textAlign = Paint.Align.RIGHT
         mBackButton.mDimensions = Rect(mScreenWidth / 3 * 2,
@@ -151,25 +129,13 @@ class InventoryView(context: Context) : View(context) {
         mScreenRect = Rect(0, 0, mScreenWidth, mScreenHeight)
         mItemListRect = Rect(mItemPanelsLeftBorder.toInt(), mItemPanelsTopBorder.toInt(), mItemPanelsRightBorder.toInt(), mItemPanelsBottomBorder.toInt())
 
-        var top = mItemPanelsTopBorder + mSpaceBetweenItemPanels + mItemPanelHeight
-        var bottom = top + mItemPanelHeight
-        mPrimaryArmRect = Rect(mItemPanelsLeftBorder.toInt(), top.toInt(), mItemPanelsRightBorder.toInt(), bottom.toInt())
-
-        top = mItemPanelsTopBorder + 2 * (mSpaceBetweenItemPanels + mItemPanelHeight)
-        bottom = top + mItemPanelHeight
-        mSecondaryArmRect = Rect(mItemPanelsLeftBorder.toInt(), top.toInt(), mItemPanelsRightBorder.toInt(), bottom.toInt())
-
-        top = mItemPanelsTopBorder + 4 * (mSpaceBetweenItemPanels + mItemPanelHeight)
-        bottom = top + mItemPanelHeight
-        mBodyRect = Rect(mItemPanelsLeftBorder.toInt(), top.toInt(), mItemPanelsRightBorder.toInt(), bottom.toInt())
-
-        mItemDetailsBitmapY = mItemPanelsTopBorder // using same height
-
         mMaxItemsOnScreen = if (mItemListRect.height() % mItemPanelCombinedHeight == 0) {
             mItemListRect.height() / mItemPanelCombinedHeight
         } else {
             mItemListRect.height() / mItemPanelCombinedHeight + 1
         }
+
+        filter?.let { setFilters(filter) }
         showItemList()
     }
 
@@ -181,6 +147,14 @@ class InventoryView(context: Context) : View(context) {
         mFilterStates[2] = isArmorAllowed
         mFilterStates[3] = isGearAllowed
         mFilterStates[4] = isConsumablesAllowed
+    }
+
+    private fun setFilters(filter: InventoryFilterType) {
+        when(filter) {
+            InventoryFilterType.WEAPONS -> setFilters(true, false, false, false, false)
+            InventoryFilterType.SHIELDS -> setFilters(false, true, false, false, false)
+            InventoryFilterType.ARMOR -> setFilters(false, false, true, false, false)
+        }
     }
 
     private fun isAllowed(item: Item): Boolean =
@@ -249,105 +223,11 @@ class InventoryView(context: Context) : View(context) {
         canvas.clipRect(mScreenRect, Region.Op.REPLACE)
     }
 
-    internal fun drawGear(canvas: Canvas) {
-        val textVerticalPadding = UnitConverter.convertDpToPixels(4F, context)
-        val textHorizontalPadding = UnitConverter.convertDpToPixels(10F, context)
-        canvas.drawText(context.getString(R.string.weapon_lebel),
-                mItemPanelsLeftBorder + textHorizontalPadding,
-                mItemPanelsTopBorder + mItemPanelHeight * 0.5F + textVerticalPadding,
-                mSecondaryTextPaint)
-        for (x in 0..1) {
-            val top = mItemPanelsTopBorder + (x + 1) * (mSpaceBetweenItemPanels + mItemPanelHeight)
-            val bottom = top + mItemPanelHeight
-
-            Global.hero!!.equipmentList[x]?.let {
-                canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, mMainBackgroundPaint)
-                canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-                canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
-                canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
-            } ?: let {
-                mSecondaryTextPaint.textAlign = Paint.Align.CENTER
-                canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-                canvas.drawText(context.getString(R.string.empty_label), mScreenWidth * 0.5F, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
-                mSecondaryTextPaint.textAlign = Paint.Align.LEFT
-            }
-
-        }
-        var top = mItemPanelsTopBorder + 3 * (mSpaceBetweenItemPanels + mItemPanelHeight)
-        canvas.drawText(context.getString(R.string.armor_label), mItemPanelsLeftBorder + textHorizontalPadding, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
-        top = mItemPanelsTopBorder + 4 * (mSpaceBetweenItemPanels + mItemPanelHeight)
-        val bottom = top + mItemPanelHeight
-
-        Global.hero!!.equipmentList[2]?.let {
-            canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsLeftBorder + mItemPanelHeight + 1, bottom, mMainBackgroundPaint)
-            canvas.drawRect(mItemPanelsLeftBorder + mItemPanelHeight, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-            canvas.drawBitmap(it.image, mItemPanelsLeftBorder + (mItemPanelHeight - it.image.width) / 2, top + (mItemPanelHeight - it.image.height) / 2, null)
-            canvas.drawText(it.mTitle, mItemPanelsLeftBorder + mItemPanelHeight + mTextHorizontalPadding, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
-        } ?: let {
-            mSecondaryTextPaint.textAlign = Paint.Align.CENTER
-            canvas.drawRect(mItemPanelsLeftBorder, top, mItemPanelsRightBorder, bottom, mMainBackgroundPaint)
-            canvas.drawText(context.getString(R.string.empty_label), mScreenWidth * 0.5F, top + mItemPanelHeight * 0.5F + textVerticalPadding, mSecondaryTextPaint)
-            mSecondaryTextPaint.textAlign = Paint.Align.LEFT
-        }
-
-        mLeftSoftButton.mLabel = context.getString(R.string.inventory_label)
-    }
-
-    private fun drawItem(canvas: Canvas) {
-        val temp = (mScreenWidth - mSelectedItemBitmap!!.width) * 0.5F
-        val temp1 = UnitConverter.convertDpToPixels(16F, context) + mItemDetailsBitmapY + mSelectedItemBitmap!!.height
-        val textHeightAdjustment = UnitConverter.convertDpToPixels(4F, context)
-        canvas.drawBitmap(mSelectedItemBitmap!!, temp, mItemDetailsBitmapY, null)
-        mSecondaryTextPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(context.getString(R.string.empty_stat_label), temp * 0.6F, mItemDetailsBitmapY + mSelectedItemBitmap!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
-        canvas.drawText(context.getString(R.string.empty_stat_label), mScreenWidth - temp * 0.6F, mItemDetailsBitmapY + mSelectedItemBitmap!!.height / 2 + textHeightAdjustment, mSecondaryTextPaint)
-        canvas.drawText(mSelectedItem!!.mTitle, mScreenWidth * 0.5F, temp1, mMainTextPaint)
-        when (mSelectedItem!!.mType) {
-            1 -> {
-                if (!mSelectedItem!!.mProperty) {
-                    canvas.drawText(context.getString(R.string.onehanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                } else {
-                    canvas.drawText(context.getString(R.string.twohanded_weapon_label), mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                }
-                canvas.drawText("Атака +${mSelectedItem!!.mValue1}", mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
-                canvas.drawText("Урон ${mSelectedItem!!.mValue2} - ${mSelectedItem!!.mValue3}", mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 10, mSecondaryTextPaint)
-            }
-            2, 3 -> {
-                canvas.drawText("Защита ${mSelectedItem!!.mValue1}", mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-                canvas.drawText("Броня ${mSelectedItem!!.mValue2}", mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 7, mSecondaryTextPaint)
-            }
-            5 -> canvas.drawText("${Global.stats[mSelectedItem!!.mValue1].mTitle} +${mSelectedItem!!.mValue2}", mScreenWidth * 0.5F, temp1 + textHeightAdjustment * 4, mSecondaryTextPaint)
-        }
-        if (mSelectedItem!!.isConsumable) {
-            mLeftSoftButton.mLabel = context.getString(R.string.use_label)
-        } else {
-
-            Global.hero!!.equipmentList[mSelectedItem!!.mType - 1]?.let {
-                mLeftSoftButton.mLabel = if (mSelectedItem == it) {
-                    context.getString(R.string.take_off_item_label)
-                } else {
-                    context.getString(R.string.change_equipped_item_label)
-                }
-            } ?: let {
-                mLeftSoftButton.mLabel = context.getString(R.string.equip_item_label)
-            }
-
-        }
-        mSecondaryTextPaint.textAlign = Paint.Align.LEFT
-    }
-
     override fun onDraw(canvas: Canvas) {
         canvas.fillFrame(mScreenWidth, mScreenHeight, mMainBackgroundPaint)
-        if (mDrawItem) {
-            drawItem(canvas)
-        } else if (mDrawGear) {
-            drawGear(canvas)
-        } else {
-            drawFlags(canvas)
-            drawList(canvas)
-        }
+        drawFlags(canvas)
+        drawList(canvas)
         mLeftSoftButton.draw(canvas)
-        mMiddleSoftButton.draw(canvas)
         mBackButton.draw(canvas)
         mSecondaryTextPaint.textAlign = Paint.Align.LEFT
         postInvalidate()
@@ -358,33 +238,13 @@ class InventoryView(context: Context) : View(context) {
                              isArmorAllowed: Boolean = mFilterStates[2],
                              isGearAllowed: Boolean = mFilterStates[3],
                              isConsumablesAllowed: Boolean = mFilterStates[4]) {
-        mDrawGear = false
-        mDrawItem = false
         scrollPermission = true
 
         mCurrentScroll = 0
         mSavedScroll = 0
 
-        mMiddleSoftButton.mIsEnabled = false
-
         setFilters(isWeaponsAllowed, isShieldsAllowed, isArmorAllowed, isGearAllowed, isConsumablesAllowed)
         populateItemList()
-    }
-
-    private fun showGear() {
-        mDrawGear = true
-        mDrawItem = false
-        scrollPermission = false
-
-        mMiddleSoftButton.mIsEnabled = false
-    }
-
-    private fun showSelectedItem(selectedItem: Item) {
-        mSelectedItem = selectedItem
-        mSelectedItemBitmap = Bitmap.createScaledBitmap(selectedItem.image, 168, 168, false)
-        mDrawItem = true
-        scrollPermission = false
-        mMiddleSoftButton.mIsEnabled = true
     }
 
     private fun findItem(id: Int): Item? {
@@ -395,76 +255,6 @@ class InventoryView(context: Context) : View(context) {
         }
     }
 
-    private fun onTouchGear(sx: Int, sy: Int) {
-        if (mPrimaryArmRect.contains(sx, sy)) {
-            Global.hero!!.equipmentList[0]?.let {
-                showSelectedItem(it)
-            } ?: let {
-                showItemList(true, false, false, false, false)
-            }
-        }
-
-        if (mSecondaryArmRect.contains(sx, sy)) {
-            Global.hero!!.equipmentList[1]?.let {
-                showSelectedItem(it)
-            } ?: let {
-                showItemList(false, true, false, false, false)
-            }
-        }
-
-        if (mBodyRect.contains(sx, sy)) {
-            Global.hero!!.equipmentList[2]?.let {
-                showSelectedItem(it)
-            } ?: let {
-                showItemList(false, false, true, false, false)
-            }
-        }
-
-        if (mLeftSoftButton.isPressed(sx, sy)) {
-            showItemList()
-        }
-
-        if (mBackButton.isPressed(sx, sy)) {
-            Global.game.changeScreen(0)
-        }
-    }
-
-    fun onTouchItem(sx: Int, sy: Int) {
-        if (mLeftSoftButton.isPressed(sx, sy)) {
-            if (mSelectedItem!!.isConsumable) {
-                Global.hero!!.modifyStat(mSelectedItem!!.mValue1, mSelectedItem!!.mValue2, 1)
-                Global.mapview.addLine("${mSelectedItem!!.mTitle} использован${mSelectedItem!!.mTitleEnding}")
-                Global.hero!!.deleteItem(mSelectedItem)
-            } else {
-                Global.hero!!.equipmentList[mSelectedItem!!.mType - 1]?.let {
-                    if (mSelectedItem == it) {
-                        Global.hero!!.takeOffItem(it)
-                    } else {
-                        Global.hero!!.takeOffItem(it.mType - 1)
-                        Global.hero!!.equipItem(mSelectedItem)
-                    }
-                } ?: let {
-                    Global.hero!!.equipItem(mSelectedItem)
-                }
-            }
-            Global.game.changeScreen(0)
-        }
-
-        if (mMiddleSoftButton.isPressed(sx, sy)) {
-            Global.hero!!.dropItem(mSelectedItem)
-            Game.v.vibrate(30)
-            Global.game.changeScreen(0)
-        }
-
-        if (mBackButton.isPressed(sx, sy)) {
-            if (mDrawGear) {
-                showGear()
-            } else {
-                showItemList()
-            }
-        }
-    }
-
     fun onTouchInv(sx: Int, sy: Int) {
         if (sy < mFilterPanelBorder) { // filter buttons panel
             mFilterStates[sx / mFilterButtonsWidth.toInt()] = !mFilterStates[sx / (mScreenWidth / 5)]
@@ -472,17 +262,18 @@ class InventoryView(context: Context) : View(context) {
         }
 
         if (mLeftSoftButton.isPressed(sx, sy)) {
-            showGear()
+            Global.game.changeScreen(Screens.GEAR_SCREEN)
         }
 
         if (mBackButton.isPressed(sx, sy)) {
-            Global.game.changeScreen(0)
+            Global.game.changeScreen(Screens.GAME_SCREEN)
         }
 
         if (mItemListRect.contains(sx, sy)) {
             val possibleItem = (sy - mItemPanelsTopBorder.toInt() + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
             findItem(possibleItem)?.let {
-                showSelectedItem(it)
+                Global.game.selectedItem = it
+                Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
             }
         }
     }
@@ -523,13 +314,9 @@ class InventoryView(context: Context) : View(context) {
             }
             MotionEvent.ACTION_UP -> {
                 if (!scroll) {
-                    if (tap)
-                        if (mDrawItem) {
-                            onTouchItem(sx, sy)
-                        } else if (mDrawGear) {
-                            onTouchGear(sx, sy)
-                        } else
-                            onTouchInv(sx, sy)
+                    if (tap) {
+                        onTouchInv(sx, sy)
+                    }
                 } else {
                     mSavedScroll += mCurrentScroll
                     mCurrentScroll = 0

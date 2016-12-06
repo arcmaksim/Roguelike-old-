@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.View;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -18,11 +19,13 @@ import ru.MeatGames.roguelike.tomb.db.TileDB;
 import ru.MeatGames.roguelike.tomb.model.HeroClass;
 import ru.MeatGames.roguelike.tomb.model.Item;
 import ru.MeatGames.roguelike.tomb.model.MapClass;
-import ru.MeatGames.roguelike.tomb.screen.BrezenhamView;
-import ru.MeatGames.roguelike.tomb.screen.InventoryView;
+import ru.MeatGames.roguelike.tomb.screen.CharacterScreen;
+import ru.MeatGames.roguelike.tomb.screen.DetailedItemScreen;
+import ru.MeatGames.roguelike.tomb.screen.GameScreen;
+import ru.MeatGames.roguelike.tomb.screen.GearScreen;
+import ru.MeatGames.roguelike.tomb.screen.InventoryScreen;
 import ru.MeatGames.roguelike.tomb.screen.MainMenu;
-import ru.MeatGames.roguelike.tomb.screen.MapView;
-import ru.MeatGames.roguelike.tomb.screen.StatsView;
+import ru.MeatGames.roguelike.tomb.screen.MapScreen;
 import ru.MeatGames.roguelike.tomb.util.AssetHelper;
 
 public class Game extends Activity {
@@ -54,6 +57,9 @@ public class Game extends Activity {
     public Bitmap bag;
     public MobList firstMob;
     public int[][] zone;
+    // TODO: temporal solution
+    public Item selectedItem;
+    private Screens lastScreen;
 
     public static Bitmap getHeroImg(int n) {
         return Global.INSTANCE.getHero().img[n];
@@ -83,7 +89,7 @@ public class Game extends Activity {
         Global.INSTANCE.setHero(new HeroClass());
         Global.INSTANCE.setMapg(new MapGenerationClass());
         Global.INSTANCE.setMmview(new MainMenu(this));
-        Global.INSTANCE.setMapview(new MapView(this));
+        Global.INSTANCE.setMapview(new GameScreen(this));
 
         zone = new int[11][11];
 
@@ -108,36 +114,48 @@ public class Game extends Activity {
         curLvls = 0;
         Global.INSTANCE.getMapg().generateMap();
         Global.INSTANCE.getMapview().clearLog();
-        changeScreen(4);
+        changeScreen(Screens.MAIN_MENU);
     }
 
-    public void changeScreen(int u) {
-        scr = u;
-        switch (u) {
-            case 0:
-                setContentView(Global.INSTANCE.getMapview());
-                Global.INSTANCE.getMapview().requestFocus();
+    public void changeScreen(Screens screen) {
+        View view = null;
+        switch (screen) {
+            case GAME_SCREEN:
+                view = Global.INSTANCE.getMapview();
                 break;
-            case 1:
-                InventoryView inventoryScreen = new InventoryView(this);
-                setContentView(inventoryScreen);
-                inventoryScreen.requestFocus();
+            case INVENTORY_SCREEN:
+                lastScreen = Screens.INVENTORY_SCREEN;
+                view = new InventoryScreen(this, null);
                 break;
-            case 2:
-                StatsView characterScreen = new StatsView(this);
-                setContentView(characterScreen);
-                characterScreen.requestFocus();
+            case CHARACTER_SCREEN:
+                view = new CharacterScreen(this);
                 break;
-            case 3:
-                BrezenhamView mapScreen = new BrezenhamView(this);
-                setContentView(mapScreen);
-                mapScreen.requestFocus();
+            case MAP_SCREEN:
+                view = new MapScreen(this);
                 break;
-            case 4:
-                setContentView(Global.INSTANCE.getMmview());
-                Global.INSTANCE.getMmview().requestFocus();
+            case MAIN_MENU:
+                view = Global.INSTANCE.getMmview();
+                break;
+            case GEAR_SCREEN:
+                lastScreen = Screens.GEAR_SCREEN;
+                view = new GearScreen(this);
+                break;
+            case DETAILED_ITEM_SCREEN:
+                view = new DetailedItemScreen(this, selectedItem);
                 break;
         }
+        setContentView(view);
+        view.requestFocus();
+    }
+
+    public void changeToLastScreen() {
+        changeScreen(lastScreen);
+    }
+
+    public void showInventoryWithFilters(InventoryFilterType filter) {
+        InventoryScreen inventoryScreen = new InventoryScreen(this, filter);
+        setContentView(inventoryScreen);
+        inventoryScreen.requestFocus();
     }
 
     public Item createItem() {
@@ -661,4 +679,5 @@ public class Game extends Activity {
         });
         t.start();
     }
+
 }
