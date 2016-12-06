@@ -123,23 +123,32 @@ class GearScreen(context: Context) : View(context) {
     }
 
     private fun onTouchGear(sx: Int, sy: Int) {
-        if (mPrimaryArmRect.contains(sx, sy)) {
-            Global.hero!!.equipmentList[0]?.let {
-                Global.game.selectedItem = it
+        // TODO: temporal solution
+        if (mIsTwoHandedWeaponEquipped) {
+            if (mPrimaryArmAltRect.contains(sx, sy)) {
+                Global.game.selectedItem = Global.hero!!.equipmentList[0]
                 Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
-            } ?: let {
-                Global.game.showInventoryWithFilters(InventoryFilterType.WEAPONS)
+            }
+        } else {
+            if (mPrimaryArmRect.contains(sx, sy)) {
+                Global.hero!!.equipmentList[0]?.let {
+                    Global.game.selectedItem = it
+                    Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
+                } ?: let {
+                    Global.game.showInventoryWithFilters(InventoryFilterType.WEAPONS)
+                }
+            }
+
+            if (mSecondaryArmRect.contains(sx, sy)) {
+                Global.hero!!.equipmentList[1]?.let {
+                    Global.game.selectedItem = it
+                    Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
+                } ?: let {
+                    Global.game.showInventoryWithFilters(InventoryFilterType.SHIELDS)
+                }
             }
         }
 
-        if (mSecondaryArmRect.contains(sx, sy)) {
-            Global.hero!!.equipmentList[1]?.let {
-                Global.game.selectedItem = it
-                Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
-            } ?: let {
-                Global.game.showInventoryWithFilters(InventoryFilterType.SHIELDS)
-            }
-        }
 
         if (mBodyRect.contains(sx, sy)) {
             Global.hero!!.equipmentList[2]?.let {
