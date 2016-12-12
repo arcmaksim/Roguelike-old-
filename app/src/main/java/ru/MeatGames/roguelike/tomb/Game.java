@@ -26,6 +26,7 @@ import ru.MeatGames.roguelike.tomb.screen.GearScreen;
 import ru.MeatGames.roguelike.tomb.screen.InventoryScreen;
 import ru.MeatGames.roguelike.tomb.screen.MainMenu;
 import ru.MeatGames.roguelike.tomb.screen.MapScreen;
+import ru.MeatGames.roguelike.tomb.screen.Screens;
 import ru.MeatGames.roguelike.tomb.util.AssetHelper;
 
 public class Game extends Activity {
@@ -87,7 +88,6 @@ public class Game extends Activity {
         Global.INSTANCE.setMAssetHelper(new AssetHelper(getAssets()));
 
         Global.INSTANCE.setHero(new HeroClass());
-        Global.INSTANCE.setMapg(new MapGenerationClass());
         Global.INSTANCE.setMmview(new MainMenu(this));
         Global.INSTANCE.setMapview(new GameScreen(this));
 
@@ -112,7 +112,7 @@ public class Game extends Activity {
     public void newGame() {
         Global.INSTANCE.getHero().newHero();
         curLvls = 0;
-        Global.INSTANCE.getMapg().generateMap();
+        generateNewMap();
         Global.INSTANCE.getMapview().clearLog();
         changeScreen(Screens.MAIN_MENU);
     }
@@ -156,6 +156,11 @@ public class Game extends Activity {
         InventoryScreen inventoryScreen = new InventoryScreen(this, filter);
         setContentView(inventoryScreen);
         inventoryScreen.requestFocus();
+    }
+
+    public void generateNewMap() {
+        MapGenerator mapGenerator = new MapGenerator();
+        mapGenerator.generateMap();
     }
 
     public Item createItem() {

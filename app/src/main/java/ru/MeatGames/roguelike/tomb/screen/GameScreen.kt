@@ -8,7 +8,6 @@ import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
-import ru.MeatGames.roguelike.tomb.Screens
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import java.util.*
@@ -416,13 +415,13 @@ class GameScreen(context: Context) : View(context) {
                 4 -> {
                     if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
                         Game.curLvls++
-                        Global.mapg!!.generateMap()
+                        Global.game.generateNewMap()
                         Global.game.move(0, 0)
                     }
                     if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
                         val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
                         Global.hero!!.addItem(item)
-                        addLine(item.mTitle + " подобран" + item.mTitleEnding)
+                        addLine("${item.mTitle} подобран${item.mTitleEnding}")
                         Game.v.vibrate(30)
                         Global.game.move(0, 0)
                     }

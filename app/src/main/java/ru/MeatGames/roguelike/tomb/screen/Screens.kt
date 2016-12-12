@@ -1,8 +1,5 @@
-package ru.MeatGames.roguelike.tomb
+package ru.MeatGames.roguelike.tomb.screen
 
-/**
- * Created by MeatBoy on 12/6/2016.
- */
 enum class Screens(val screenID: Int) {
     MAIN_MENU(0),
     GAME_SCREEN(1),

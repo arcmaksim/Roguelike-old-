@@ -14,7 +14,6 @@ object Global {
 
     lateinit var game: Game
     var hero: HeroClass? = null
-    var mapg: MapGenerationClass? = null
     lateinit var mapview: GameScreen
     lateinit var mmview: MainMenu
     var map: Array<Array<MapClass>>? = null

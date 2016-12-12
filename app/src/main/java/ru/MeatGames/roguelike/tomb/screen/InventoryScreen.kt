@@ -4,7 +4,10 @@ import android.content.Context
 import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
-import ru.MeatGames.roguelike.tomb.*
+import ru.MeatGames.roguelike.tomb.Game
+import ru.MeatGames.roguelike.tomb.Global
+import ru.MeatGames.roguelike.tomb.InventoryFilterType
+import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.model.Item
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
@@ -259,7 +262,7 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
         }
 
         if (mItemListRect.contains(sx, sy)) {
-            val possibleItem = (sy - mItemListRect.top + -mSavedScroll % mItemPanelCombinedHeight - mSavedScroll) / mItemPanelCombinedHeight
+            val possibleItem = (sy - mItemListRect.top - mSavedScroll) / mItemPanelCombinedHeight
             findItem(possibleItem)?.let {
                 Global.game.selectedItem = it
                 Global.game.changeScreen(Screens.DETAILED_ITEM_SCREEN)
