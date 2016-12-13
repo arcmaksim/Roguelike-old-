@@ -46,14 +46,14 @@ class GameScreen(context: Context) : View(context) {
 
     var mIsItemPicked = false // currently not used
 
-    var mActionCount: Int = 0
+    var mActionCount: Int = 0 // currently not used
 
     val mTileSize = Global.game.actualTileSize
     val mScaleAmount = Global.game.scaleAmount
     val mBitmapPaint = Paint()
 
-    val mOffsetX: Float
-    val mOffsetY: Float
+    val mMapOffsetX: Float
+    val mMapOffsetY: Float
 
     // hero'single move directions
     var mx: Int = 0
@@ -92,8 +92,8 @@ class GameScreen(context: Context) : View(context) {
 
         mBitmapPaint.isFilterBitmap = false
 
-        mOffsetX = (mScreenWidth - mTileSize * 9) / 2 / mScaleAmount
-        mOffsetY = (mScreenHeight - mTileSize * 9) / 2 / mScaleAmount
+        mMapOffsetX = (mScreenWidth - mTileSize * 9) / 2 / mScaleAmount
+        mMapOffsetY = (mScreenHeight - mTileSize * 9) / 2 / mScaleAmount
     }
 
     fun initProgressBar(tileID: Int, duration: Int) {
@@ -146,30 +146,33 @@ class GameScreen(context: Context) : View(context) {
 
         for (x in camx..camx + 9 - 1) {
             val cx = x - camx
+            val currentPixelXtoDraw = (Global.game.mTileSize * cx + mMapOffsetX)
+            val leftDrawBorder = (Global.game.mTileSize * (cx + 1) + mMapOffsetX)
 
             for (y in camy..camy + 9 - 1) {
                 val cy = y - camy
+                val currentPixelYtoDraw = (Global.game.mTileSize * cy + mMapOffsetY)
+                val rightDrawBorder = (Global.game.mTileSize * (cy + 1) + mMapOffsetY)
 
                 if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh && Global.map!![x][y].mCurrentlyVisible) {
-                    val currentPixelXtoDraw = (Global.game.mTileSize * cx + mOffsetX)
-                    val currentPixelYtoDraw = (Global.game.mTileSize * cy + mOffsetY)
-                    val leftDrawBorder = (Global.game.mTileSize * (cx + 1) + mOffsetX)
-                    val rightDrawBorder = (Global.game.mTileSize * (cy + 1) + mOffsetY)
-
                     canvas.drawBitmap(Global.map!![x][y].floorImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
                     canvas.drawBitmap(Global.map!![x][y].objectImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
 
-                    if (Global.map!![x][y].hasItem())
+                    if (Global.map!![x][y].hasItem()) {
                         canvas.drawBitmap(Global.map!![x][y].itemImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
+                    }
 
-                    if (Global.map!![x][y].hasMob())
+                    if (Global.map!![x][y].hasMob()) {
                         canvas.drawBitmap(Global.map!![x][y].mob.getImg(animationFrame), currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
+                    }
 
-                    if ((cx - 4 == 0 || cy - 4 == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 3 || cx - 4 != 0 && cy - 4 != 0 && Math.abs(cx - 4) + Math.abs(cy - 4) == 4)
+                    if ((cx - 4 == 0 || cy - 4 == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 3 || cx - 4 != 0 && cy - 4 != 0 && Math.abs(cx - 4) + Math.abs(cy - 4) == 4) {
                         canvas.drawRect(currentPixelXtoDraw, currentPixelYtoDraw, leftDrawBorder, rightDrawBorder, mLightShadowPaint)
+                    }
 
-                    if ((Math.abs(cx - 4) == 0 || Math.abs(cy - 4) == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 4 || (Math.abs(cx - 4) != 0 || Math.abs(cy - 4) != 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 5 || Math.abs(cx - 4) == Math.abs(cy - 4) && Math.abs(cx - 4) == 3)
+                    if ((Math.abs(cx - 4) == 0 || Math.abs(cy - 4) == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 4 || (Math.abs(cx - 4) != 0 || Math.abs(cy - 4) != 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 5 || Math.abs(cx - 4) == Math.abs(cy - 4) && Math.abs(cx - 4) == 3) {
                         canvas.drawRect(currentPixelXtoDraw, currentPixelYtoDraw, leftDrawBorder, rightDrawBorder, mDarkShadowPaint)
+                    }
                 }
             }
         }
@@ -182,11 +185,11 @@ class GameScreen(context: Context) : View(context) {
                 (mScreenWidth / 8 - Global.game.mInventoryIcon.width / 2).toFloat(),
                 mScreenHeight * 0.9F + (mScreenHeight * 0.1F - Global.game.mInventoryIcon.height) / 2,
                 null)
-        canvas.drawText("HP  " + Global.hero!!.getStat(5) + " / " + Global.hero!!.getStat(6),
+        canvas.drawText("HP  ${Global.hero!!.getStat(5)} / ${Global.hero!!.getStat(6)}",
                 mScreenWidth * 0.5F,
                 mScreenHeight * 0.94F,
                 mTextPaint)
-        canvas.drawText("MP  " + Global.hero!!.getStat(7) + " / " + Global.hero!!.getStat(8),
+        canvas.drawText("MP  ${Global.hero!!.getStat(7)} / ${Global.hero!!.getStat(8)}",
                 mScreenWidth * 0.5F,
                 mScreenHeight * 0.965F,
                 mTextPaint)
@@ -203,7 +206,7 @@ class GameScreen(context: Context) : View(context) {
         val r = 190f
         var x: Int
         var y: Int
-        canvas.drawRect(0f, 0f, 480f, 800f, mMenuBackgroundPaint)
+        canvas.fillFrame(mScreenWidth, mScreenHeight, mMenuBackgroundPaint)
         for (c in 0..n - 1) {
             x = (r * Math.cos(Math.toRadians((270 + z * c).toDouble()))).toInt()
             y = (r * Math.sin(Math.toRadians((270 + z * c).toDouble()))).toInt()
@@ -413,51 +416,47 @@ class GameScreen(context: Context) : View(context) {
     private fun onTouchMain(touchX: Int, touchY: Int) {
         clearLog()
 
-        if (touchY < mScreenWidth * 0.1F && touchX > mScreenWidth * 0.5F)
+        if (touchY < mScreenWidth * 0.1F && touchX > mScreenWidth * 0.5F) {
             Global.game.changeScreen(Screens.MAP_SCREEN)
+        }
 
-        if (touchY < mScreenWidth * 0.1F && touchX < mScreenWidth * 0.5F)
+        if (touchY < mScreenWidth * 0.1F && touchX < mScreenWidth * 0.5F) {
             Global.game.lines = !Global.game.lines
+        }
 
         val temp = (mScreenHeight - (mScreenHeight + mScreenWidth) * 0.1F) / 3
         if (touchY > mScreenWidth * 0.1F && touchY < mScreenHeight * 0.9F) {
 
-            val x = touchX / (mScreenWidth / 3)
-            val y = ((touchY - mScreenWidth * 0.1F) / temp).toInt()
+            val x = touchX / (mScreenWidth / 3) - 1
+            val y = ((touchY - mScreenWidth * 0.1F) / temp).toInt() - 1
 
-            when (x + y * 3) {
-                0 -> Global.game.move(-1, -1)
-                1 -> Global.game.move(0, -1)
-                2 -> Global.game.move(1, -1)
-                3 -> Global.game.move(-1, 0)
-                4 -> {
-                    if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
-                        Game.curLvls++
-                        Global.game.generateNewMap()
-                        Global.game.move(0, 0)
-                    }
-                    if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
-                        val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
-                        Global.hero!!.addItem(item)
-                        addLine("${item.mTitle} подобран${item.mTitleEnding}")
-                        Game.v.vibrate(30)
-                        Global.game.move(0, 0)
-                    }
+            if (x == 0 && y == 0) {
+                if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
+                    Game.curLvls++
+                    Global.game.generateNewMap()
+                    Global.game.move(0, 0)
                 }
-                5 -> Global.game.move(1, 0)
-                6 -> Global.game.move(-1, 1)
-                7 -> Global.game.move(0, 1)
-                8 -> Global.game.move(1, 1)
+                if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
+                    val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
+                    Global.hero!!.addItem(item)
+                    addLine("${item.mTitle} подобран${item.mTitleEnding}")
+                    Game.v.vibrate(30)
+                    Global.game.move(0, 0)
+                }
+            } else {
+                Global.game.move(x, y)
             }
         }
 
         if (touchY > mScreenHeight * 0.9F) {
 
-            if (touchX < mScreenWidth * 0.25F)
+            if (touchX < mScreenWidth * 0.25F) {
                 Global.game.changeScreen(Screens.INVENTORY_SCREEN)
+            }
 
-            if (touchX > mScreenWidth * 0.25F && touchX < mScreenWidth * 0.75F)
+            if (touchX > mScreenWidth * 0.25F && touchX < mScreenWidth * 0.75F) {
                 Global.game.changeScreen(Screens.CHARACTER_SCREEN)
+            }
 
             if (touchX > mScreenWidth * 0.75F) {
                 Global.game.move(0, 0)
