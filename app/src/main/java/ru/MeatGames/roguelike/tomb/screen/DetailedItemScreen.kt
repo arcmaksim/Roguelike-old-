@@ -6,22 +6,16 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
-import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.model.Item
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
-import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
-class DetailedItemScreen(context: Context, selectedItem: Item) : View(context) {
+class DetailedItemScreen(context: Context, selectedItem: Item) : BasicScreen(context) {
 
-    private val mScreenWidth: Int
-    private val mScreenHeight: Int
-
-    private val mMainBackgroundPaint = Paint()
     private val mMainTextPaint: Paint
     private val mSecondaryTextPaint: Paint
 
@@ -40,16 +34,7 @@ class DetailedItemScreen(context: Context, selectedItem: Item) : View(context) {
     private val mTextLinePadding: Float
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
-
         mSelectedItem = selectedItem
-
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-
-        mMainBackgroundPaint.color = resources.getColor(R.color.mainBackground)
 
         mMainTextPaint = ScreenHelper.getDefaultTextPaint(context)
         mMainTextPaint.textSize = 24f
@@ -101,7 +86,7 @@ class DetailedItemScreen(context: Context, selectedItem: Item) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, mScreenHeight, mMainBackgroundPaint)
+        drawBackground(canvas)
         drawItem(canvas)
         mLeftSoftButton.draw(canvas)
         mMiddleSoftButton.draw(canvas)

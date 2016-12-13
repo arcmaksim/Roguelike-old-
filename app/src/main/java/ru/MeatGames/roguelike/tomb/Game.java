@@ -21,6 +21,7 @@ import ru.MeatGames.roguelike.tomb.model.HeroClass;
 import ru.MeatGames.roguelike.tomb.model.Item;
 import ru.MeatGames.roguelike.tomb.model.MapClass;
 import ru.MeatGames.roguelike.tomb.screen.CharacterScreen;
+import ru.MeatGames.roguelike.tomb.screen.DeathScreen;
 import ru.MeatGames.roguelike.tomb.screen.DetailedItemScreen;
 import ru.MeatGames.roguelike.tomb.screen.GameScreen;
 import ru.MeatGames.roguelike.tomb.screen.GearScreen;
@@ -135,7 +136,7 @@ public class Game extends Activity {
     }
 
     public void changeScreen(Screens screen) {
-        View view = null;
+        View view;
         switch (screen) {
             case GAME_SCREEN:
                 view = Global.INSTANCE.getMapview();
@@ -150,6 +151,7 @@ public class Game extends Activity {
             case MAP_SCREEN:
                 view = new MapScreen(this);
                 break;
+            default:
             case MAIN_MENU:
                 view = Global.INSTANCE.getMmview();
                 break;
@@ -159,6 +161,9 @@ public class Game extends Activity {
                 break;
             case DETAILED_ITEM_SCREEN:
                 view = new DetailedItemScreen(this, selectedItem);
+                break;
+            case DEATH_SCREEN:
+                view = new DeathScreen(this);
                 break;
         }
         setContentView(view);
@@ -287,7 +292,7 @@ public class Game extends Activity {
                     Global.INSTANCE.getMapview().addLine(getString(R.string.trap_message));
                     if (Global.INSTANCE.getHero().getStat(5) < 1) {
                         lastAttack = Bitmap.createScaledBitmap(Global.INSTANCE.getTiles()[44].getImg(), 72, 72, false);
-                        Global.INSTANCE.getMapview().setMDrawDeathScreen(true);
+                        changeScreen(Screens.DEATH_SCREEN);
                     }
                 }
             if (!Global.INSTANCE.getMap()[mx][my].mIsPassable && turn) {
@@ -428,7 +433,12 @@ public class Game extends Activity {
         if (Global.INSTANCE.getHero().getStat(5) < 1) {
             Global.INSTANCE.getHero().modifyStat(5, Global.INSTANCE.getHero().getStat(5), -1);
             lastAttack = Bitmap.createScaledBitmap(mob.getImg(0), 72, 72, false);
-            Global.INSTANCE.getMapview().setMDrawDeathScreen(true);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    changeScreen(Screens.DEATH_SCREEN);
+                }
+            });
         }
     }
 
@@ -442,8 +452,9 @@ public class Game extends Activity {
         AssetHelper assetHelper = Global.INSTANCE.getMAssetHelper();
         Bitmap temp = assetHelper.getBitmapFromAsset("character_animation_sheet");
 
-        for (int x = 0; x < 4; x++)
+        for (int x = 0; x < 4; x++) {
             Global.INSTANCE.getHero().img[x] = Bitmap.createBitmap(temp, x * 24, 0, 24, 24);
+        }
 
         bag = Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24);
         mCharacterIcon = assetHelper.getBitmapFromAsset("character_icon");

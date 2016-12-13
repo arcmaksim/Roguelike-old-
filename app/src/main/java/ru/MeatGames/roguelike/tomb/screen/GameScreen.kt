@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.MotionEvent
-import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
@@ -12,17 +11,11 @@ import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.fillFrame
 import java.util.*
 
-class GameScreen(context: Context) : View(context) {
-
-    val mScreenWidth: Int
-    val mScreenHeight: Int
-    val mScaledScreenWidth: Float
-    val mScaledScreenHeight: Float
+class GameScreen(context: Context) : BasicScreen(context) {
 
     val mMaxLogLines = 8
     var mGameEventsLog: LinkedList<String>
 
-    val mBackgroundPaint = Paint()
     val mLightBluePaint = Paint()
     val mDarkBluePaint = Paint()
     val mSemiTransparentBackgroundPaint = Paint()
@@ -40,7 +33,6 @@ class GameScreen(context: Context) : View(context) {
     var mDrawExitDialog = false
     var mDrawLog = true
     var mDrawProgressBar = false
-    var mDrawDeathScreen = false
     var mDrawWinScreen = false
     val mDrawActionsMenu = false
 
@@ -62,18 +54,8 @@ class GameScreen(context: Context) : View(context) {
     val black: Paint
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
-
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-        mScaledScreenWidth = mScreenWidth / mScaleAmount
-        mScaledScreenHeight = mScreenHeight / mScaleAmount
-
         mGameEventsLog = LinkedList()
 
-        mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
         mLightBluePaint.color = resources.getColor(R.color.lightBlue)
         mDarkBluePaint.color = resources.getColor(R.color.darkBlue)
         mSemiTransparentBackgroundPaint.color = resources.getColor(R.color.semiTransparentBackground)
@@ -104,9 +86,9 @@ class GameScreen(context: Context) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, mScreenHeight, mBackgroundPaint)
+        drawBackground(canvas)
 
-        if (!mDrawDeathScreen && !mDrawWinScreen) {
+        if (!mDrawWinScreen) {
 
             var animationFrame = (Math.abs(System.currentTimeMillis()) / 600 % 2).toInt()
 
@@ -287,10 +269,6 @@ class GameScreen(context: Context) : View(context) {
     private fun drawFinalScreen(canvas: Canvas) {
         mTextPaint.textAlign = Paint.Align.CENTER
         mTextPaint.textSize = 24f
-        if (mDrawDeathScreen) {
-            canvas.drawText(context.getString(R.string.death_from_label), mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
-            canvas.drawBitmap(Global.game.lastAttack, (mScreenWidth - Global.game.lastAttack.width) * 0.5F, mScreenHeight * 0.425F, null)
-        }
         if (mDrawWinScreen) {
             canvas.drawText(context.getString(R.string.victory_label), mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
             canvas.drawText(context.getString(R.string.king_was_slain_label), mScreenWidth * 0.5F, mScreenHeight * 0.45F, mTextPaint)
@@ -476,7 +454,6 @@ class GameScreen(context: Context) : View(context) {
     private fun onTouchFinal(touchX: Int, touchY: Int) {
         if (touchY > mScreenHeight * 0.9F) {
             mDrawWinScreen = false
-            mDrawDeathScreen = mDrawWinScreen
             Global.game.newGame()
         }
     }
@@ -487,7 +464,7 @@ class GameScreen(context: Context) : View(context) {
                 if (Global.game.tap) {
                     val touchX = event.x.toInt()
                     val touchY = event.y.toInt()
-                    if (!mDrawProgressBar && !mDrawDeathScreen && !mDrawWinScreen) {
+                    if (!mDrawProgressBar && !mDrawWinScreen) {
                         if (/*!mIsItemPicked && */!mDrawExitDialog) {
                             onTouchMain(touchX, touchY)
                         } else {
@@ -499,7 +476,7 @@ class GameScreen(context: Context) : View(context) {
                             if (mDrawExitDialog) onTouchExitDialog(touchX, touchY)
                         }
                     }
-                    if (mDrawDeathScreen || mDrawWinScreen) onTouchFinal(touchX, touchY)
+                    if (mDrawWinScreen) onTouchFinal(touchX, touchY)
                 }
         }
         return true

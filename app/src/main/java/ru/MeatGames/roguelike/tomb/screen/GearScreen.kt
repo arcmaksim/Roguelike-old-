@@ -5,19 +5,15 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
-import android.view.View
-import ru.MeatGames.roguelike.tomb.*
+import ru.MeatGames.roguelike.tomb.Global
+import ru.MeatGames.roguelike.tomb.InventoryFilterType
+import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
-import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
-class GearScreen(context: Context) : View(context) {
+class GearScreen(context: Context) : BasicScreen(context) {
 
-    private val mScreenWidth: Int
-    private val mScreenHeight: Int
-
-    private val mMainBackgroundPaint = Paint()
     private val mTextPaint: Paint
 
     private val mPrimaryArmRect: Rect
@@ -32,14 +28,6 @@ class GearScreen(context: Context) : View(context) {
     private val mIsTwoHandedWeaponEquipped: Boolean
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
-
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-
-        mMainBackgroundPaint.color = resources.getColor(R.color.mainBackground)
         mTextPaint = ScreenHelper.getDefaultTextPaint(context)
 
         mLeftSoftButton = TextButton(context, resources.getString(R.string.inventory_label))
@@ -70,7 +58,7 @@ class GearScreen(context: Context) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, mScreenHeight, mMainBackgroundPaint)
+        drawBackground(canvas)
         drawGear(canvas)
         mLeftSoftButton.draw(canvas)
         mBackButton.draw(canvas)
@@ -80,19 +68,19 @@ class GearScreen(context: Context) : View(context) {
     private fun drawGear(canvas: Canvas) {
         Global.hero!!.equipmentList[0]?.let {
             if (mIsTwoHandedWeaponEquipped) {
-                canvas.drawRect(mPrimaryArmAltRect, mMainBackgroundPaint)
+                canvas.drawRect(mPrimaryArmAltRect, mBackgroundPaint)
                 canvas.drawBitmap(it.image, mPrimaryArmAltRect.exactCenterX() - it.image.width / 2, mPrimaryArmAltRect.exactCenterY() - it.image.height / 2, null)
             } else {
-                canvas.drawRect(mPrimaryArmRect, mMainBackgroundPaint)
+                canvas.drawRect(mPrimaryArmRect, mBackgroundPaint)
                 canvas.drawBitmap(it.image, mPrimaryArmRect.exactCenterX() - it.image.width / 2, mPrimaryArmRect.exactCenterY() - it.image.height / 2, null)
             }
         } ?: let {
-            canvas.drawRect(mPrimaryArmRect, mMainBackgroundPaint)
+            canvas.drawRect(mPrimaryArmRect, mBackgroundPaint)
             canvas.drawText(context.getString(R.string.empty_label), mPrimaryArmRect.exactCenterX(), mPrimaryArmRect.exactCenterY(), mTextPaint)
         }
 
         if (!mIsTwoHandedWeaponEquipped) {
-            canvas.drawRect(mSecondaryArmRect, mMainBackgroundPaint)
+            canvas.drawRect(mSecondaryArmRect, mBackgroundPaint)
             Global.hero!!.equipmentList[1]?.let {
                 canvas.drawBitmap(it.image, mSecondaryArmRect.exactCenterX() - it.image.width / 2, mSecondaryArmRect.exactCenterY() - it.image.width / 2, null)
             } ?: let {
@@ -100,14 +88,14 @@ class GearScreen(context: Context) : View(context) {
             }
         }
 
-        canvas.drawRect(mBodyRect, mMainBackgroundPaint)
+        canvas.drawRect(mBodyRect, mBackgroundPaint)
         Global.hero!!.equipmentList[2]?.let {
             canvas.drawBitmap(it.image, mBodyRect.exactCenterX() - it.image.width / 2, mBodyRect.exactCenterY() - it.image.width / 2, null)
         } ?: let {
             canvas.drawText(context.getString(R.string.empty_label), mBodyRect.exactCenterX(), mBodyRect.exactCenterY(), mTextPaint)
         }
 
-        canvas.drawRect(mGearRect, mMainBackgroundPaint)
+        canvas.drawRect(mGearRect, mBackgroundPaint)
         canvas.drawText(context.getString(R.string.empty_label), mGearRect.exactCenterX(), mGearRect.exactCenterY(), mTextPaint)
     }
 

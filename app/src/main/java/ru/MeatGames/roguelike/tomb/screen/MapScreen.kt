@@ -5,22 +5,15 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
-import android.view.View
-import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
-import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
 // displays explored map
-class MapScreen(context: Context) : View(context) {
+class MapScreen(context: Context) : BasicScreen(context) {
 
-    val mScreenWidth: Int
-    val mScreenHeight: Int
-
-    private val mBackgroundPaint = Paint()
     private val mDoorMarkerPaint = Paint()
     private val mRoomBackgroundPaint = Paint()
     private val mHeroMarkerPaint = Paint()
@@ -28,18 +21,9 @@ class MapScreen(context: Context) : View(context) {
     private val mTextPaint: Paint
 
     private val mBackButton: TextButton
-
     private val mMarkerSize: Float
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
-
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-
-        mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
         mDoorMarkerPaint.color = resources.getColor(R.color.hud)
         mRoomBackgroundPaint.color = resources.getColor(R.color.white)
         mHeroMarkerPaint.color = resources.getColor(R.color.fredl)
@@ -59,7 +43,7 @@ class MapScreen(context: Context) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, mScreenHeight, mBackgroundPaint)
+        drawBackground(canvas)
         for (x in 0..Global.game.mw - 1)
             for (y in 0..Global.game.mh - 1) {
                 if (Global.map!![x][y].mIsDiscovered) {

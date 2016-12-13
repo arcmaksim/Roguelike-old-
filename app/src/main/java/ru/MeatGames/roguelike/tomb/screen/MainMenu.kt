@@ -5,36 +5,20 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
-import android.view.View
 import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
-import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
-import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 
-class MainMenu(mContext: Context) : View(mContext) {
+class MainMenu(mContext: Context) : BasicScreen(mContext) {
 
-    private val mBackgroundPaint = Paint()
     private val mTitleTextPaint: Paint
-
-    private val mScreenWidth: Int
-    private val mScreenHeight: Int
-
     private val mNewGameButton: TextButton
     private val mExitGameButton: TextButton
 
     init {
         Global.game = mContext as Game
-        isFocusable = true
-        isFocusableInTouchMode = true
-
-        val screenSize = ScreenHelper.getScreenSize(mContext.windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-
-        mBackgroundPaint.color = resources.getColor(R.color.mainBackground)
 
         mTitleTextPaint = ScreenHelper.getDefaultTextPaint(mContext)
         mTitleTextPaint.textSize = UnitConverter.convertSpToPixels(32F, context)
@@ -55,7 +39,7 @@ class MainMenu(mContext: Context) : View(mContext) {
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, measuredHeight, mBackgroundPaint)
+        drawBackground(canvas)
         canvas.drawText("Yet Another",
                 (mScreenWidth / 2).toFloat(),
                 (mScreenHeight / 8 * 3).toFloat(),

@@ -7,5 +7,6 @@ enum class Screens(val screenID: Int) {
     INVENTORY_SCREEN(3),
     GEAR_SCREEN(4),
     DETAILED_ITEM_SCREEN(5),
-    MAP_SCREEN(6)
+    MAP_SCREEN(6),
+    DEATH_SCREEN(7)
 }

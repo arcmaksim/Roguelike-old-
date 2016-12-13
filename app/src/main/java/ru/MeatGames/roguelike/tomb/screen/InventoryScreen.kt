@@ -3,25 +3,18 @@ package ru.MeatGames.roguelike.tomb.screen
 import android.content.Context
 import android.graphics.*
 import android.view.MotionEvent
-import android.view.View
-import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.InventoryFilterType
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.model.Item
 import ru.MeatGames.roguelike.tomb.util.ScreenHelper
 import ru.MeatGames.roguelike.tomb.util.UnitConverter
-import ru.MeatGames.roguelike.tomb.util.fillFrame
 import ru.MeatGames.roguelike.tomb.view.TextButton
 import java.util.*
 
-class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(context) {
+class InventoryScreen(context: Context, filter: InventoryFilterType?) : BasicScreen(context) {
 
-    private val mScreenWidth: Int
-    private val mScreenHeight: Int
-
-    private val mMainBackgroundPaint = Paint()
-    private val mGreenBackgroundPaint = Paint()
+    private val mEquippedItemBackgroundPaint = Paint()
     private val mMainTextPaint: Paint
     private val mSecondaryTextPaint: Paint
 
@@ -64,15 +57,7 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
     private val mFilterIcons: List<Bitmap>
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
-
-        val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
-        mScreenWidth = screenSize.x
-        mScreenHeight = screenSize.y
-
-        mMainBackgroundPaint.color = resources.getColor(R.color.mainBackground)
-        mGreenBackgroundPaint.color = resources.getColor(R.color.framegrn)
+        mEquippedItemBackgroundPaint.color = resources.getColor(R.color.framegrn)
 
         mMainTextPaint = ScreenHelper.getDefaultTextPaint(context)
         mMainTextPaint.textSize = 24f
@@ -197,9 +182,9 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
                     val top = mItemListRect.top + (q - u) * (mSpaceBetweenItemPanels + mItemPanelHeight) - offset
                     val bottom = top + mItemPanelHeight
                     val itemPanelBackground = if (!it!!.isConsumable && Global.hero!!.isEquiped(it)) {
-                        mGreenBackgroundPaint
+                        mEquippedItemBackgroundPaint
                     } else {
-                        mMainBackgroundPaint
+                        mBackgroundPaint
                     }
                     canvas.drawRect(mItemListRect.left.toFloat(), top, mItemListRect.right.toFloat(), bottom, itemPanelBackground)
                     canvas.drawBitmap(it.image, mItemListRect.left + (mItemPanelHeight - it.image.width) * 0.5F, top + (mItemPanelHeight - it.image.height) / 2, null)
@@ -216,7 +201,7 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : View(con
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.fillFrame(mScreenWidth, mScreenHeight, mMainBackgroundPaint)
+        drawBackground(canvas)
         drawFlags(canvas)
         drawList(canvas)
         mLeftSoftButton.draw(canvas)
