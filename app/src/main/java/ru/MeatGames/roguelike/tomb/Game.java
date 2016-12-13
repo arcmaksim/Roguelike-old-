@@ -3,6 +3,7 @@ package ru.MeatGames.roguelike.tomb;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -28,6 +29,7 @@ import ru.MeatGames.roguelike.tomb.screen.MainMenu;
 import ru.MeatGames.roguelike.tomb.screen.MapScreen;
 import ru.MeatGames.roguelike.tomb.screen.Screens;
 import ru.MeatGames.roguelike.tomb.util.AssetHelper;
+import ru.MeatGames.roguelike.tomb.util.ScreenHelper;
 
 public class Game extends Activity {
 
@@ -35,7 +37,9 @@ public class Game extends Activity {
     public static int curLvls = 0;
     public final int mw = 96; //64
     public final int mh = 96; //64
-    public final int step = 48; //48
+    public final int mTileSize = 24; // in pixels
+    private float mScaleAmount;
+    private float mActualTileSize;
     public final int maxTiles = 100;
     public final int maxItems = 17;
     public final int maxStats = 35;
@@ -80,23 +84,36 @@ public class Game extends Activity {
         Global.INSTANCE.setGame(this);
         mRandom = new Random();
 
+        zone = new int[11][11];
+
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        Point screenSize = ScreenHelper.getScreenSize(getWindowManager());
+        mScaleAmount = screenSize.x / (mTileSize * 10f);
+        mActualTileSize = mTileSize * mScaleAmount;
+
         Global.INSTANCE.setMap(new MapClass[mw][mh]);
         for (int x = 0; x < mw; x++)
             for (int y = 0; y < mh; y++)
                 Global.INSTANCE.getMap()[x][y] = new MapClass();
 
-        Global.INSTANCE.setMAssetHelper(new AssetHelper(getAssets()));
-
         Global.INSTANCE.setHero(new HeroClass());
         Global.INSTANCE.setMmview(new MainMenu(this));
         Global.INSTANCE.setMapview(new GameScreen(this));
 
-        zone = new int[11][11];
-
-        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        Global.INSTANCE.setMAssetHelper(new AssetHelper(getAssets()));
         loading();
+
         newGame();
         mainBody();
+    }
+
+    public float getScaleAmount() {
+        return mScaleAmount;
+    }
+
+    public float getActualTileSize() {
+        return mActualTileSize;
     }
 
     public void onBackPressed() {
@@ -298,8 +315,8 @@ public class Game extends Activity {
         Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
         if (!turn) {
             tap = false;
-            if (mx == 1) Global.INSTANCE.getHero().side = false;
-            if (mx == -1) Global.INSTANCE.getHero().side = true;
+            if (mx == 1) Global.INSTANCE.getHero().isFacingLeft = false;
+            if (mx == -1) Global.INSTANCE.getHero().isFacingLeft = true;
         }
         if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].hasItem()) {
             if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].mItems.size() > 1) {
@@ -426,9 +443,9 @@ public class Game extends Activity {
         Bitmap temp = assetHelper.getBitmapFromAsset("character_animation_sheet");
 
         for (int x = 0; x < 4; x++)
-            Global.INSTANCE.getHero().img[x] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 0, 24, 24), step, step, false);
+            Global.INSTANCE.getHero().img[x] = Bitmap.createBitmap(temp, x * 24, 0, 24, 24);
 
-        bag = Bitmap.createScaledBitmap(Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24), step, step, false);
+        bag = Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24);
         mCharacterIcon = assetHelper.getBitmapFromAsset("character_icon");
         mInventoryIcon = assetHelper.getBitmapFromAsset("inventory_icon");
         mBackIcon = assetHelper.getBitmapFromAsset("back_icon");
@@ -438,19 +455,21 @@ public class Game extends Activity {
         temp = assetHelper.getBitmapFromAsset("tileset");
         for (int y = 0; y < 10; y++)
             for (int x = 0; x < 10; x++)
-                if (Global.INSTANCE.getTiles()[y * 10 + x] != null)
-                    Global.INSTANCE.getTiles()[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24), step, step, false));
+                if (Global.INSTANCE.getTiles()[y * 10 + x] != null) {
+                    Global.INSTANCE.getTiles()[y * 10 + x].setImg(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24));
+                }
 
         temp = assetHelper.getBitmapFromAsset("items_sheet");
         for (int y = 0; y < 2; y++)
             for (int x = 0; x < 10; x++)
-                if (y * 10 + x < Global.game.maxItems)
-                    Global.itemDB[y * 10 + x].setImg(Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24), step, step, false));
+                if (y * 10 + x < Global.game.maxItems) {
+                    Global.itemDB[y * 10 + x].setImg(Bitmap.createBitmap(temp, x * 24, y * 24, 24, 24));
+                }
 
         temp = assetHelper.getBitmapFromAsset("mobs_sheet");
         for (int x = 0; x < maxMobs; x++) {
-            Global.mobDB[x].getImg()[0] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 0, 24, 24), step, step, false);
-            Global.mobDB[x].getImg()[1] = Bitmap.createScaledBitmap(Bitmap.createBitmap(temp, x * 24, 24, 24, 24), step, step, false);
+            Global.mobDB[x].getImg()[0] = Bitmap.createBitmap(temp, x * 24, 0, 24, 24);
+            Global.mobDB[x].getImg()[1] = Bitmap.createBitmap(temp, x * 24, 24, 24, 24);
         }
     }
 

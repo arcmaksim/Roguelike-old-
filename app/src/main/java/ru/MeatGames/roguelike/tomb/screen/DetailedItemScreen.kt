@@ -76,7 +76,7 @@ class DetailedItemScreen(context: Context, selectedItem: Item) : View(context) {
                 mScreenWidth,
                 mScreenHeight)
 
-        mItemBitmapSize = mItemBitmapScale * Global.game.step
+        mItemBitmapSize = mItemBitmapScale * Global.game.mTileSize
         mSelectedItemBitmap = Bitmap.createScaledBitmap(mSelectedItem.image, mItemBitmapSize, mItemBitmapSize, false)
         mItemBitmapHorizontalPadding = (mScreenWidth - mSelectedItemBitmap.width) * 0.5F
 

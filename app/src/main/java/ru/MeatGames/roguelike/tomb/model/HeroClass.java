@@ -9,12 +9,12 @@ import ru.MeatGames.roguelike.tomb.Global;
 public class HeroClass {
 
     // System
-    public int x;
-    public int y;
+    public float x;
+    public float y;
     public int mx;
     public int my;
     public Item[] equipmentList;
-    public boolean side = true; //left
+    public boolean isFacingLeft = true; //left
 
     // Stats
     public int regen;

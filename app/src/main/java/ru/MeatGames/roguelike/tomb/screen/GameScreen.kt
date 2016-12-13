@@ -16,6 +16,8 @@ class GameScreen(context: Context) : View(context) {
 
     val mScreenWidth: Int
     val mScreenHeight: Int
+    val mScaledScreenWidth: Float
+    val mScaledScreenHeight: Float
 
     val mMaxLogLines = 8
     var mGameEventsLog: LinkedList<String>
@@ -33,7 +35,6 @@ class GameScreen(context: Context) : View(context) {
     var mProgressBarDuration: Int = 0
     var mProgressBarStartingTime: Long = 0
 
-    var animTime: Long = 0
     var camx: Int = 0
     var camy: Int = 0
     var mDrawExitDialog = false
@@ -47,13 +48,18 @@ class GameScreen(context: Context) : View(context) {
 
     var mActionCount: Int = 0
 
+    val mTileSize = Global.game.actualTileSize
+    val mScaleAmount = Global.game.scaleAmount
+    val mBitmapPaint = Paint()
+
+    val mOffsetX: Float
+    val mOffsetY: Float
+
     // hero'single move directions
     var mx: Int = 0
     var my: Int = 0
 
     val black: Paint
-
-    val mTempTileSize = Global.game.step
 
     init {
         isFocusable = true
@@ -62,6 +68,8 @@ class GameScreen(context: Context) : View(context) {
         val screenSize = ScreenHelper.getScreenSize((context as Game).windowManager)
         mScreenWidth = screenSize.x
         mScreenHeight = screenSize.y
+        mScaledScreenWidth = mScreenWidth / mScaleAmount
+        mScaledScreenHeight = mScreenHeight / mScaleAmount
 
         mGameEventsLog = LinkedList()
 
@@ -79,8 +87,13 @@ class GameScreen(context: Context) : View(context) {
         black = Paint()
         black.color = resources.getColor(R.color.black)
 
-        Global.hero!!.x = (mScreenWidth - mTempTileSize) / 2
-        Global.hero!!.y = (mScreenHeight - mTempTileSize) / 2
+        Global.hero!!.x = (mScreenWidth - mTileSize) / 2 / mScaleAmount
+        Global.hero!!.y = (mScreenHeight - mTileSize) / 2 / mScaleAmount
+
+        mBitmapPaint.isFilterBitmap = false
+
+        mOffsetX = (mScreenWidth - mTileSize * 9) / 2 / mScaleAmount
+        mOffsetY = (mScreenHeight - mTileSize * 9) / 2 / mScaleAmount
     }
 
     fun initProgressBar(tileID: Int, duration: Int) {
@@ -95,13 +108,18 @@ class GameScreen(context: Context) : View(context) {
 
         if (!mDrawDeathScreen && !mDrawWinScreen) {
 
-            animTime = Math.abs(System.currentTimeMillis()) / 600 % 2
-            drawMap(canvas)
+            var animationFrame = (Math.abs(System.currentTimeMillis()) / 600 % 2).toInt()
 
-            if (Global.hero!!.side)
-                canvas.drawBitmap(Game.getHeroImg((animTime).toInt()), Global.hero!!.x.toFloat(), Global.hero!!.y.toFloat(), null)
-            else
-                canvas.drawBitmap(Game.getHeroImg((animTime + 2).toInt()), Global.hero!!.x.toFloat(), Global.hero!!.y.toFloat(), null)
+            canvas.save()
+            canvas.scale(mScaleAmount, mScaleAmount)
+
+            drawMap(canvas, animationFrame)
+            if (!Global.hero!!.isFacingLeft) {
+                animationFrame += 2
+            }
+            canvas.drawBitmap(Game.getHeroImg(animationFrame), Global.hero!!.x, Global.hero!!.y, mBitmapPaint)
+
+            canvas.restore()
 
             drawHUD(canvas)
 
@@ -112,7 +130,11 @@ class GameScreen(context: Context) : View(context) {
             val currentXP = Global.hero!!.getStat(20).toFloat() / Global.hero!!.getStat(21)
             canvas.drawRect(4F, mScreenHeight - 11F, Math.round(mScreenWidth * 0.99F * currentXP).toFloat(), mScreenHeight - 4F, mDarkBluePaint)
 
+            canvas.save()
+            canvas.scale(mScaleAmount, mScaleAmount)
             if (mDrawProgressBar) drawProgressBar(canvas)
+            canvas.restore()
+
         } else {
             drawFinalScreen(canvas)
         }
@@ -120,13 +142,7 @@ class GameScreen(context: Context) : View(context) {
         postInvalidate()
     }
 
-    private fun drawMap(canvas: Canvas) {
-        mTextPaint.textAlign = Paint.Align.LEFT
-
-        val maxDrawnMapWidth = mTempTileSize * 9
-        val maxDrawnMapHeight = maxDrawnMapWidth
-        val offsetX = (mScreenWidth - maxDrawnMapWidth) / 2
-        val offsetY = (mScreenHeight - maxDrawnMapHeight) / 2
+    private fun drawMap(canvas: Canvas, animationFrame: Int) {
 
         for (x in camx..camx + 9 - 1) {
             val cx = x - camx
@@ -135,19 +151,19 @@ class GameScreen(context: Context) : View(context) {
                 val cy = y - camy
 
                 if (x > -1 && y > -1 && x < Global.game.mw && y < Global.game.mh && Global.map!![x][y].mCurrentlyVisible) {
-                    val currentPixelXtoDraw = (Global.game.step * cx + offsetX).toFloat()
-                    val currentPixelYtoDraw = (Global.game.step * cy + offsetY).toFloat()
-                    val leftDrawBorder = (Global.game.step * (cx + 1) + offsetX).toFloat()
-                    val rightDrawBorder = (Global.game.step * (cy + 1) + offsetY).toFloat()
+                    val currentPixelXtoDraw = (Global.game.mTileSize * cx + mOffsetX)
+                    val currentPixelYtoDraw = (Global.game.mTileSize * cy + mOffsetY)
+                    val leftDrawBorder = (Global.game.mTileSize * (cx + 1) + mOffsetX)
+                    val rightDrawBorder = (Global.game.mTileSize * (cy + 1) + mOffsetY)
 
-                    canvas.drawBitmap(Global.map!![x][y].floorImg, currentPixelXtoDraw, currentPixelYtoDraw, null)
-                    canvas.drawBitmap(Global.map!![x][y].objectImg, currentPixelXtoDraw, currentPixelYtoDraw, null)
+                    canvas.drawBitmap(Global.map!![x][y].floorImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
+                    canvas.drawBitmap(Global.map!![x][y].objectImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
 
                     if (Global.map!![x][y].hasItem())
-                        canvas.drawBitmap(Global.map!![x][y].itemImg, currentPixelXtoDraw, currentPixelYtoDraw, null)
+                        canvas.drawBitmap(Global.map!![x][y].itemImg, currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
 
                     if (Global.map!![x][y].hasMob())
-                        canvas.drawBitmap(Global.map!![x][y].mob.getImg((animTime).toInt()), currentPixelXtoDraw, currentPixelYtoDraw, null)
+                        canvas.drawBitmap(Global.map!![x][y].mob.getImg(animationFrame), currentPixelXtoDraw, currentPixelYtoDraw, mBitmapPaint)
 
                     if ((cx - 4 == 0 || cy - 4 == 0) && Math.abs(cx - 4) + Math.abs(cy - 4) == 3 || cx - 4 != 0 && cy - 4 != 0 && Math.abs(cx - 4) + Math.abs(cy - 4) == 4)
                         canvas.drawRect(currentPixelXtoDraw, currentPixelYtoDraw, leftDrawBorder, rightDrawBorder, mLightShadowPaint)
@@ -157,7 +173,6 @@ class GameScreen(context: Context) : View(context) {
                 }
             }
         }
-        mTextPaint.textAlign = Paint.Align.CENTER
     }
 
     private fun drawHUD(canvas: Canvas) {
@@ -241,26 +256,29 @@ class GameScreen(context: Context) : View(context) {
     }
 
     // needs to be directly above the hero
-    // so without autoscale of assets leave same height as before
     private fun drawProgressBar(canvas: Canvas) {
         if (Math.abs(System.currentTimeMillis()) / 10 - mProgressBarStartingTime > mProgressBarDuration) {
             mDrawProgressBar = false
             mDrawLog = true
             afterProgressBar(mTileID)
+            return
         }
-        val offsetX = mScreenWidth * 0.5F - mTempTileSize * 1.5F
+        val offsetX = Global.hero!!.x - mTileSize / mScaleAmount
         canvas.drawRect(offsetX,
-                (Global.hero!!.y - 35).toFloat(),
-                offsetX + mTempTileSize * 3,
-                (Global.hero!!.y - 11).toFloat(),
+                Global.hero!!.y - mTileSize * 0.75F / mScaleAmount,
+                offsetX + mTileSize * 3 / mScaleAmount,
+                Global.hero!!.y - mTileSize * 0.25F / mScaleAmount,
                 mTextPaint)
         canvas.drawRect(offsetX,
-                (Global.hero!!.y - 35).toFloat(),
-                offsetX + (Math.abs(System.currentTimeMillis()) / 10 - mProgressBarStartingTime) * (mTempTileSize * 3F / mProgressBarDuration),
-                (Global.hero!!.y - 11).toFloat(),
+                Global.hero!!.y - mTileSize * 0.75F / mScaleAmount,
+                offsetX + (Math.abs(System.currentTimeMillis()) / 10 - mProgressBarStartingTime) * (mTileSize * 3F / mProgressBarDuration) / mScaleAmount,
+                Global.hero!!.y - mTileSize * 0.25F / mScaleAmount,
                 mLightBluePaint)
+
         mTextPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(context.getString(R.string.searching_label), mScreenWidth * 0.5F, (Global.hero!!.y - 16).toFloat(), mTextPaint)
+        mTextPaint.textSize /= mScaleAmount
+        canvas.drawText(context.getString(R.string.searching_label), mScreenWidth * 0.5F / mScaleAmount, Global.hero!!.y - mTileSize * 0.35F / mScaleAmount, mTextPaint)
+        mTextPaint.textSize *= mScaleAmount
     }
 
     private fun drawFinalScreen(canvas: Canvas) {
@@ -271,11 +289,11 @@ class GameScreen(context: Context) : View(context) {
             canvas.drawBitmap(Global.game.lastAttack, (mScreenWidth - Global.game.lastAttack.width) * 0.5F, mScreenHeight * 0.425F, null)
         }
         if (mDrawWinScreen) {
-            canvas.drawText(context.getString(R.string.victory_label),  mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
-            canvas.drawText(context.getString(R.string.king_was_slain_label),  mScreenWidth * 0.5F, mScreenHeight * 0.45F, mTextPaint)
+            canvas.drawText(context.getString(R.string.victory_label), mScreenWidth * 0.5F, mScreenHeight * 0.4F, mTextPaint)
+            canvas.drawText(context.getString(R.string.king_was_slain_label), mScreenWidth * 0.5F, mScreenHeight * 0.45F, mTextPaint)
         }
         mTextPaint.textSize = 16f
-        canvas.drawText(context.getString(R.string.to_menu_label),  mScreenWidth * 0.5F, mScreenHeight * 0.95F, mTextPaint)
+        canvas.drawText(context.getString(R.string.to_menu_label), mScreenWidth * 0.5F, mScreenHeight * 0.95F, mTextPaint)
     }
 
     private fun afterProgressBar(result: Int) {
