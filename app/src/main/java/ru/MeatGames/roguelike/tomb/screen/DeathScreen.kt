@@ -42,7 +42,7 @@ class DeathScreen(context: Context) : BasicScreen(context) {
                 val touchX = event.x.toInt()
                 val touchY = event.y.toInt()
                 if (mMainMenuButton.isPressed(touchX, touchY)) {
-                    Global.game.changeScreen(Screens.MAIN_MENU)
+                    Global.game.gameOver()
                 }
             }
         }

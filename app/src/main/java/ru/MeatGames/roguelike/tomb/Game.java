@@ -67,6 +67,9 @@ public class Game extends Activity {
     public Item selectedItem;
     private Screens lastScreen;
 
+    private Thread mMainGameThread;
+    private MainGameLoop mMainGameLoop;
+
     public static Bitmap getHeroImg(int n) {
         return Global.INSTANCE.getHero().img[n];
     }
@@ -105,8 +108,7 @@ public class Game extends Activity {
         Global.INSTANCE.setMAssetHelper(new AssetHelper(getAssets()));
         loading();
 
-        newGame();
-        mainBody();
+        changeScreen(Screens.MAIN_MENU);
     }
 
     public float getScaleAmount() {
@@ -132,7 +134,8 @@ public class Game extends Activity {
         curLvls = 0;
         generateNewMap();
         Global.INSTANCE.getMapview().clearLog();
-        changeScreen(Screens.MAIN_MENU);
+        newGameLoop();
+        changeScreen(Screens.GAME_SCREEN);
     }
 
     public void changeScreen(Screens screen) {
@@ -616,6 +619,7 @@ public class Game extends Activity {
         Global.INSTANCE.getMap()[x4][y4].addItem(item);
     }
 
+    // currently not used
     public void createItem(int x4, int y4, int t) {
         Item item = createItem(t);
         Global.INSTANCE.getMap()[x4][y4].addItem(item);
@@ -686,33 +690,18 @@ public class Game extends Activity {
         return a;
     }
 
-    public void mainBody() {
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    if (--Global.INSTANCE.getHero().init == 0) {
-                        newTurnCount();
-                        if (--Global.INSTANCE.getHero().cregen == 0) {
-                            Global.INSTANCE.getHero().cregen = Global.INSTANCE.getHero().regen;
-                            if (Global.INSTANCE.getHero().getStat(5) != Global.INSTANCE.getHero().getStat(6))
-                                Global.INSTANCE.getHero().modifyStat(5, 1, 1);
-                        }
-                        tap = turn = move = true;
-                        while (tap) ;
-                    }
-                    if (firstMob != null)
-                        while (firstMob.turnCount <= turnCount) {
-                            MobList temp = firstMob;
-                            firstMob = firstMob.next;
-                            if (Math.abs(temp.x - Global.INSTANCE.getHero().mx) < 5 && Math.abs(temp.y - Global.INSTANCE.getHero().my) < 5)
-                                mobTurn(temp);
-                            addInQueue(temp);
-                        }
-                    turnCount++;
-                }
-            }
-        });
-        t.start();
+    public void newGameLoop() {
+        mMainGameLoop = new MainGameLoop();
+        mMainGameThread = new Thread(mMainGameLoop);
+        mMainGameThread.start();
+    }
+
+    public void gameOver() {
+        if (mMainGameThread != null) {
+            mMainGameLoop.terminate();
+        }
+        mMainGameThread = null;
+        changeScreen(Screens.MAIN_MENU);
     }
 
 }
