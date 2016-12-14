@@ -3,6 +3,9 @@
 My first roguelike (and my first game) back from 2012. Developed specifically for Samsung Galaxy S Plus.
 Main goal - multiresolution support.
 
+### Current version
+Pre-alpha 0.1
+
 ### Current features
 - Full multiresolution support (ui elements needs to be tweaked).
 - Only russian language support.
@@ -15,4 +18,4 @@ Main goal - multiresolution support.
 4. Refactor and complete current content (items, enemies, rooms).
 
 ### Screenshots
-![](/app/screenshot0.png)
+![](/app/prealpha-screenshot0.png)
