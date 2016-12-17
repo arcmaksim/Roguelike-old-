@@ -71,7 +71,7 @@ public class Game extends Activity {
     private MainGameLoop mMainGameLoop;
 
     public static Bitmap getHeroImg(int n) {
-        return Global.INSTANCE.getHero().img[n];
+        return Global.INSTANCE.getHero().getImg()[n];
     }
 
     public static int getFloor(int x, int y) {
@@ -310,27 +310,33 @@ public class Game extends Activity {
         }
     }
 
+    public void skipTurn() {
+        tap = false;
+        updateZone();
+    }
+
     public void move(int mx, int my) {
+        Global.INSTANCE.getHero().interruptResting();
         Global.INSTANCE.getMapview().setMx(mx);
         Global.INSTANCE.getMapview().setMy(my);
-        isCollision(Global.INSTANCE.getHero().mx + mx, Global.INSTANCE.getHero().my + my);
+        isCollision(Global.INSTANCE.getHero().getMx() + mx, Global.INSTANCE.getHero().getMy() + my);
         if (move) {
-            Global.INSTANCE.getHero().mx += mx;
-            Global.INSTANCE.getHero().my += my;
+            Global.INSTANCE.getHero().setMx(Global.INSTANCE.getHero().getMx() + mx);
+            Global.INSTANCE.getHero().setMy(Global.INSTANCE.getHero().getMy() + my);
             Global.INSTANCE.getMapview().setCamx(Global.INSTANCE.getMapview().getCamx() + mx);
             Global.INSTANCE.getMapview().setCamy(Global.INSTANCE.getMapview().getCamy() + my);
         }
-        Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().mx, Global.INSTANCE.getHero().my);
+        Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().getMx(), Global.INSTANCE.getHero().getMy());
         if (!turn) {
             tap = false;
-            if (mx == 1) Global.INSTANCE.getHero().isFacingLeft = false;
-            if (mx == -1) Global.INSTANCE.getHero().isFacingLeft = true;
+            if (mx == 1) Global.INSTANCE.getHero().setMIsFacingLeft(false);
+            if (mx == -1) Global.INSTANCE.getHero().setMIsFacingLeft(true);
         }
-        if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].hasItem()) {
-            if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].mItems.size() > 1) {
+        if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().getMx()][Global.INSTANCE.getHero().getMy()].hasItem()) {
+            if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().getMx()][Global.INSTANCE.getHero().getMy()].mItems.size() > 1) {
                 Global.INSTANCE.getMapview().addLine(getString(R.string.several_items_lying_on_the_ground_message));
             } else {
-                Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().mx][Global.INSTANCE.getHero().my].mItems.get(0).mTitle + getString(R.string.lying_on_the_ground_message));
+                Global.INSTANCE.getMapview().addLine(Global.INSTANCE.getMap()[Global.INSTANCE.getHero().getMx()][Global.INSTANCE.getHero().getMy()].mItems.get(0).mTitle + getString(R.string.lying_on_the_ground_message));
             }
         }
         updateZone();
@@ -367,7 +373,7 @@ public class Game extends Activity {
     // currently not used
     public void pickupItem() {
         v.vibrate(30);
-        move(0, 0);
+        skipTurn();
     }
 
     public void attack(MapClass map) {
@@ -422,6 +428,8 @@ public class Game extends Activity {
     }
 
     public void mobAttack(MobList mob) {
+        Global.INSTANCE.getHero().interruptResting();
+
         int att = mRandom.nextInt(20) + 1 + mob.mob.getMArmor();
         if (att >= Global.INSTANCE.getHero().getStat(19)) {
             int u = mob.mob.getMDamage() - Global.INSTANCE.getHero().getStat(22);
@@ -456,7 +464,7 @@ public class Game extends Activity {
         Bitmap temp = assetHelper.getBitmapFromAsset("character_animation_sheet");
 
         for (int x = 0; x < 4; x++) {
-            Global.INSTANCE.getHero().img[x] = Bitmap.createBitmap(temp, x * 24, 0, 24, 24);
+            Global.INSTANCE.getHero().getImg()[x] = Bitmap.createBitmap(temp, x * 24, 0, 24, 24);
         }
 
         bag = Bitmap.createBitmap(assetHelper.getBitmapFromAsset("bag"), 0, 0, 24, 24);
@@ -650,7 +658,7 @@ public class Game extends Activity {
             mobAttack(mob);
         } else {
             int x4 = 0, y4 = 0;
-            int x = mob.x - Global.INSTANCE.getHero().mx + 5, y = mob.y - Global.INSTANCE.getHero().my + 5;
+            int x = mob.x - Global.INSTANCE.getHero().getMx() + 5, y = mob.y - Global.INSTANCE.getHero().getMy() + 5;
             boolean u, d, l, r;
             u = d = l = r = false;
             for (int c = -1; c < 2; c++) {
@@ -677,16 +685,19 @@ public class Game extends Activity {
         }
     }
 
-    public void newTurnCount() {
-        Global.INSTANCE.getHero().init = Global.INSTANCE.getHero().getStat(25);
+    public void updateHeroTurnCount(Boolean isResting) {
+        Global.INSTANCE.getHero().setInit(Global.INSTANCE.getHero().getStat(25));
+        if (isResting) {
+            Global.INSTANCE.getHero().setInit(Global.INSTANCE.getHero().getInit() / 2);
+        }
     }
 
     public int min(MobList mob) {
         int a = defValue;
         for (int x1 = -1; x1 < 2; x1++)
             for (int y1 = -1; y1 < 2; y1++)
-                if (zone[mob.x - Global.INSTANCE.getHero().mx + 5 + x1][mob.y - Global.INSTANCE.getHero().my + 5 + y1] < a)
-                    a = zone[mob.x - Global.INSTANCE.getHero().mx + 5 + x1][mob.y - Global.INSTANCE.getHero().my + 5 + y1];
+                if (zone[mob.x - Global.INSTANCE.getHero().getMx() + 5 + x1][mob.y - Global.INSTANCE.getHero().getMy() + 5 + y1] < a)
+                    a = zone[mob.x - Global.INSTANCE.getHero().getMx() + 5 + x1][mob.y - Global.INSTANCE.getHero().getMy() + 5 + y1];
         return a;
     }
 

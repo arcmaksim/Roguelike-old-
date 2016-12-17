@@ -4,26 +4,38 @@ class MainGameLoop : Runnable {
 
     @Volatile private var isRunning = true
 
-    public fun terminate() {
+    fun terminate() {
         isRunning = false
     }
 
     override fun run() {
         while (isRunning) {
             if (--Global.hero!!.init == 0) {
-                Global.game.newTurnCount()
                 if (--Global.hero!!.cregen == 0) {
                     Global.hero!!.cregen = Global.hero!!.regen
                     if (Global.hero!!.getStat(5) != Global.hero!!.getStat(6)) {
                         Global.hero!!.modifyStat(5, 1, 1)
                     }
+                    if (Global.hero!!.isFullyHealed()) {
+                        Global.hero!!.finishResting()
+                    }
                 }
+                Global.game.updateHeroTurnCount(Global.hero!!.mIsResting)
                 Global.game.move = true
                 Global.game.turn = true
                 Global.game.tap = true
-                while (Global.game.tap) {}
+                while (Global.game.tap) {
+                    if (Global.hero!!.mIsResting) {
+                        Thread.sleep(400)
+                        if (Global.hero!!.mIsResting) {
+                            Global.game.skipTurn()
+                        } else {
+                            Global.hero!!.interruptResting()
+                        }
+                    }
+                }
             }
-            if (Global.game.firstMob != null)
+            Global.game.firstMob?.let {
                 while (Global.game.firstMob.turnCount <= Global.game.turnCount) {
                     val temp = Global.game.firstMob
                     Global.game.firstMob = Global.game.firstMob.next
@@ -32,6 +44,7 @@ class MainGameLoop : Runnable {
                     }
                     Global.game.addInQueue(temp)
                 }
+            }
             Global.game.turnCount++
         }
     }

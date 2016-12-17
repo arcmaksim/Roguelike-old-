@@ -53,7 +53,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
 
     var mInputLock = false // for handling long presses
     var mLongPressTime: Long = 0L
-    val mLongPressTimeThreshold = 700 // in milliseconds
+    val mLongPressTimeThreshold = 500 // in milliseconds
     var mIsLongPress = false
 
     init {
@@ -99,7 +99,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
             canvas.scale(mScaleAmount, mScaleAmount)
 
             drawMap(canvas, animationFrame)
-            if (!Global.hero!!.isFacingLeft) {
+            if (!Global.hero!!.mIsFacingLeft) {
                 animationFrame += 2
             }
             canvas.drawBitmap(Game.getHeroImg(animationFrame), Global.hero!!.x, Global.hero!!.y, mBitmapPaint)
@@ -415,14 +415,14 @@ class GameScreen(context: Context) : BasicScreen(context) {
                 if (Global.map!![Global.hero!!.mx][Global.hero!!.my].mObjectID == 40) {
                     Game.curLvls++
                     Global.game.generateNewMap()
-                    Global.game.move(0, 0)
+                    Global.game.skipTurn()
                 }
                 if (Global.map!![Global.hero!!.mx][Global.hero!!.my].hasItem()) {
                     val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
                     Global.hero!!.addItem(item)
                     addLine("${item.mTitle} подобран${item.mTitleEnding}")
                     Game.v.vibrate(30)
-                    Global.game.move(0, 0)
+                    Global.game.skipTurn()
                 }
             } else {
                 Global.game.move(x, y)
@@ -439,14 +439,25 @@ class GameScreen(context: Context) : BasicScreen(context) {
                 Global.game.changeScreen(Screens.CHARACTER_SCREEN)
             }
 
+            // TODO: refactor
             if (touchX > mScreenWidth * 0.75F) {
-                Global.game.move(0, 0)
-                if (mIsLongPress) {
-                    Global.mapview.addLine("Отдых")
-                    Game.v.vibrate(30);
+                if (Global.hero!!.mIsResting) {
+                    Global.hero!!.interruptResting()
                 } else {
-                    Global.mapview.addLine(context.getString(R.string.turn_passed_message))
+                    if (mIsLongPress) {
+                        if (Global.hero!!.isFullyHealed()) {
+                            Global.mapview.addLine("Герой полностью здоров")
+                        } else {
+                            Global.hero!!.startResting();
+                            Global.game.skipTurn()
+                        }
+                        Game.v.vibrate(30);
+                    } else {
+                        Global.mapview.addLine(context.getString(R.string.turn_passed_message))
+                        Global.game.skipTurn()
+                    }
                 }
+
             }
         }
     }
