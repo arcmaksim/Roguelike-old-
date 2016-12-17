@@ -53,7 +53,7 @@ class HeroClass {
         Global.stats[28].value = 10
         Global.stats[29].value = 1
         Global.stats[31].value = 1
-        regen = 22
+        regen = 16
         cregen = regen
         addItem(Global.game.createItem(1))
         addItem(Global.game.createItem(4))
@@ -124,7 +124,7 @@ class HeroClass {
         mInventory!!.remove(item)
         Global.map!![mx][my].addItem(item)
         Global.mapview.addLine(item.mTitle + " выброшен" + item.mTitleEnding)
-        Global.game.move(0, 0)
+        Global.game.skipTurn()
     }
 
     fun deleteItem(item: Item) {
@@ -178,7 +178,7 @@ class HeroClass {
             }
         }
         Global.mapview.addLine(item.mTitle + " надет" + item.mTitleEnding)
-        Global.game.move(0, 0)
+        Global.game.skipTurn()
     }
 
     fun takeOffItem(item: Item) {
@@ -199,7 +199,7 @@ class HeroClass {
         }
         Global.hero!!.equipmentList[item.mType - 1] = null
         Global.mapview.addLine(item.mTitle + " снят" + item.mTitleEnding)
-        Global.game.move(0, 0)
+        Global.game.skipTurn()
     }
 
     fun takeOffItem(i: Int) {
