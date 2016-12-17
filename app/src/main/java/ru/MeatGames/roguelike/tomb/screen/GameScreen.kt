@@ -36,8 +36,6 @@ class GameScreen(context: Context) : BasicScreen(context) {
     var mDrawWinScreen = false
     val mDrawActionsMenu = false
 
-    var mIsItemPicked = false // currently not used
-
     var mActionCount: Int = 0 // currently not used
 
     val mTileSize = Global.game.actualTileSize
@@ -52,6 +50,11 @@ class GameScreen(context: Context) : BasicScreen(context) {
     var my: Int = 0
 
     val black: Paint
+
+    var mInputLock = false // for handling long presses
+    var mLongPressTime: Long = 0L
+    val mLongPressTimeThreshold = 700 // in milliseconds
+    var mIsLongPress = false
 
     init {
         mGameEventsLog = LinkedList()
@@ -438,7 +441,12 @@ class GameScreen(context: Context) : BasicScreen(context) {
 
             if (touchX > mScreenWidth * 0.75F) {
                 Global.game.move(0, 0)
-                Global.mapview.addLine(context.getString(R.string.turn_passed_message))
+                if (mIsLongPress) {
+                    Global.mapview.addLine("Отдых")
+                    Game.v.vibrate(30);
+                } else {
+                    Global.mapview.addLine(context.getString(R.string.turn_passed_message))
+                }
             }
         }
     }
@@ -458,26 +466,43 @@ class GameScreen(context: Context) : BasicScreen(context) {
         }
     }
 
+    private fun processTouchEvent(touchX: Int, touchY: Int) {
+        if (!mDrawProgressBar && !mDrawWinScreen) {
+            if (!mDrawExitDialog) {
+                onTouchMain(touchX, touchY)
+            } else {
+                onTouchExitDialog(touchX, touchY)
+            }
+        }
+        if (mDrawWinScreen) onTouchFinal(touchX, touchY)
+        mIsLongPress = false
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
-            MotionEvent.ACTION_UP ->
-                if (Global.game.tap) {
+            MotionEvent.ACTION_UP -> {
+                if (!mInputLock) {
+                    if (Global.game.tap) {
+                        val touchX = event.x.toInt()
+                        val touchY = event.y.toInt()
+                        processTouchEvent(touchX, touchY)
+                    }
+                } else {
+                    mInputLock = false
+                }
+            }
+            MotionEvent.ACTION_DOWN -> {
+                mLongPressTime = System.currentTimeMillis()
+            }
+            else -> {
+                if (!mInputLock && System.currentTimeMillis() - mLongPressTime >= mLongPressTimeThreshold) {
+                    mIsLongPress = true
+                    mInputLock = true
                     val touchX = event.x.toInt()
                     val touchY = event.y.toInt()
-                    if (!mDrawProgressBar && !mDrawWinScreen) {
-                        if (/*!mIsItemPicked && */!mDrawExitDialog) {
-                            onTouchMain(touchX, touchY)
-                        } else {
-                            /*if (mIsItemPicked)
-                                if (touchX > 45 && touchX < 435 && touchY > 448 && touchY < 520) {
-                                    if (touchX < mScreenWidth * 0.5F) Global.game!!.pickupItem()
-                                    mIsItemPicked = false
-                                }*/
-                            if (mDrawExitDialog) onTouchExitDialog(touchX, touchY)
-                        }
-                    }
-                    if (mDrawWinScreen) onTouchFinal(touchX, touchY)
+                    processTouchEvent(touchX, touchY)
                 }
+            }
         }
         return true
     }
