@@ -233,4 +233,10 @@ class HeroClass {
     fun isFullyHealed() =
             getStat(5) == getStat(6)
 
+    // used for proper handling all ongoing hero actions
+    // for example when changing screens
+    fun interruptAllActions() {
+        interruptResting(false)
+    }
+
 }

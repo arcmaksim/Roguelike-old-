@@ -125,6 +125,7 @@ public class Game extends Activity {
 
     public void onBackPressed() {
         if (!Global.INSTANCE.getMapview().getMDrawProgressBar()) {
+            Global.INSTANCE.getHero().interruptAllActions();
             Global.INSTANCE.getMapview().setMDrawExitDialog(!Global.INSTANCE.getMapview().getMDrawExitDialog());
         }
     }
@@ -173,6 +174,9 @@ public class Game extends Activity {
                 view = new DeathScreen(this);
                 break;
         }
+
+        // TODO: temporal solution
+        Global.INSTANCE.getHero().interruptAllActions();
         setContentView(view);
         view.requestFocus();
     }
