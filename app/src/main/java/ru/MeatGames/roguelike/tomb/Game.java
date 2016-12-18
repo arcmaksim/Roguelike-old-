@@ -34,8 +34,8 @@ import ru.MeatGames.roguelike.tomb.util.ScreenHelper;
 
 public class Game extends Activity {
 
-    public static Vibrator v;
     public static int curLvls = 0;
+
     public final int mw = 96; //64
     public final int mh = 96; //64
     public final int mTileSize = 24; // in pixels
@@ -48,27 +48,31 @@ public class Game extends Activity {
     public final int defValue = 99;
     public final int maxLvl = 3;
     public int turnCount = 0;
-    public boolean turn = true;
-    public boolean move = true;
-    public boolean tap;
-    public Bitmap mCharacterIcon;
-    public Bitmap mInventoryIcon;
-    public Bitmap mBackIcon;
-    public Bitmap d;
-    public Bitmap mSkipTurnIcon;
     public Random mRandom;
-    public boolean lines = false;
-    public int scr = 0;
-    public Bitmap lastAttack;
-    public Bitmap bag;
     public MobList firstMob;
     public int[][] zone;
+
     // TODO: temporal solution
     public Item selectedItem;
     private Screens lastScreen;
 
     private Thread mMainGameThread;
     private MainGameLoop mMainGameLoop;
+
+    // player flags
+    public boolean mIsPlayerTurn = true;
+    public boolean mIsPlayerMoved = false;
+    public boolean mAcceptPlayerInput;
+
+    public Bitmap mCharacterIcon;
+    public Bitmap mInventoryIcon;
+    public Bitmap mBackIcon;
+    public Bitmap d;
+    public Bitmap mSkipTurnIcon;
+    public Bitmap lastAttack;
+    public Bitmap bag;
+
+    public boolean mDrawInputAreas = false;
 
     public static Bitmap getHeroImg(int n) {
         return Global.INSTANCE.getHero().getImg()[n];
@@ -90,7 +94,7 @@ public class Game extends Activity {
 
         zone = new int[11][11];
 
-        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        Global.mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         Point screenSize = ScreenHelper.getScreenSize(getWindowManager());
         mScaleAmount = screenSize.x / (mTileSize * 10f);
@@ -120,7 +124,7 @@ public class Game extends Activity {
     }
 
     public void onBackPressed() {
-        if (scr == 0 && !Global.INSTANCE.getMapview().getMDrawProgressBar()) {
+        if (!Global.INSTANCE.getMapview().getMDrawProgressBar()) {
             Global.INSTANCE.getMapview().setMDrawExitDialog(!Global.INSTANCE.getMapview().getMDrawExitDialog());
         }
     }
@@ -263,33 +267,32 @@ public class Game extends Activity {
 
     public void isCollision(int mx, int my) {
         if (mx > -1 && mx < mw && my < mh && my > -1) {
-            move = true;
             if (Global.INSTANCE.getMap()[mx][my].mIsUsable) {
                 switch (Game.getObject(mx, my)) {
                     case 31:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 32);
                         Global.INSTANCE.getMapview().addLine(getString(R.string.door_opened_message));
-                        move = false;
-                        turn = false;
                         break;
                     case 33:
                         fillArea(mx, my, 1, 1, Game.getFloor(mx, my), 34);
                         Global.INSTANCE.getMapview().setMDrawLog(false);
                         Global.INSTANCE.getMapview().initProgressBar(33, 159);
-                        move = false;
-                        turn = false;
                         break;
                     case 36:
                         Global.INSTANCE.getMapview().setMDrawLog(false);
                         Global.INSTANCE.getMapview().initProgressBar(36, 259);
-                        move = false;
-                        turn = false;
                         break;
                 }
+                mIsPlayerTurn = false;
+                return;
             }
-            if (turn && Global.INSTANCE.getMap()[mx][my].hasMob())
+            if (mIsPlayerTurn && Global.INSTANCE.getMap()[mx][my].hasMob()) {
                 attack(Global.INSTANCE.getMap()[mx][my]);
-            if (turn)
+                return;
+            }
+            if (Global.INSTANCE.getMap()[mx][my].mIsPassable) {
+                mIsPlayerTurn = false;
+                mIsPlayerMoved = true; // ?
                 if (Game.getObject(mx, my) == 44) {
                     Global.INSTANCE.getHero().modifyStat(5, mRandom.nextInt(3) + 1, -1);
                     Global.INSTANCE.getMapview().addLine(getString(R.string.trap_message));
@@ -298,20 +301,16 @@ public class Game extends Activity {
                         changeScreen(Screens.DEATH_SCREEN);
                     }
                 }
-            if (!Global.INSTANCE.getMap()[mx][my].mIsPassable && turn) {
-                Global.INSTANCE.getMapview().addLine(getString(R.string.path_is_blocked_message));
-                v.vibrate(30);
-                move = false;
             } else {
-                turn = false;
+                Global.INSTANCE.getMapview().addLine(getString(R.string.path_is_blocked_message));
+                Global.vibrate();
             }
-        } else {
-            move = false;
         }
     }
 
     public void skipTurn() {
-        tap = false;
+        mAcceptPlayerInput = false;
+        mIsPlayerTurn = false;
         updateZone();
     }
 
@@ -320,18 +319,15 @@ public class Game extends Activity {
         Global.INSTANCE.getMapview().setMx(mx);
         Global.INSTANCE.getMapview().setMy(my);
         isCollision(Global.INSTANCE.getHero().getMx() + mx, Global.INSTANCE.getHero().getMy() + my);
-        if (move) {
+        if (mIsPlayerMoved) {
             Global.INSTANCE.getHero().setMx(Global.INSTANCE.getHero().getMx() + mx);
             Global.INSTANCE.getHero().setMy(Global.INSTANCE.getHero().getMy() + my);
             Global.INSTANCE.getMapview().setCamx(Global.INSTANCE.getMapview().getCamx() + mx);
             Global.INSTANCE.getMapview().setCamy(Global.INSTANCE.getMapview().getCamy() + my);
         }
         Global.INSTANCE.getMapview().calculateLineOfSight(Global.INSTANCE.getHero().getMx(), Global.INSTANCE.getHero().getMy());
-        if (!turn) {
-            tap = false;
-            if (mx == 1) Global.INSTANCE.getHero().setMIsFacingLeft(false);
-            if (mx == -1) Global.INSTANCE.getHero().setMIsFacingLeft(true);
-        }
+        if (mx == 1) Global.INSTANCE.getHero().setMIsFacingLeft(false);
+        if (mx == -1) Global.INSTANCE.getHero().setMIsFacingLeft(true);
         if ((mx != 0 || my != 0) && Global.INSTANCE.getMap()[Global.INSTANCE.getHero().getMx()][Global.INSTANCE.getHero().getMy()].hasItem()) {
             if (Global.INSTANCE.getMap()[Global.INSTANCE.getHero().getMx()][Global.INSTANCE.getHero().getMy()].mItems.size() > 1) {
                 Global.INSTANCE.getMapview().addLine(getString(R.string.several_items_lying_on_the_ground_message));
@@ -372,7 +368,7 @@ public class Game extends Activity {
 
     // currently not used
     public void pickupItem() {
-        v.vibrate(30);
+        Global.vibrate();
         skipTurn();
     }
 
@@ -409,8 +405,7 @@ public class Game extends Activity {
         } else {
             Global.INSTANCE.getMapview().addLine(getString(R.string.attack_missed_message));
         }
-        turn = false;
-        move = false;
+        mIsPlayerTurn = false;
     }
 
     public void deleteMob(MapClass map) {

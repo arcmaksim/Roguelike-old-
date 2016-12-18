@@ -181,7 +181,7 @@ class InventoryScreen(context: Context, filter: InventoryFilterType?) : BasicScr
                 if (q >= u) {
                     val top = mItemListRect.top + (q - u) * (mSpaceBetweenItemPanels + mItemPanelHeight) - offset
                     val bottom = top + mItemPanelHeight
-                    val itemPanelBackground = if (!it!!.isConsumable && Global.hero!!.isEquiped(it)) {
+                    val itemPanelBackground = if (!it!!.isConsumable && Global.hero!!.isEquipped(it)) {
                         mEquippedItemBackgroundPaint
                     } else {
                         mBackgroundPaint

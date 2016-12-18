@@ -45,7 +45,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
     val mMapOffsetX: Float
     val mMapOffsetY: Float
 
-    // hero'single move directions
+    // hero'single mIsPlayerMoved directions
     var mx: Int = 0
     var my: Int = 0
 
@@ -108,7 +108,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
 
             drawHUD(canvas)
 
-            if (Global.game.lines) drawLines(canvas)
+            if (Global.game.mDrawInputAreas) drawLines(canvas)
             if (mDrawActionsMenu) drawActionsMenu(canvas, mActionCount)
             if (mDrawExitDialog) drawExitDialog(canvas)
 
@@ -402,7 +402,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
         }
 
         if (touchY < mScreenWidth * 0.1F && touchX < mScreenWidth * 0.5F) {
-            Global.game.lines = !Global.game.lines
+            Global.game.mDrawInputAreas = !Global.game.mDrawInputAreas
         }
 
         val temp = (mScreenHeight - (mScreenHeight + mScreenWidth) * 0.1F) / 3
@@ -421,7 +421,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
                     val item = Global.map!![Global.hero!!.mx][Global.hero!!.my].item
                     Global.hero!!.addItem(item)
                     addLine("${item.mTitle} подобран${item.mTitleEnding}")
-                    Game.v.vibrate(30)
+                    Global.vibrate()
                     Global.game.skipTurn()
                 }
             } else {
@@ -448,26 +448,26 @@ class GameScreen(context: Context) : BasicScreen(context) {
                         if (Global.hero!!.isFullyHealed()) {
                             Global.mapview.addLine("Герой полностью здоров")
                         } else {
-                            Global.hero!!.startResting();
+                            Global.hero!!.startResting()
                             Global.game.skipTurn()
                         }
-                        Game.v.vibrate(30);
+                        Global.vibrate()
                     } else {
                         Global.mapview.addLine(context.getString(R.string.turn_passed_message))
                         Global.game.skipTurn()
                     }
                 }
-
             }
         }
     }
 
     private fun onTouchExitDialog(touchX: Int, touchY: Int) {
         if (touchY > mScreenHeight * 0.48F && touchY < mScreenHeight * 0.59F && touchX > mScreenWidth * 0.05F && touchX < mScreenWidth * 0.95F)
-            if (touchX < mScreenWidth * 0.5F)
+            if (touchX < mScreenWidth * 0.5F) {
                 Global.game.exitGame()
-            else
+            } else {
                 mDrawExitDialog = false
+            }
     }
 
     private fun onTouchFinal(touchX: Int, touchY: Int) {
@@ -493,7 +493,7 @@ class GameScreen(context: Context) : BasicScreen(context) {
         when (event.action) {
             MotionEvent.ACTION_UP -> {
                 if (!mInputLock) {
-                    if (Global.game.tap) {
+                    if (Global.game.mAcceptPlayerInput) {
                         val touchX = event.x.toInt()
                         val touchY = event.y.toInt()
                         processTouchEvent(touchX, touchY)

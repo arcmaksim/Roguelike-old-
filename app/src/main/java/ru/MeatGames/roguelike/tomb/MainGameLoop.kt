@@ -21,12 +21,12 @@ class MainGameLoop : Runnable {
                     }
                 }
                 Global.game.updateHeroTurnCount(Global.hero!!.mIsResting)
-                Global.game.move = true
-                Global.game.turn = true
-                Global.game.tap = true
-                while (Global.game.tap) {
+                Global.game.mIsPlayerTurn = true
+                Global.game.mIsPlayerMoved = false
+                Global.game.mAcceptPlayerInput = true
+                while (Global.game.mIsPlayerTurn) {
                     if (Global.hero!!.mIsResting) {
-                        Thread.sleep(400)
+                        Thread.sleep(100)
                         if (Global.hero!!.mIsResting) {
                             Global.game.skipTurn()
                         } else {

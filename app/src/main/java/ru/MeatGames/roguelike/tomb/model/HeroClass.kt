@@ -69,9 +69,8 @@ class HeroClass {
         preequipItem(mInventory!![2])
     }
 
-    fun getStat(id: Int): Int {
-        return Global.stats[id].value
-    }
+    fun getStat(id: Int) =
+            Global.stats[id].value
 
     fun modifyStat(id: Int, value: Int, m: Int) {
         Global.stats[id].value = Global.stats[id].value + m * value
@@ -110,26 +109,24 @@ class HeroClass {
         }
     }
 
-    fun addItem(item: Item) {
-        mInventory!!.add(item)
-    }
+    fun addItem(item: Item) =
+            mInventory!!.add(item)
 
-    fun isEquiped(item: Item): Boolean {
-        return equipmentList[item.mType - 1] === item
-    }
+    fun isEquipped(item: Item) =
+            equipmentList[item.mType - 1] == item
 
     fun dropItem(item: Item) {
-        if (!item.isConsumable && isEquiped(item))
+        if (!item.isConsumable && isEquipped(item)) {
             takeOffItem(item)
+        }
         mInventory!!.remove(item)
         Global.map!![mx][my].addItem(item)
         Global.mapview.addLine(item.mTitle + " выброшен" + item.mTitleEnding)
         Global.game.skipTurn()
     }
 
-    fun deleteItem(item: Item) {
-        mInventory!!.remove(item)
-    }
+    fun deleteItem(item: Item) =
+            mInventory!!.remove(item)
 
     fun preequipItem(item: Item) {
         when (item.mType) {
@@ -202,10 +199,10 @@ class HeroClass {
         Global.game.skipTurn()
     }
 
-    fun takeOffItem(i: Int) {
-        takeOffItem(equipmentList[i]!!)
-    }
+    fun takeOffItem(i: Int) =
+            takeOffItem(equipmentList[i]!!)
 
+    @JvmOverloads
     fun startResting(loudBroadcast: Boolean = true) {
         mIsResting = true
         if (loudBroadcast) {
@@ -223,6 +220,7 @@ class HeroClass {
         }
     }
 
+    @JvmOverloads
     fun finishResting(loudBroadcast: Boolean = true) {
         if (mIsResting) {
             mIsResting = false

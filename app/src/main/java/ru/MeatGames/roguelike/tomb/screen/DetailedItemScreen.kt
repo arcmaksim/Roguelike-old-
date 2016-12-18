@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
-import ru.MeatGames.roguelike.tomb.Game
 import ru.MeatGames.roguelike.tomb.Global
 import ru.MeatGames.roguelike.tomb.R
 import ru.MeatGames.roguelike.tomb.model.Item
@@ -150,7 +149,7 @@ class DetailedItemScreen(context: Context, selectedItem: Item) : BasicScreen(con
 
         if (mMiddleSoftButton.isPressed(sx, sy)) {
             Global.hero!!.dropItem(mSelectedItem)
-            Game.v.vibrate(30)
+            Global.vibrate()
             Global.game.changeScreen(Screens.GAME_SCREEN)
         }
 
